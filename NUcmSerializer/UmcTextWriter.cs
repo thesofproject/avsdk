@@ -85,7 +85,8 @@ namespace NUmcSerializer
 
             List<PropertyInfo> result = props.Where(
                 p => !Attribute.IsDefined(p, typeof(UmcIdentifierAttribute)) &&
-                     !Attribute.IsDefined(p, typeof(UmcIgnoreAttribute))
+                     !Attribute.IsDefined(p, typeof(UmcIgnoreAttribute)) &&
+                     p.GetValue(token) != null
             ).ToList();
 
             return result.ToArray();
