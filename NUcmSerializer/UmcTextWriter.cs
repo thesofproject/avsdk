@@ -12,6 +12,7 @@ namespace NUmcSerializer
         None,
         Element,
         Array,
+        Tuple,
         Section
     }
 
@@ -50,6 +51,8 @@ namespace NUmcSerializer
                 // obtain token name
                 if (attr != null && attr.Name != null)
                     Name = attr.Name;
+                else if (type.IsSimpleTupleType())
+                    Name = TypeHelper.GetGenericObjectPropertyValue<string>(token, 0);
                 else if (tokenInfo != null)
                     Name = tokenInfo.Name;
                 else
@@ -149,6 +152,10 @@ namespace NUmcSerializer
                     WriteArray(token);
                     break;
 
+                case TokenType.Tuple:
+                    WriteValue(TypeHelper.GetGenericObjectPropertyValue(token, 1));
+                    break;
+
                 case TokenType.Section:
                     PropertyInfo[] infos = GetTypeTokenProperties(token);
 
@@ -181,6 +188,7 @@ namespace NUmcSerializer
             switch (tokenInfo.Type)
             {
                 case TokenType.Element:
+                case TokenType.Tuple:
                     str.Append(" \"");
                     writer.Write(str);
                     break;
@@ -214,6 +222,7 @@ namespace NUmcSerializer
             switch (current.Type)
             {
                 case TokenType.Element:
+                case TokenType.Tuple:
                     writer.Write("\"");
                     break;
 
