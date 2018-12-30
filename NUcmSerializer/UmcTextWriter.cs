@@ -119,7 +119,13 @@ namespace NUmcSerializer
 
         internal void WriteValue(object token)
         {
-            writer.Write(token.ToString().ToLower());
+            string value;
+            if (token.GetType() != typeof(Guid))
+                value = token.ToString().ToLower();
+            else
+                value = string.Join(", ", ((Guid)token).ToByteArray());
+
+            writer.Write(value);
         }
 
         internal void WriteArray(object token)
