@@ -13,6 +13,7 @@ namespace NUmcSerializer
         Element,
         Array,
         Tuple,
+        VendorArray, // array with non-basic elements
         Section
     }
 
@@ -132,6 +133,14 @@ namespace NUmcSerializer
             }
         }
 
+        internal void WriteVendorArray(object token)
+        {
+            Array array = (Array)token;
+
+            foreach (var elem in array)
+                WriteToken(elem, null);
+        }
+
         public void WriteToken(object token, PropertyInfo tokenInfo)
         {
             if (token == null)
@@ -154,6 +163,10 @@ namespace NUmcSerializer
 
                 case TokenType.Tuple:
                     WriteValue(TypeHelper.GetGenericObjectPropertyValue(token, 1));
+                    break;
+
+                case TokenType.VendorArray:
+                    WriteVendorArray(token);
                     break;
 
                 case TokenType.Section:
@@ -194,6 +207,7 @@ namespace NUmcSerializer
                     break;
 
                 case TokenType.Array:
+                case TokenType.VendorArray:
                     writer.WriteLine();
                     str.Append(" [");
                     writer.WriteLine(str);
@@ -227,6 +241,7 @@ namespace NUmcSerializer
                     break;
 
                 case TokenType.Array:
+                case TokenType.VendorArray:
                 case TokenType.Section:
                     StringBuilder str = new StringBuilder();
                     str.Append(indentChar, indentSize * top);

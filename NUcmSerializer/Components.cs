@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NUmcSerializer
 {
     public abstract class Section
     {
-        public string Identifier { get; set; }
+        public virtual string Identifier { get; set; }
         public string Comment { get; set; }
     }
 
@@ -92,6 +93,51 @@ namespace NUmcSerializer
         public string Tuples { get; set; }
     }
 
+    public abstract class VendorTuples : Section
+    {
+    }
+
+    public class VendorTuples<T> : VendorTuples
+    {
+        static readonly Dictionary<Type, string> typeToTupleType =
+            new Dictionary<Type, string>()
+            {
+                { typeof(string), "string" },
+                { typeof(Guid), "uuid" },
+                { typeof(bool), "bool" },
+                { typeof(byte), "byte" },
+                { typeof(ushort), "short" },
+                { typeof(uint), "word" },
+            };
+
+        public static string TupleType { get; }
+
+        public Tuple<string, T>[] Tuples { get; set; }
+
+        public override string Identifier
+        {
+            get
+            {
+                return base.Identifier;
+            }
+
+            set
+            {
+                base.Identifier = TupleType + $".{value}";
+            }
+        }
+
+        static VendorTuples()
+        {
+            Type type = typeof(T);
+
+            if (typeToTupleType.ContainsKey(type))
+                TupleType = typeToTupleType[type];
+            else
+                TupleType = type.Name;
+        }
+    }
+
     public class SectionVendorTokens : Section
     {
         public Tuple<string, uint>[] Tokens { get; set; }
@@ -100,6 +146,8 @@ namespace NUmcSerializer
     public class SectionVendorTuples : Section
     {
         public string Tokens { get; set; }
+
+        public VendorTuples[] Tuples { get; set; }
     }
 
     public class SectionControlMixer : Section

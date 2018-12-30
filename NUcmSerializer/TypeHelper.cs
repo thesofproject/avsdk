@@ -29,6 +29,11 @@ namespace NUmcSerializer
             return false;
         }
 
+        public static bool IsVendorArrayType(this Type type)
+        {
+            return type.IsArray && !IsSimpleType(type.GetElementType());
+        }
+
         public static TokenType GetTypeTokenType(this Type type)
         {
             if (type.IsSimpleType())
@@ -37,6 +42,8 @@ namespace NUmcSerializer
                 return TokenType.Array;
             else if (type.IsSimpleTupleType())
                 return TokenType.Tuple;
+            else if (type.IsVendorArrayType())
+                return TokenType.VendorArray;
             else if (type.IsSubclassOf(typeof(Section)))
                 return TokenType.Section;
 
