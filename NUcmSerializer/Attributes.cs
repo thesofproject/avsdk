@@ -58,4 +58,8 @@ namespace NUmcSerializer
     public class UmcIdentifierAttribute : Attribute
     {
     }
+
+    public class UmcIgnoreAttribute : Attribute
+    {
+    }
 }

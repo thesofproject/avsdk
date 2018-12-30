@@ -84,7 +84,8 @@ namespace NUmcSerializer
             PropertyInfo[] props = type.GetProperties();
 
             List<PropertyInfo> result = props.Where(
-                p => !Attribute.IsDefined(p, typeof(UmcIdentifierAttribute))
+                p => !Attribute.IsDefined(p, typeof(UmcIdentifierAttribute)) &&
+                     !Attribute.IsDefined(p, typeof(UmcIgnoreAttribute))
             ).ToList();
 
             return result.ToArray();
