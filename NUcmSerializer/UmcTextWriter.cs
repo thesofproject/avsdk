@@ -32,6 +32,7 @@ namespace NUmcSerializer
             public string Name;
             public TokenType Type;
             public string Identifier;
+            public bool Inline;
 
             public void Init(object token, PropertyInfo tokenInfo)
             {
@@ -58,6 +59,10 @@ namespace NUmcSerializer
                     Name = tokenInfo.Name;
                 else
                     Name = type.Name;
+
+                // obtain token misc params
+                if (type.IsArray && attr is UmcArrayAttribute)
+                    Inline = (attr as UmcArrayAttribute).Inline;
 
                 PropertyInfo propInfo = type.GetProperties().SingleOrDefault(
                     p => Attribute.IsDefined(p, typeof(UmcIdentifierAttribute))
@@ -149,7 +154,8 @@ namespace NUmcSerializer
             TokenInfo current = new TokenInfo();
             current.Init(token, tokenInfo);
 
-            WriteTagStart(current);
+            if (!current.Inline)
+                WriteTagStart(current);
 
             switch (current.Type)
             {
@@ -180,7 +186,8 @@ namespace NUmcSerializer
                     throw new NotSupportedException("current");
             }
 
-            WriteTagEnd();
+            if (!current.Inline)
+                WriteTagEnd();
         }
 
         public void WriteTagStart(TokenInfo tokenInfo)

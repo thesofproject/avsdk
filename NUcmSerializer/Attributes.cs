@@ -29,13 +29,26 @@ namespace NUmcSerializer
     // default for all arrays
     public class UmcArrayAttribute : UmcNamedTagAttribute
     {
-        public UmcArrayAttribute(string name)
+        public bool Inline { get; set; }
+
+        public UmcArrayAttribute(string name, bool inline)
             : base(name)
         {
+            Inline = inline;
         }
 
         public UmcArrayAttribute()
-            : this(null)
+            : this(null, false)
+        {
+        }
+
+        public UmcArrayAttribute(string name)
+            : this(name, false)
+        {
+        }
+
+        public UmcArrayAttribute(bool inline)
+            : this(null, inline)
         {
         }
     }
