@@ -85,9 +85,25 @@ namespace NUmcSerializer
 
             List<PropertyInfo> result = props.Where(
                 p => !Attribute.IsDefined(p, typeof(UmcIdentifierAttribute)) &&
+                     !Attribute.IsDefined(p, typeof(UmcExclusiveAttribute)) &&
                      !Attribute.IsDefined(p, typeof(UmcIgnoreAttribute)) &&
                      p.GetValue(token) != null
             ).ToList();
+
+            var exclusives = props.Where(
+                p => Attribute.IsDefined(p, typeof(UmcExclusiveAttribute))
+            );
+
+            var groups = exclusives.GroupBy(
+                p => p.GetCustomAttribute<UmcExclusiveAttribute>().Namespace
+            );
+
+            foreach (var group in groups)
+            {
+                var chosen = group.FirstOrDefault(p => p.GetValue(token) != null);
+                if (chosen != null)
+                    result.Add(chosen);
+            }
 
             return result.ToArray();
         }

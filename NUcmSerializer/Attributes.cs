@@ -59,6 +59,22 @@ namespace NUmcSerializer
     {
     }
 
+    // mutually exclusive with identifier
+    public class UmcExclusiveAttribute : Attribute
+    {
+        public string Namespace { get; set; }
+
+        public UmcExclusiveAttribute(string nameSpace)
+        {
+            Namespace = nameSpace;
+        }
+
+        public UmcExclusiveAttribute()
+            : this("")
+        {
+        }
+    }
+
     public class UmcIgnoreAttribute : Attribute
     {
     }
