@@ -1,0 +1,87 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Debug: Build",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "/property:Configuration=Debug",
+                "/t:build"
+            ],
+            "group": "build",
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Debug: Rebuild",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "/property:Configuration=Debug",
+                "/t:rebuild"
+            ],
+            "group": "build",
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Debug: Clean",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "/property:Configuration=Debug",
+                "/t:clean"
+            ],
+            "group": "build",
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "silent"
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Release: Build",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "/property:Configuration=Release",
+                "/t:build"
+            ],
+            "group": "build",
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Release: Rebuild",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "/property:Configuration=Release",
+                "/t:rebuild"
+            ],
+            "group": "build",
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Release: Clean",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "/property:Configuration=Release",
+                "/t:clean"
+            ],
+            "group": "build",
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "silent"
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
