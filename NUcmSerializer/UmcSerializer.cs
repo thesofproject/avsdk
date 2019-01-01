@@ -34,7 +34,7 @@ namespace NUmcSerializer
             foreach (var section in topology)
                 writer.WriteToken(section, null);
             writer.Flush();
-            writer.Close();
+            writer.Dispose();
         }
 
         public IEnumerable<Section> Deserialize(Stream stream)
