@@ -17,7 +17,7 @@ namespace NUmcSerializer
         Section
     }
 
-    public class UmcTextWriter
+    public class UmcTextWriter : IDisposable
     {
         TextWriter writer;
         Encoding encoding;
@@ -26,6 +26,8 @@ namespace NUmcSerializer
 
         TokenInfo[] stack;
         int top;
+
+        bool disposed;
 
         public struct TokenInfo
         {
@@ -84,6 +86,7 @@ namespace NUmcSerializer
             top = 0;
             indentChar = ' ';
             indentSize = 4;
+            disposed = false;
         }
 
         // helper method, retrieves token properties to enumerate over
@@ -307,8 +310,29 @@ namespace NUmcSerializer
             catch
             {
             }
+            finally
+            {
+                writer.Close();
+            }
+        }
 
-            writer.Close();
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                Close();
+                writer.Dispose();
+            }
+
+            disposed = true;
         }
     }
 }
