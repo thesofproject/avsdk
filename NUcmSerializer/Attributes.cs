@@ -2,6 +2,7 @@
 
 namespace NUmcSerializer
 {
+    [AttributeUsage(AttributeTargets.Property)]
     public abstract class UmcNamedTagAttribute : Attribute
     {
         public string Name { get; }
@@ -54,6 +55,7 @@ namespace NUmcSerializer
     }
 
     // default for all sections
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Property)]
     public class UmcSectionAttribute : UmcNamedTagAttribute
     {
         public UmcSectionAttribute(string name)
@@ -68,11 +70,13 @@ namespace NUmcSerializer
     }
 
     // only one per Type (section), exclusive with all other attributes
+    [AttributeUsage(AttributeTargets.Property)]
     public class UmcIdentifierAttribute : Attribute
     {
     }
 
     // mutually exclusive with identifier
+    [AttributeUsage(AttributeTargets.Property)]
     public class UmcExclusiveAttribute : Attribute
     {
         public string Namespace { get; set; }
@@ -88,6 +92,7 @@ namespace NUmcSerializer
         }
     }
 
+    [AttributeUsage(AttributeTargets.Property)]
     public class UmcIgnoreAttribute : Attribute
     {
     }
