@@ -172,6 +172,11 @@ namespace NUmcSerializer
             else
                 TupleType = type.Name;
         }
+
+        public VendorTuples()
+        {
+            base.Identifier = TupleType;
+        }
     }
 
     public class SectionVendorTokens : Section
