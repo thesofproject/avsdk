@@ -199,9 +199,6 @@ namespace NUmcSerializer
         [UmcElement("index")]
         public uint Index { get; set; }
 
-        [UmcElement("texts")]
-        public string Texts { get; set; }
-
         [UmcElement("no_pm")]
         public bool? NoPcm { get; set; }
         [UmcArray("channel", Inline = true)]
