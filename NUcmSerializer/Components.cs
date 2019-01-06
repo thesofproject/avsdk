@@ -202,8 +202,10 @@ namespace NUmcSerializer
         [UmcElement("texts")]
         public string Texts { get; set; }
 
-        [UmcSection("channel")]
-        public ChannelMap Channel { get; set; }
+        [UmcElement("no_pm")]
+        public bool? NoPcm { get; set; }
+        [UmcArray("channel", Inline = true)]
+        public ChannelMap[] Channel { get; set; }
         [UmcSection("ops")]
         public Ops Ops { get; set; }
 
@@ -226,10 +228,12 @@ namespace NUmcSerializer
         [UmcElement("index")]
         public uint Index { get; set; }
 
-        [UmcSection("channel")]
-        public ChannelMap Channel { get; set; }
+        [UmcArray("channel", Inline = true)]
+        public ChannelMap[] Channel { get; set; }
         [UmcSection("ops")]
         public Ops Ops { get; set; }
+        [UmcSection("extops")]
+        public Ops ExtOps { get; set; }
 
         [UmcElement("base")]
         public int? Base { get; set; }
