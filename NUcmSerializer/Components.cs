@@ -82,6 +82,32 @@ namespace NUmcSerializer
         public string Reg { get; set; }
         [UmcElement("shift")]
         public string Shift { get; set; }
+
+        [UmcIdentifier]
+        public override string Identifier
+        {
+            get
+            {
+                return base.Identifier;
+            }
+
+            set
+            {
+                if (value == null)
+                    return;
+
+                var lcase = value.ToLower();
+                var fields = typeof(ChannelName).GetFields();
+
+                if (fields.Any(f => f.GetValue(null).Equals(lcase)))
+                    base.Identifier = lcase;
+            }
+        }
+
+        public ChannelMap()
+        {
+            Identifier = ChannelName.Mono;
+        }
     }
 
     [UmcSection("scale")]
