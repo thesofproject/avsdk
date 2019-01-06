@@ -253,6 +253,23 @@ namespace NUmcSerializer
         public string Data { get; set; }
     }
 
+    public class SectionControlEnum : Section
+    {
+        [UmcElement("index")]
+        public uint Index { get; set; }
+
+        [UmcElement("texts")]
+        public string Texts { get; set; }
+
+        [UmcArray("channel", Inline = true)]
+        public ChannelMap[] Channel { get; set; }
+        [UmcSection("ops")]
+        public Ops Ops { get; set; }
+
+        [UmcElement("data")]
+        public string Data { get; set; }
+    }
+
     public class SectionText : Section
     {
         public string[] Values { get; set; }
