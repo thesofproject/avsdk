@@ -44,11 +44,13 @@ namespace NUmcSerializer
     public class UmcArrayAttribute : UmcNamedTagAttribute
     {
         public bool Inline { get; set; }
+        public bool TagElements { get; set; }
 
         public UmcArrayAttribute(string name, bool inline)
             : base(name)
         {
             Inline = inline;
+            TagElements = true;
         }
 
         public UmcArrayAttribute()

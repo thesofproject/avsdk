@@ -48,6 +48,7 @@ namespace NUmcSerializer
             public TokenType Type;
             public string Identifier;
             public bool Inline;
+            public bool TagElements;
 
             public void Init(object token, PropertyInfo tokenInfo)
             {
@@ -76,8 +77,12 @@ namespace NUmcSerializer
                     Name = type.Name;
 
                 // obtain token misc params
-                if (type.IsArray && attr is UmcArrayAttribute)
-                    Inline = (attr as UmcArrayAttribute).Inline;
+                if (type.IsArray)
+                {
+                    var arrAttr = attr as UmcArrayAttribute;
+                    Inline = (arrAttr != null) ? arrAttr.Inline : false;
+                    TagElements = (arrAttr != null) ? arrAttr.TagElements : true;
+                }
 
                 PropertyInfo propInfo = type.GetProperties().SingleOrDefault(
                     p => Attribute.IsDefined(p, typeof(UmcIdentifierAttribute))
@@ -144,7 +149,7 @@ namespace NUmcSerializer
             writer.Write(value);
         }
 
-        internal void WriteArray(object token)
+        internal void WriteArray(object token, string elemTag)
         {
             Array array = (Array)token;
             StringBuilder str = new StringBuilder();
@@ -186,7 +191,7 @@ namespace NUmcSerializer
                     break;
 
                 case TokenType.Array:
-                    WriteArray(token);
+                    WriteArray(token, current.TagElements ? "\"" : string.Empty);
                     break;
 
                 case TokenType.Tuple:
