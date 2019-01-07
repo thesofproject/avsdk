@@ -111,4 +111,20 @@ namespace NUmcSerializer
     public class UmcIgnoreAttribute : Attribute
     {
     }
+
+    [AttributeUsage(AttributeTargets.Field)]
+    public class UmcEnumAttribute : Attribute
+    {
+        public string Name { get; set; }
+
+        public UmcEnumAttribute(string name)
+        {
+            Name = name;
+        }
+
+        public UmcEnumAttribute()
+            : this(null)
+        {
+        }
+    }
 }

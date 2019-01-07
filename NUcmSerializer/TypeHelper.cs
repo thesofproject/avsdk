@@ -81,4 +81,19 @@ namespace NUmcSerializer
             return (T)GetGenericObjectPropertyValue(obj, index);
         }
     }
+
+    internal static class EnumHelper
+    {
+        internal static T GetAttributeOfType<T>(this Enum value)
+            where T : Attribute
+        {
+            var type = value.GetType();
+            // lets be reliable for different locales
+            var memInfo = type.GetMember(Enum.GetName(type, value));
+            if (memInfo.Length == 0)
+                return null;
+
+            return (T)Attribute.GetCustomAttribute(memInfo[0], typeof(T), false);
+        }
+    }
 }
