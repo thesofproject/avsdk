@@ -70,7 +70,7 @@ namespace NUmcSerializer
                 if (attr != null && attr.Name != null)
                     Name = attr.Name;
                 else if (type.IsSimpleTupleType())
-                    Name = TypeHelper.GetGenericObjectPropertyValue<string>(token, 0);
+                    Name = TypeHelper.GetObjectGenericPropertyValue<string>(token, 0);
                 else if (tokenInfo != null)
                     Name = tokenInfo.Name;
                 else
@@ -208,7 +208,7 @@ namespace NUmcSerializer
                     break;
 
                 case TokenType.Tuple:
-                    WriteValue(TypeHelper.GetGenericObjectPropertyValue(token, 1));
+                    WriteValue(TypeHelper.GetObjectGenericPropertyValue(token, 1));
                     break;
 
                 case TokenType.VendorArray:

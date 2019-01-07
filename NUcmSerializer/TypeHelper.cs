@@ -63,7 +63,7 @@ namespace NUmcSerializer
             return TokenType.None;
         }
 
-        public static object GetGenericObjectPropertyValue(object obj, uint index)
+        public static object GetObjectGenericPropertyValue(object obj, uint index)
         {
             Type type = obj.GetType();
             if (type.IsGenericType)
@@ -76,9 +76,9 @@ namespace NUmcSerializer
             return null;
         }
 
-        public static T GetGenericObjectPropertyValue<T>(object obj, uint index)
+        public static T GetObjectGenericPropertyValue<T>(object obj, uint index)
         {
-            return (T)GetGenericObjectPropertyValue(obj, index);
+            return (T)GetObjectGenericPropertyValue(obj, index);
         }
     }
 
