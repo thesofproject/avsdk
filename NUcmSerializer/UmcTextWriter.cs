@@ -158,9 +158,9 @@ namespace NUmcSerializer
             {
                 str.Clear();
                 str.Append(indentChar, indentSize * top);
-                str.Append("\"");
+                str.Append(elemTag);
                 str.Append(elem);
-                str.Append("\"");
+                str.Append(elemTag);
                 writer.WriteLine(str);
             }
         }
