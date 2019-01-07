@@ -107,9 +107,9 @@ namespace NUmcSerializer
     public class ChannelMap : Section
     {
         [UmcElement("reg")]
-        public string Reg { get; set; }
+        public int Reg { get; set; }
         [UmcElement("shift")]
-        public string Shift { get; set; }
+        public int Shift { get; set; }
 
         [UmcIdentifier]
         public override string Identifier
@@ -362,6 +362,7 @@ namespace NUmcSerializer
 
     public class SectionText : Section
     {
+        [UmcArray("values")]
         public string[] Values { get; set; }
     }
 
