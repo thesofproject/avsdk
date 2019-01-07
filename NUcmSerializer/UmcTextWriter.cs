@@ -138,15 +138,30 @@ namespace NUmcSerializer
             return result.ToArray();
         }
 
+        internal static string GetTokenStringValue(object token)
+        {
+            string value = null;
+            Type type = token.GetType();
+
+            if (type == typeof(Guid))
+            {
+                value = string.Join(", ", ((Guid)token).ToByteArray());
+            }
+            else if (type.IsSubclassOf(typeof(Enum)))
+            {
+                var attr = EnumHelper.GetAttributeOfType<UmcEnumAttribute>((Enum)token);
+                if (attr != null)
+                    value = attr.Name;
+            }
+
+            if (value == null)
+                value = token.ToString().ToLower();
+            return value;
+        }
+
         internal void WriteValue(object token)
         {
-            string value;
-            if (token.GetType() != typeof(Guid))
-                value = token.ToString().ToLower();
-            else
-                value = string.Join(", ", ((Guid)token).ToByteArray());
-
-            writer.Write(value);
+            writer.Write(GetTokenStringValue(token));
         }
 
         internal void WriteArray(object token, string elemTag)
@@ -159,7 +174,7 @@ namespace NUmcSerializer
                 str.Clear();
                 str.Append(indentChar, indentSize * top);
                 str.Append(elemTag);
-                str.Append(elem);
+                str.Append(GetTokenStringValue(elem));
                 str.Append(elemTag);
                 writer.WriteLine(str);
             }
