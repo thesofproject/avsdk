@@ -392,6 +392,35 @@ namespace NUmcSerializer
         public string[] Lines { get; set; }
     }
 
+    public enum TPLG_DAPM
+    {
+        // DAPM widget types - add new items to the end
+        [UmcEnum(Name = "input")] INPUT,
+        [UmcEnum(Name = "output")] OUTPUT,
+        [UmcEnum(Name = "mux")] MUX,
+        [UmcEnum(Name = "mixer")] MIXER,
+        [UmcEnum(Name = "pga")] PGA,
+        [UmcEnum(Name = "out_drv")] OUT_DRV,
+        [UmcEnum(Name = "adc")] ADC,
+        [UmcEnum(Name = "dac")] DAC,
+        [UmcEnum(Name = "switch")] SWITCH,
+        [UmcEnum(Name = "pre")] PRE,
+        [UmcEnum(Name = "post")] POST,
+        [UmcEnum(Name = "aif_in")] AIF_IN,
+        [UmcEnum(Name = "aif_out")] AIF_OUT,
+        [UmcEnum(Name = "dai_in")] DAI_IN,
+        [UmcEnum(Name = "dai_out")] DAI_OUT,
+        [UmcEnum(Name = "dai_link")] DAI_LINK,
+        [UmcEnum(Name = "buffer")] BUFFER,
+        [UmcEnum(Name = "scheduler")] SCHEDULER,
+        [UmcEnum(Name = "effect")] EFFECT,
+        [UmcEnum(Name = "siggen")] SIGGEN,
+        [UmcEnum(Name = "src")] SRC,
+        [UmcEnum(Name = "asrc")] ASRC,
+        [UmcEnum(Name = "encoder")] ENCODER,
+        [UmcEnum(Name = "decoder")] DECODER
+    }
+
     public class SectionWidget : Section
     {
         [UmcElement("index")]
