@@ -287,41 +287,38 @@ namespace NUmcSerializer
         public VendorTuples[] Tuples { get; set; }
     }
 
-    public class SectionControlMixer : Section
+    public abstract class SectionControl : Section
     {
         [UmcElement("index")]
         public uint Index { get; set; }
 
-        [UmcElement("no_pm")]
-        public bool? NoPcm { get; set; }
         [UmcArray("channel", Inline = true)]
         public ChannelMap[] Channel { get; set; }
         [UmcSection("ops")]
         public Ops Ops { get; set; }
+
+        [UmcElement("data")]
+        public string Data { get; set; }
+    }
+
+    public class SectionControlMixer : SectionControl
+    {
+        [UmcElement("no_pm")]
+        public bool? NoPm { get; set; }
 
         [UmcElement("max")]
         public int? Max { get; set; }
         [UmcElement("min")]
         public int? Min { get; set; }
         [UmcElement("invert")]
-        public byte Invert { get; set; }
+        public bool Invert { get; set; }
 
         [UmcElement("tlv")]
         public string TLV { get; set; }
-
-        [UmcElement("data")]
-        public string Data { get; set; }
     }
 
-    public class SectionControlBytes : Section
+    public class SectionControlBytes : SectionControl
     {
-        [UmcElement("index")]
-        public uint Index { get; set; }
-
-        [UmcArray("channel", Inline = true)]
-        public ChannelMap[] Channel { get; set; }
-        [UmcSection("ops")]
-        public Ops Ops { get; set; }
         [UmcSection("extops")]
         public Ops ExtOps { get; set; }
 
@@ -338,26 +335,12 @@ namespace NUmcSerializer
 
         [UmcElement("tlv")]
         public string TLV { get; set; }
-
-        [UmcElement("data")]
-        public string Data { get; set; }
     }
 
-    public class SectionControlEnum : Section
+    public class SectionControlEnum : SectionControl
     {
-        [UmcElement("index")]
-        public uint Index { get; set; }
-
         [UmcElement("texts")]
         public string Texts { get; set; }
-
-        [UmcArray("channel", Inline = true)]
-        public ChannelMap[] Channel { get; set; }
-        [UmcSection("ops")]
-        public Ops Ops { get; set; }
-
-        [UmcElement("data")]
-        public string Data { get; set; }
     }
 
     public class SectionText : Section
