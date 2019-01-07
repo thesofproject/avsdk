@@ -77,30 +77,30 @@ namespace NUmcSerializer
         public static readonly string SideRight = "sr";
         public static readonly string RearCenter = "rc";
         public static readonly string FrontLeftCenter = "flc";
-        public static readonly string FrontRightCenter  = "frc";
+        public static readonly string FrontRightCenter = "frc";
         public static readonly string RearLeftCenter = "rlc";
         public static readonly string RearRightCenter = "rrc";
-        public static readonly string FrontLeftWide  = "flw";
-        public static readonly string FrontRightWide  = "frw";
-        public static readonly string FrontLeftHigh  = "flh";
-        public static readonly string FrontCenterHigh  = "fch";
+        public static readonly string FrontLeftWide = "flw";
+        public static readonly string FrontRightWide = "frw";
+        public static readonly string FrontLeftHigh = "flh";
+        public static readonly string FrontCenterHigh = "fch";
         public static readonly string FrontRightHigh = "frh";
         public static readonly string TopCenter = "tc";
-        public static readonly string TopFrontLeft  = "tfl";
-        public static readonly string TopFrontRight  = "tfr";
-        public static readonly string TopFrontCenter  = "tfc";
-        public static readonly string TopRearLeft  = "trl";
-        public static readonly string TopRearRight  = "trr";
-        public static readonly string TopRearCenter  = "trc";
-        public static readonly string TopFrontLeftCenter  = "tflc";
-        public static readonly string TopFrontRightCenter  = "tfrc";
-        public static readonly string TopSideLeft  = "tsl";
-        public static readonly string TopSideRight  = "tsr";
+        public static readonly string TopFrontLeft = "tfl";
+        public static readonly string TopFrontRight = "tfr";
+        public static readonly string TopFrontCenter = "tfc";
+        public static readonly string TopRearLeft = "trl";
+        public static readonly string TopRearRight = "trr";
+        public static readonly string TopRearCenter = "trc";
+        public static readonly string TopFrontLeftCenter = "tflc";
+        public static readonly string TopFrontRightCenter = "tfrc";
+        public static readonly string TopSideLeft = "tsl";
+        public static readonly string TopSideRight = "tsr";
         public static readonly string LeftLFE = "llfe";
         public static readonly string RightLFE = "rlfe";
         public static readonly string BottomCenter = "bc";
         public static readonly string BottomLeftCenter = "blc";
-        public static readonly string BottomRightCenter  = "brc";
+        public static readonly string BottomRightCenter = "brc";
     }
 
     [UmcSection("channel")]
