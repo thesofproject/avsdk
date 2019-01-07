@@ -40,7 +40,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeHelper.cs" />
     <Compile Include="UmcSerializer.cs" />
-    <Compile Include="UmcTextWriter.cs" />
+    <Compile Include="UmcWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

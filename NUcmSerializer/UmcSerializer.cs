@@ -29,7 +29,7 @@ namespace NUmcSerializer
             if (topology == null)
                 throw new ArgumentNullException("topology");
 
-            var writer = new UmcTextWriter(stream, null);
+            var writer = new UmcWriter(stream, null);
 
             foreach (var section in topology)
                 writer.WriteToken(section, null);
