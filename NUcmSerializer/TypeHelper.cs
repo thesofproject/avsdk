@@ -15,19 +15,19 @@ using System;
 
 namespace NUmcSerializer
 {
-    public static class TypeHelper
+    internal static class TypeHelper
     {
-        public static bool IsSimpleType(this Type type)
+        internal static bool IsSimpleType(this Type type)
         {
             return type.IsPrimitive || type.IsValueType || type == typeof(string);
         }
 
-        public static bool IsSimpleArrayType(this Type type)
+        internal static bool IsSimpleArrayType(this Type type)
         {
             return type.IsArray && IsSimpleType(type.GetElementType());
         }
 
-        public static bool IsSimpleTupleType(this Type type)
+        internal static bool IsSimpleTupleType(this Type type)
         {
             if (type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(Tuple<,>))
@@ -42,12 +42,12 @@ namespace NUmcSerializer
             return false;
         }
 
-        public static bool IsVendorArrayType(this Type type)
+        internal static bool IsVendorArrayType(this Type type)
         {
             return type.IsArray && !IsSimpleType(type.GetElementType());
         }
 
-        public static TokenType GetTypeTokenType(this Type type)
+        internal static TokenType GetTypeTokenType(this Type type)
         {
             if (type.IsSimpleType())
                 return TokenType.Element;
@@ -63,7 +63,7 @@ namespace NUmcSerializer
             return TokenType.None;
         }
 
-        public static object GetObjectGenericPropertyValue(object obj, uint index)
+        internal static object GetObjectGenericPropertyValue(object obj, uint index)
         {
             Type type = obj.GetType();
             if (type.IsGenericType)
@@ -76,7 +76,7 @@ namespace NUmcSerializer
             return null;
         }
 
-        public static T GetObjectGenericPropertyValue<T>(object obj, uint index)
+        internal static T GetObjectGenericPropertyValue<T>(object obj, uint index)
         {
             return (T)GetObjectGenericPropertyValue(obj, index);
         }
