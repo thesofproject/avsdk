@@ -287,6 +287,38 @@ namespace NUmcSerializer
         public VendorTuples[] Tuples { get; set; }
     }
 
+    public enum CTL_ELEM_ACCESS
+    {
+        [UmcEnum(Name = "read")]
+        READ          = (1 << 0),
+        [UmcEnum(Name = "write")]
+        WRITE         = (1 << 1),
+        [UmcEnum(Name = "read_write")]
+        READWRITE     = (READ | WRITE),
+        [UmcEnum(Name = "volatile")]
+        VOLATILE      = (1 << 2),   // control value may be changed without a notification
+        [UmcEnum(Name = "timestamp")]
+        TIMESTAMP     = (1 << 3),   // when was control changed
+        [UmcEnum(Name = "tlv_read")]
+        TLV_READ      = (1 << 4),   // TLV read is possible
+        [UmcEnum(Name = "tlv_write")]
+        TLV_WRITE     = (1 << 5),   // TLV write is possible
+        [UmcEnum(Name = "tlv_read_write")]
+        TLV_READWRITE = (TLV_READ | TLV_WRITE),
+        [UmcEnum(Name = "tlv_command")]
+        TLV_COMMAND   = (1 << 6),   // TLV command is possible
+        [UmcEnum(Name = "inactive")]
+        INACTIVE      = (1 << 8),   // control does actually nothing, but may be updated
+        [UmcEnum(Name = "lock")]
+        LOCK          = (1 << 9),   // write lock
+        [UmcEnum(Name = "owner")]
+        OWNER         = (1 << 10),  // write lock owner
+        [UmcEnum(Name = "tlv_callback")]
+        TLV_CALLBACK  = (1 << 28),  // kernel use a TLV callback
+        [UmcEnum(Name = "user")]
+        USER          = (1 << 29)   // user space element
+    }
+
     public abstract class SectionControl : Section
     {
         [UmcElement("index")]
@@ -296,6 +328,9 @@ namespace NUmcSerializer
         public ChannelMap[] Channel { get; set; }
         [UmcSection("ops")]
         public Ops Ops { get; set; }
+
+        [UmcArray("access")]
+        public CTL_ELEM_ACCESS[] Access { get; set; }
 
         [UmcElement("data")]
         public string Data { get; set; }
