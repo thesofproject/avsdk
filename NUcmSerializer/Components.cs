@@ -427,7 +427,7 @@ namespace NUmcSerializer
         public uint Index { get; set; }
 
         [UmcElement("type")]
-        public string Type { get; set; }
+        public TPLG_DAPM Type { get; set; }
         [UmcElement("stream_name")]
         public string StreamName { get; set; }
 
@@ -438,9 +438,9 @@ namespace NUmcSerializer
         [UmcElement("shift")]
         public string Shift { get; set; }
         [UmcElement("invert")]
-        public byte Invert { get; set; }
+        public bool? Invert { get; set; }
         [UmcElement("subseq")]
-        public int Subseq { get; set; }
+        public int? Subseq { get; set; }
 
         [UmcElement("event_type")]
         public int? EventType { get; set; }
@@ -448,12 +448,12 @@ namespace NUmcSerializer
         public int? EventFlags { get; set; }
 
         [UmcElement("mixer"), UmcExclusive("control")]
-        public string Mixer { get; set; }
+        public string[] Mixer { get; set; }
         [UmcElement("enum"), UmcExclusive("control")]
-        public string Enum { get; set; }
+        public string[] Enum { get; set; }
 
         [UmcElement("data")]
-        public string Data { get; set; }
+        public string[] Data { get; set; }
     }
 
     public class SectionPCMCapabilities : Section
