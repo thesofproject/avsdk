@@ -151,6 +151,10 @@ namespace NUmcSerializer
                 if (attr != null)
                     value = attr.Name;
             }
+            else if (type == typeof(string))
+            {
+                value = token.ToString();
+            }
 
             if (value == null)
                 value = token.ToString().ToLower();
