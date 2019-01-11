@@ -114,9 +114,9 @@ namespace NUmcSerializer
             PropertyInfo[] props = type.GetProperties();
 
             List<PropertyInfo> result = props.Where(
-                p => !Attribute.IsDefined(p, typeof(UmcIdentifierAttribute)) &&
-                     !Attribute.IsDefined(p, typeof(UmcIgnoreAttribute)) &&
-                     p.GetValue(token) != null
+                p => p.GetValue(token) != null &&
+                     !Attribute.IsDefined(p, typeof(UmcIdentifierAttribute)) &&
+                     !Attribute.IsDefined(p, typeof(UmcIgnoreAttribute))
             ).ToList();
 
             var cache = new List<string>();
