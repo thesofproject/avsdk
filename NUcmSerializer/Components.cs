@@ -451,6 +451,8 @@ namespace NUmcSerializer
         public string[] Mixer { get; set; }
         [UmcElement("enum"), UmcExclusive("control")]
         public string[] Enum { get; set; }
+        [UmcElement("bytes"), UmcExclusive("control")]
+        public string[] Bytes { get; set; }
 
         [UmcElement("data")]
         public string[] Data { get; set; }
