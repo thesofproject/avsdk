@@ -147,7 +147,7 @@ namespace NUmcSerializer
             }
             else if (type.IsSubclassOf(typeof(Enum)))
             {
-                var attr = EnumHelper.GetAttributeOfType<UmcEnumAttribute>((Enum)token);
+                var attr = ((Enum)token).GetAttributeOfType<UmcEnumAttribute>();
                 if (attr != null)
                     value = attr.Name;
             }

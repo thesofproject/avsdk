@@ -87,9 +87,12 @@ namespace NUmcSerializer
         internal static T GetAttributeOfType<T>(this Enum value)
             where T : Attribute
         {
-            var type = value.GetType();
+            Type type = value.GetType();
+            string name = Enum.GetName(type, value);
+            if (name == null)
+                return null;
             // lets be reliable for different locales
-            var memInfo = type.GetMember(Enum.GetName(type, value));
+            var memInfo = type.GetMember(name);
             if (memInfo.Length == 0)
                 return null;
 
