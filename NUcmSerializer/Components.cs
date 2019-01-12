@@ -443,12 +443,12 @@ namespace NUmcSerializer
         [UmcElement("invert")]
         public bool? Invert { get; set; }
         [UmcElement("subseq")]
-        public int? Subseq { get; set; }
+        public uint? Subseq { get; set; }
 
         [UmcElement("event_type")]
-        public int? EventType { get; set; }
+        public uint? EventType { get; set; }
         [UmcElement("event_flags")]
-        public int? EventFlags { get; set; }
+        public DAPM_EVENT? EventFlags { get; set; }
 
         [UmcElement("mixer"), UmcExclusive("control")]
         public string[] Mixer { get; set; }
