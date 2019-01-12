@@ -12,6 +12,9 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace NUmcSerializer
 {
@@ -84,6 +87,63 @@ namespace NUmcSerializer
 
     internal static class ExtensionMethods
     {
+        internal static byte[] ToBytes(this string value)
+        {
+            var result = new List<byte>();
+            var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim());
+
+            foreach (var substr in substrs)
+            {
+                if (substr.StartsWith("0x") &&
+                    byte.TryParse(substr.Substring(2), NumberStyles.HexNumber,
+                                        CultureInfo.InvariantCulture, out byte val))
+                    result.Add(val);
+                else if (byte.TryParse(substr, out val))
+                    result.Add(val);
+            }
+
+            return result.ToArray();
+        }
+
+        internal static ushort[] ToUInts16(this string value)
+        {
+            var result = new List<ushort>();
+            var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim());
+
+            foreach (var substr in substrs)
+            {
+                if (substr.StartsWith("0x") &&
+                    ushort.TryParse(substr.Substring(2), NumberStyles.HexNumber,
+                                        CultureInfo.InvariantCulture, out ushort val))
+                    result.Add(val);
+                else if (ushort.TryParse(substr, out val))
+                    result.Add(val);
+            }
+
+            return result.ToArray();
+        }
+
+        internal static uint[] ToUInts32(this string value)
+        {
+            var result = new List<uint>();
+            var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim());
+
+            foreach (var substr in substrs)
+            {
+                if (substr.StartsWith("0x") &&
+                    uint.TryParse(substr.Substring(2), NumberStyles.HexNumber,
+                                        CultureInfo.InvariantCulture, out uint val))
+                    result.Add(val);
+                else if (uint.TryParse(substr, out val))
+                    result.Add(val);
+            }
+
+            return result.ToArray();
+        }
+
         internal static T GetAttributeOfType<T>(this Enum value)
             where T : Attribute
         {
