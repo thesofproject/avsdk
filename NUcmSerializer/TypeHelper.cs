@@ -82,7 +82,7 @@ namespace NUmcSerializer
         }
     }
 
-    internal static class EnumHelper
+    internal static class ExtensionMethods
     {
         internal static T GetAttributeOfType<T>(this Enum value)
             where T : Attribute
