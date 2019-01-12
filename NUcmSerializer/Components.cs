@@ -153,64 +153,52 @@ namespace NUmcSerializer
 
     public class SectionData : Section
     {
-        private byte[] bytes;
-        private ushort[] shorts;
-        private uint[] words;
+        public byte[] Bytes;
+        public ushort[] Shorts;
+        public uint[] Words;
 
         [UmcElement("file"), UmcExclusive("value")]
         public string File { get; set; }
 
         [UmcElement("bytes"), UmcExclusive("value")]
-        public string Bytes
+        public string BytesString
         {
             get
             {
-                return (bytes != null) ? string.Join(",", bytes) : null;
+                return (Bytes != null) ? string.Join(",", Bytes) : null;
             }
 
             set
             {
-                try
-                {
-                    bytes = value.Split(',').Select(v => byte.Parse(v)).ToArray();
-                }
-                catch { }
+                Bytes = (value != null) ? value.ToBytes() : null;
             }
         }
 
         [UmcElement("shorts"), UmcExclusive("value")]
-        public string Shorts
+        public string ShortsString
         {
             get
             {
-                return (shorts != null) ? string.Join(",", shorts) : null;
+                return (Shorts != null) ? string.Join(",", Shorts) : null;
             }
 
             set
             {
-                try
-                {
-                    shorts = value.Split(',').Select(v => ushort.Parse(v)).ToArray();
-                }
-                catch { }
+                Shorts = (value != null) ? value.ToUInts16() : null;
             }
         }
 
         [UmcElement("words"), UmcExclusive("value")]
-        public string Words
+        public string WordsString
         {
             get
             {
-                return (words != null) ? string.Join(",", words) : null;
+                return (Words != null) ? string.Join(",", Words) : null;
             }
 
             set
             {
-                try
-                {
-                    words = value.Split(',').Select(v => uint.Parse(v)).ToArray();
-                }
-                catch { }
+                Words = (value != null) ? value.ToUInts32() : null;
             }
         }
 
