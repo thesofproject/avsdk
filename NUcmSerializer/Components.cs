@@ -24,6 +24,16 @@ namespace NUmcSerializer
         public virtual string Identifier { get; set; }
         [UmcElement("comment")]
         public string Comment { get; set; }
+
+        public Section(string identifier)
+        {
+            Identifier = identifier;
+        }
+
+        public Section()
+            : this(null)
+        {
+        }
     }
 
     public static class TPLG_CTL
@@ -63,6 +73,16 @@ namespace NUmcSerializer
         public uint? Put { get; set; }
         [UmcElement("info")]
         public uint? Info { get; set; }
+
+        public Ops(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public Ops()
+            : this(null)
+        {
+        }
     }
 
     public static class ChannelName
@@ -133,9 +153,14 @@ namespace NUmcSerializer
             }
         }
 
-        public ChannelMap()
+        public ChannelMap(string identifier)
+            : base(identifier)
         {
-            Identifier = ChannelName.Mono;
+        }
+
+        public ChannelMap()
+            : this(ChannelName.Mono)
+        {
         }
     }
 
@@ -150,6 +175,16 @@ namespace NUmcSerializer
         public int Step { get; set; }
         [UmcElement("mute")]
         public byte Mute { get; set; }
+
+        public DBScale(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public DBScale()
+            : this(ChannelName.Mono)
+        {
+        }
     }
 
     public class SectionData : Section
@@ -205,6 +240,16 @@ namespace NUmcSerializer
 
         [UmcElement("tuples"), UmcExclusive("value")]
         public string Tuples { get; set; }
+
+        public SectionData(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionData()
+            : this(null)
+        {
+        }
     }
 
     public abstract class VendorTuples : Section
@@ -241,6 +286,16 @@ namespace NUmcSerializer
                 default:
                     return Marshal.SizeOf(type);
             }
+        }
+
+        public VendorTuples(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public VendorTuples()
+            : this(null)
+        {
         }
 
         public abstract int Size();
@@ -290,9 +345,14 @@ namespace NUmcSerializer
                 TupleType = type.Name;
         }
 
-        public VendorTuples()
+        public VendorTuples(string identifier)
+            : base(identifier)
         {
-            base.Identifier = TupleType;
+        }
+
+        public VendorTuples()
+            : this(null)
+        {
         }
 
         public override int Size()
@@ -306,6 +366,16 @@ namespace NUmcSerializer
     {
         [UmcArray(Inline = true)]
         public Tuple<string, uint>[] Tokens { get; set; }
+
+        public SectionVendorTokens(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionVendorTokens()
+            : this(null)
+        {
+        }
     }
 
     public class SectionVendorTuples : Section
@@ -315,6 +385,16 @@ namespace NUmcSerializer
 
         [UmcArray(Inline = true)]
         public VendorTuples[] Tuples { get; set; }
+
+        public SectionVendorTuples(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionVendorTuples()
+            : this(null)
+        {
+        }
 
         public int Size()
         {
@@ -375,6 +455,16 @@ namespace NUmcSerializer
 
         [UmcElement("data")]
         public string Data { get; set; }
+
+        public SectionControl(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionControl()
+            : this(null)
+        {
+        }
     }
 
     public class SectionControlMixer : SectionControl
@@ -391,6 +481,16 @@ namespace NUmcSerializer
 
         [UmcElement("tlv")]
         public string TLV { get; set; }
+
+        public SectionControlMixer(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionControlMixer()
+            : this(null)
+        {
+        }
     }
 
     public class SectionControlBytes : SectionControl
@@ -411,18 +511,48 @@ namespace NUmcSerializer
 
         [UmcElement("tlv")]
         public string TLV { get; set; }
+
+        public SectionControlBytes(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionControlBytes()
+            : this(null)
+        {
+        }
     }
 
     public class SectionControlEnum : SectionControl
     {
         [UmcElement("texts")]
         public string Texts { get; set; }
+
+        public SectionControlEnum(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionControlEnum()
+            : this(null)
+        {
+        }
     }
 
     public class SectionText : Section
     {
         [UmcArray("values")]
         public string[] Values { get; set; }
+
+        public SectionText(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionText()
+            : this(null)
+        {
+        }
     }
 
     public class SectionGraph : Section
@@ -431,6 +561,16 @@ namespace NUmcSerializer
         public uint Index { get; set; }
         [UmcArray("lines")]
         public string[] Lines { get; set; }
+
+        public SectionGraph(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionGraph()
+            : this(null)
+        {
+        }
     }
 
     public enum TPLG_DAPM
@@ -512,6 +652,16 @@ namespace NUmcSerializer
 
         [UmcElement("data")]
         public string[] Data { get; set; }
+
+        public SectionWidget(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionWidget()
+            : this(null)
+        {
+        }
     }
 
     public class SectionPCMCapabilities : Section
@@ -526,6 +676,16 @@ namespace NUmcSerializer
         public byte ChannelMin { get; set; }
         [UmcElement("channel_max")]
         public byte ChannelMax { get; set; }
+
+        public SectionPCMCapabilities(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionPCMCapabilities()
+            : this(null)
+        {
+        }
     }
 
     public class PCMConfig : Section
@@ -538,6 +698,16 @@ namespace NUmcSerializer
         public byte Channels { get; set; }
         [UmcElement("tdm_slot")]
         public byte TDMSlot { get; set; }
+
+        public PCMConfig(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public PCMConfig()
+            : this(null)
+        {
+        }
     }
 
     public class SectionPCMConfig : Section
@@ -546,12 +716,32 @@ namespace NUmcSerializer
         public PCMConfig Playback { get; set; }
         [UmcSection("config")]
         public PCMConfig Capture { get; set; }
+
+        public SectionPCMConfig(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionPCMConfig()
+            : this(null)
+        {
+        }
     }
 
     public class DAI : Section
     {
         [UmcElement("id")]
         public uint ID { get; set; }
+
+        public DAI(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public DAI()
+            : this(null)
+        {
+        }
     }
 
     public class DAILink : Section
@@ -560,6 +750,16 @@ namespace NUmcSerializer
         public string Capabilities { get; set; }
         [UmcArray("configs")]
         public string[] Configs { get; set; }
+
+        public DAILink(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public DAILink()
+            : this(null)
+        {
+        }
     }
 
     public class SectionPCM : Section
@@ -585,6 +785,16 @@ namespace NUmcSerializer
 
         [UmcElement("data")]
         public string Data { get; set; }
+
+        public SectionPCM(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionPCM()
+            : this(null)
+        {
+        }
     }
 
     public class SectionLink : Section
@@ -610,6 +820,16 @@ namespace NUmcSerializer
 
         [UmcElement("data")]
         public string Data { get; set; }
+
+        public SectionLink(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionLink()
+            : this(null)
+        {
+        }
     }
 
     public class SectionHWConfig : Section
@@ -622,6 +842,16 @@ namespace NUmcSerializer
         public string Bclk { get; set; }
         [UmcElement("fsync")]
         public string Fsync { get; set; }
+
+        public SectionHWConfig(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionHWConfig()
+            : this(null)
+        {
+        }
     }
 
     public class SectionDAI : Section
@@ -645,11 +875,31 @@ namespace NUmcSerializer
 
         [UmcElement("data")]
         public string Data { get; set; }
+
+        public SectionDAI(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionDAI()
+            : this(null)
+        {
+        }
     }
 
     public class SectionManifest : Section
     {
         [UmcArray("data")]
         public string[] Data { get; set; }
+
+        public SectionManifest(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionManifest()
+            : this(null)
+        {
+        }
     }
 }
