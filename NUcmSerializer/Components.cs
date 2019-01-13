@@ -142,14 +142,9 @@ namespace NUmcSerializer
 
             set
             {
-                if (value == null)
-                    return;
-
-                var lcase = value.ToLower();
-                var fields = typeof(ChannelName).GetFields();
-
-                if (fields.Any(f => f.GetValue(null).Equals(lcase)))
-                    base.Identifier = lcase;
+                if (typeof(ChannelName).GetFields()
+                        .Any(f => f.GetValue(null).Equals(value)))
+                    base.Identifier = value;
             }
         }
 
@@ -398,13 +393,7 @@ namespace NUmcSerializer
 
         public int Size()
         {
-            int result = 0;
-            if (Tuples == null)
-                return result;
-
-            foreach (var tuple in Tuples)
-                result += tuple.Size();
-            return result;
+            return (Tuples == null) ? 0 : Tuples.Sum(t => t.Size());
         }
     }
 
