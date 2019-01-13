@@ -14,6 +14,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace NUmcSerializer
 {
@@ -208,12 +209,47 @@ namespace NUmcSerializer
 
     public abstract class VendorTuples : Section
     {
+        public const int CTL_ELEM_ID_NAME_MAXLEN = 44;
+
+        public static int GetElementSize<T>()
+        {
+            Type type = typeof(T);
+            TypeCode code = Type.GetTypeCode(type);
+            switch (code)
+            {
+                case TypeCode.String:
+                    return CTL_ELEM_ID_NAME_MAXLEN;
+
+                case TypeCode.Object:
+                    if (type == typeof(Guid))
+                        return 16 * sizeof(byte);
+                    else
+                        return Marshal.SizeOf(type);
+
+                case TypeCode.Boolean:
+                    return sizeof(bool);
+
+                case TypeCode.Byte:
+                    return sizeof(byte);
+
+                case TypeCode.UInt16:
+                    return sizeof(ushort);
+
+                case TypeCode.UInt32:
+                    return sizeof(uint);
+
+                default:
+                    return Marshal.SizeOf(type);
+            }
+        }
+
+        public abstract int Size();
     }
 
     [UmcSection("tuples")]
     public class VendorTuples<T> : VendorTuples
     {
-        static readonly Dictionary<Type, string> typeToTupleType =
+        static readonly Dictionary<Type, string> tupleTypes =
             new Dictionary<Type, string>()
             {
                 { typeof(string), "string" },
@@ -248,8 +284,8 @@ namespace NUmcSerializer
         {
             Type type = typeof(T);
 
-            if (typeToTupleType.ContainsKey(type))
-                TupleType = typeToTupleType[type];
+            if (tupleTypes.ContainsKey(type))
+                TupleType = tupleTypes[type];
             else
                 TupleType = type.Name;
         }
@@ -257,6 +293,12 @@ namespace NUmcSerializer
         public VendorTuples()
         {
             base.Identifier = TupleType;
+        }
+
+        public override int Size()
+        {
+            return (Tuples == null) ?
+                0 : (sizeof(uint) + GetElementSize<T>()) * Tuples.Length;
         }
     }
 
@@ -273,6 +315,17 @@ namespace NUmcSerializer
 
         [UmcArray(Inline = true)]
         public VendorTuples[] Tuples { get; set; }
+
+        public int Size()
+        {
+            int result = 0;
+            if (Tuples == null)
+                return result;
+
+            foreach (var tuple in Tuples)
+                result += tuple.Size();
+            return result;
+        }
     }
 
     public enum CTL_ELEM_ACCESS
