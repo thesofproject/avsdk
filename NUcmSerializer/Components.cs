@@ -331,7 +331,7 @@ namespace NUmcSerializer
 
             set
             {
-                base.Identifier = TupleType + $".{value}";
+                base.Identifier = (value == null) ? TupleType : $"{TupleType}.{value}";
             }
         }
 
