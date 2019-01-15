@@ -29,4 +29,47 @@ namespace itt
             Tokens = SectionSkylakeTokens.IDENTIFIER;
         }
     }
+
+    public static class SectionHelper
+    {
+        public static SectionVendorTuples GetSizeDescriptor(this Section section, int size,
+            SKL_BLOCK_TYPE type = SKL_BLOCK_TYPE.TUPLE)
+        {
+            var desc = new SectionSkylakeTuples($"{section.Identifier}_size_desc");
+
+            var bytes = new VendorTuples<byte>();
+            bytes.Identifier = "u8_block_type";
+            bytes.Tuples = new[] { Tuple.Create(SKL_TKN.U8_BLOCK_TYPE.GetName(), (byte)type) };
+
+            var shorts = new VendorTuples<ushort>();
+            shorts.Identifier = "u16_size_desc";
+            shorts.Tuples = new[] { Tuple.Create(SKL_TKN.U16_BLOCK_SIZE.GetName(), (ushort)size) };
+            desc.Tuples = new VendorTuples[] { bytes, shorts };
+
+            return desc;
+        }
+
+        public static SectionVendorTuples GetSizeDescriptor(this SectionVendorTuples section,
+            SKL_BLOCK_TYPE type = SKL_BLOCK_TYPE.TUPLE)
+        {
+            return GetSizeDescriptor(section, section.Size(), type);
+        }
+
+        public static SectionVendorTuples GetNumDescriptor(this Section section, int num)
+        {
+            var desc = new SectionSkylakeTuples($"{section.Identifier} num_desc");
+
+            var bytes = new VendorTuples<byte>();
+            bytes.Identifier = "u8_num_blocks";
+            bytes.Tuples = new[] { Tuple.Create(SKL_TKN.U8_NUM_BLOCKS.GetName(), (byte)1) };
+            desc.Tuples = new[] { bytes };
+
+            return desc;
+        }
+
+        public static SectionData GetPrivateData(this Section section)
+        {
+            return new SectionData() { Identifier = section.Identifier, Tuples = section.Identifier };
+        }
+    }
 }
