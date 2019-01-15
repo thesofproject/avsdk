@@ -1,5 +1,35 @@
 ﻿namespace itt
 {
+    public enum SKL_MODULE_TYPE
+    {
+        MIXER = 0,
+        COPIER,
+        UPDWMIX,
+        SRCINT,
+        ALGO,
+        BASE_OUTFMT,
+        KPB,
+        MIC_SELECT,
+        PROBE,
+        ASRC,
+        GAIN,
+    };
+
+    public enum SKL_EVENT_TYPE
+    {
+        NONE = 0,
+        MIXER,
+        MUX,
+        VMIXER,
+        PGA
+    };
+
+    public enum SKL_BLOCK_TYPE
+    {
+        TUPLE,
+        BINARY
+    };
+
     public enum SKL_TKN
     {
         UUID = 1,
