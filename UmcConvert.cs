@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace itt
 {
@@ -870,6 +871,76 @@ namespace itt
             return GetPathModuleId(path, module.Type, module.Instance);
         }
 
+        static string GetPathModuleId(Path path, FromTo endpoint)
+        {
+            return GetPathModuleId(path, endpoint.Module, endpoint.Instance);
+        }
+
+        static string GetPathModuleId(Path path, InputOutput endpoint)
+        {
+            return GetPathModuleId(path, endpoint.Module, endpoint.Instance);
+        }
+
+        public static IEnumerable<Section> GetSections(PathConnectors connectors, Paths paths)
+        {
+            var graph = new SectionGraph();
+            graph.Identifier = "Pipeline 1 Graph";
+            var lines = new List<string>();
+            var line = new StringBuilder();
+
+            foreach (var path in paths.Path)
+            {
+                foreach (var link in path.Links)
+                {
+                    line.Clear();
+                    line.Append(GetPathModuleId(path, link.To));
+                    line.Append(", , ");
+                    line.Append(GetPathModuleId(path, link.From));
+                    lines.Add(line.ToString());
+                }
+
+                if (path.Device == null)
+                    continue;
+
+                line.Clear();
+                if (path.Direction == Direction.PLAYBACK)
+                {
+                    Link first = path.Links.First();
+                    line.Append(GetPathModuleId(path, first.From));
+                    line.Append($", , {path.Device}");
+                }
+                else if (path.Direction == Direction.CAPTURE)
+                {
+                    Link last = path.Links.Last();
+                    line.Append($"{path.Device}, , ");
+                    line.Append(GetPathModuleId(path, last.To));
+                }
+
+                lines.Add(line.ToString());
+            }
+
+            foreach (var connector in connectors.PathConnector)
+            {
+                foreach (var source in connector.Input)
+                {
+                    Path srcPath = paths.Path.First(p => p.Name.Equals(source.PathName));
+                    foreach (var sink in connector.Output)
+                    {
+                        Path sinkPath = paths.Path.First(p => p.Name.Equals(sink.PathName));
+                        Link link = sinkPath.Links.First(l => l.From.Module.Equals(sink.Module));
+                        line.Clear();
+                        line.Append(GetPathModuleId(sinkPath, link.From));
+                        line.Append($", {srcPath.Name} Switch, ");
+                        line.Append(GetPathModuleId(srcPath, source));
+                        lines.Add(line.ToString());
+                    }
+                }
+            }
+
+            graph.Lines = lines.ToArray();
+            return new[] { graph };
+        }
+
         public static IEnumerable<Section> ToSections(System system)
         {
             if (system == null)
@@ -905,6 +976,7 @@ namespace itt
             {
                 foreach (var path in sub.Paths.Path)
                     result.AddRange(ToSections(path, templates));
+                result.AddRange(GetSections(sub.PathConnectors, sub.Paths));
             }
 
             return result;
