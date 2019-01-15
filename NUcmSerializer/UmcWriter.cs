@@ -150,6 +150,8 @@ namespace NUmcSerializer
                 var attr = ((Enum)token).GetAttributeOfType<UmcEnumAttribute>();
                 if (attr != null)
                     value = attr.Name;
+                else
+                    value = ((Enum)token).ToString("D"); // default not acceptable
             }
             else if (type == typeof(string))
             {
