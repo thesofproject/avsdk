@@ -397,6 +397,7 @@ namespace NUmcSerializer
         }
     }
 
+    [Flags]
     public enum CTL_ELEM_ACCESS
     {
         [UmcEnum(Name = "read")]
