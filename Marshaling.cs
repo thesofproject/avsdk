@@ -3,6 +3,32 @@ using System.Runtime.InteropServices;
 
 namespace itt
 {
+    internal class MarshalHelper
+    {
+        internal static byte[] StructureToBytes<T>(T str)
+            where T : struct
+        {
+            int size = Marshal.SizeOf(str);
+            byte[] arr = new byte[size];
+            GCHandle h = default(GCHandle);
+
+            try
+            {
+                h = GCHandle.Alloc(arr, GCHandleType.Pinned);
+                Marshal.StructureToPtr(str, h.AddrOfPinnedObject(), false);
+            }
+            finally
+            {
+                if (h.IsAllocated)
+                {
+                    h.Free();
+                }
+            }
+
+            return arr;
+        }
+    }
+
     [StructLayout(LayoutKind.Explicit)]
     public struct DmactrlCtrl
     {
