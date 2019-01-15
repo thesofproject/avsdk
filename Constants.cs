@@ -41,4 +41,43 @@ namespace itt
         public const DAPM_EVENT VMIX  = (DAPM_EVENT.PRE_PMU | DAPM_EVENT.POST_PMD);
         public const DAPM_EVENT PGAL  = (DAPM_EVENT.PRE_PMU | DAPM_EVENT.POST_PMD);
     }
+
+    //
+    // This is for sorting which widgets will be triggered first
+    // according to DAPM rules.
+    //
+    // Following are the DAPM Rules.
+    // Mixer power up than PGA Power up in case of DAPM power up sequence.
+    //
+    // PGA power down than Mixer power down in case of DAPM down sequence.
+    // Within same type of widgets, lower number widgets get powered up first.
+    //
+    // Withing same type of widgets, higher numbered gets powered down first.
+    //
+    // Following are the rules required by the firmware
+    // Pipe should be created from src pipe to sink pipe, provided all the pipe
+    // has same priorities.
+    // Pipes should be started from sink pipe to source pipe irrespective of
+    // priority of pipe.
+    //
+    // Based on DAPM rules and the firmware required priority we have come
+    // up with below priorities for the different mixer and PGA modules, based
+    // on whether they belong to FE pipe or BE pipe, and whether they are
+    // SRC or Sink pipes.
+    //
+    public static class HDA_DAPM_SUBSEQ
+    {
+        public const uint BE_SINK_MIX       = 10u;
+        public const uint BE_SINK_PGA       = 0u;
+        public const uint FE_SRC_MIX        = 0u;
+        public const uint FE_SRC_PGA        = 10u;
+
+        public const uint BE_SRC_MIX        = 0u;
+        public const uint BE_SRC_PGA        = 10u;
+        public const uint FE_SINK_MIX       = 10u;
+        public const uint FE_SINK_PGA       = 0u;
+
+        public const uint INTERMEDIATE_MIX  = 5u;
+        public const uint INTERMEDIATE_PGA  = 5u;
+    }
 }
