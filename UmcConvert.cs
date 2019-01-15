@@ -392,6 +392,484 @@ namespace itt
             return result;
         }
 
+        public static ModuleType GetTemplate(this IEnumerable<ModuleType> templates, string type)
+        {
+            return templates.Single(t => t.Name.Equals(type));
+        }
+
+        static IEnumerable<VendorTuples> GetPinTuples(uint pinCount, PinDir dir,
+            List<FromTo> sources, List<FromTo> sinks, ModuleType[] templates)
+        {
+            int anyCount = sources.Count(s => s.Interface == InterfaceName.ANY);
+            bool dynamic = (anyCount == (sources.Count + sinks.Count));
+            if (dynamic && anyCount > 0)
+                throw new InvalidOperationException();
+
+            var result = new List<VendorTuples>();
+            string str = (dir == PinDir.IN) ? "in" : "out";
+            uint maxQueue = (dir == PinDir.IN) ? Constants.MAX_IN_QUEUE
+                                               : Constants.MAX_OUT_QUEUE;
+            for (uint i = 0; i < pinCount; i++)
+            {
+                uint modId = 0, instId = 0;
+                var uuid = Guid.Empty;
+                var words = new VendorTuples<uint>();
+                words.Identifier = $"{str}_pin_{i}";
+
+                int index = sources.FindIndex(
+                    s => ((uint)s.Interface & (maxQueue - 1)) == i);
+
+                if (!dynamic && index != -1)
+                {
+                    ModuleType template = templates.GetTemplate(sinks[index].Module);
+                    instId = sinks[index].Instance;
+                    modId = template.ModuleId;
+                    uuid = template.uuid;
+                }
+
+                uint dirPinCount = (uint)dir | (((uint)dir & 0xf0 | i) << 4);
+                words.Tuples = new[]
+                {
+                    GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, dirPinCount),
+                    GetTuple(SKL_TKN.U32_PIN_MOD_ID, modId),
+                    GetTuple(SKL_TKN.U32_PIN_INST_ID, instId)
+                };
+
+                result.Add(words);
+                if (!dynamic)
+                {
+                    var uuids = new VendorTuples<Guid>();
+                    uuids.Identifier = $"{str}_pin_{i}";
+                    uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, uuid) };
+                    result.Add(uuids);
+                }
+            }
+
+            return result;
+        }
+
+        public static bool IsDynamic(this IEnumerable<VendorTuples> tuples)
+        {
+            return tuples.Any(t => t.GetType() == typeof(VendorTuples<Guid>));
+        }
+
+        public static IEnumerable<Section> ToSections(Module module, Path path, ModuleType[] templates, int id)
+        {
+            if (!path.Modules.Module.Contains(module))
+                throw new ArgumentException("module is not owned by path specified");
+
+            ModuleType template = templates.GetTemplate(module.Type);
+            var links = path.Links.Where(l => l.To.Module.Equals(template.Name));
+            var inTuples = GetPinTuples(template.InputPins, PinDir.IN,
+                                        links.Select(l => l.To).ToList(),
+                                        links.Select(l => l.From).ToList(),
+                                        templates);
+
+            links = path.Links.Where(l => l.From.Module.Equals(template.Name));
+            var outTuples = GetPinTuples(template.OutputPins, PinDir.OUT,
+                                        links.Select(l => l.From).ToList(),
+                                        links.Select(l => l.To).ToList(),
+                                        templates);
+
+            var tuples = new List<VendorTuples>();
+            var uuids = new VendorTuples<Guid>();
+            uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.uuid) };
+
+            tuples.Add(uuids);
+            var bytes = new VendorTuples<byte>();
+            bytes.Identifier = "u8_data";
+            bytes.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U8_IN_PIN_TYPE, (byte)template.InputPinType),
+                GetTuple(SKL_TKN.U8_OUT_PIN_TYPE, (byte)template.OutputPinType),
+                GetTuple(SKL_TKN.U8_DYN_IN_PIN, Convert.ToByte(inTuples.IsDynamic())),
+                GetTuple(SKL_TKN.U8_DYN_OUT_PIN, Convert.ToByte(outTuples.IsDynamic())),
+                GetTuple(SKL_TKN.U8_TIME_SLOT, (byte)module.TdmSlot),
+                GetTuple(SKL_TKN.U8_CORE_ID, (byte)module.Affinity),
+                GetTuple(SKL_TKN.U8_MOD_TYPE, (byte)module.Type.GetModuleType()),
+                GetTuple(SKL_TKN.U8_CONN_TYPE, path.ConnType.GetValue()),
+                GetTuple(SKL_TKN.U8_HW_CONN_TYPE, (byte)path.Direction),
+                GetTuple(SKL_TKN.U8_DEV_TYPE, (byte)module.DevType),
+            };
+
+            tuples.Add(bytes);
+            var shorts = new VendorTuples<ushort>();
+            shorts.Identifier = "u16_data";
+            shorts.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U16_MOD_INST_ID, (ushort)id)
+            };
+
+            tuples.Add(shorts);
+            var words = new VendorTuples<uint>();
+            words.Identifier = "u32_data";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_VBUS_ID, module.Port.GetValue()),
+                GetTuple(SKL_TKN.U32_PARAMS_FIXUP, module.FixupMask),
+                GetTuple(SKL_TKN.U32_CONVERTER, module.ConverterMask),
+                GetTuple(SKL_TKN.U32_PIPE_ID, path.Id),
+                GetTuple(SKL_TKN.U32_PIPE_CONN_TYPE, (uint)path.ConnType.GetValue()),
+                GetTuple(SKL_TKN.U32_PIPE_PRIORITY, path.Priority),
+                GetTuple(SKL_TKN.U32_PMODE, Convert.ToUInt32(path.LpMode)),
+                GetTuple(SKL_TKN.U32_D0I3_CAPS, (uint)path.D0i3Caps),
+                GetTuple(SKL_TKN.U32_PROC_DOMAIN, (uint)module.Domain),
+                GetTuple(SKL_TKN.U32_PIPE_DIRECTION, (uint)path.Direction),
+                GetTuple(SKL_TKN.U32_NUM_CONFIGS, (uint)path.PathConfigurations.PathConfiguration.Length),
+                GetTuple(SKL_TKN.U32_DMA_BUF_SIZE, 2u),
+            };
+
+            tuples.Add(words);
+            var configs = ToTuples(path.PathConfigurations, module);
+            tuples.AddRange(configs);
+            tuples.AddRange(inTuples);
+            tuples.AddRange(outTuples);
+
+            var result = new List<Section>();
+            var section = new SectionSkylakeTuples(GetPathModuleId(path, module));
+            section.Tuples = tuples.ToArray();
+            SectionVendorTuples desc = section.GetSizeDescriptor();
+            result.Add(desc);
+            result.Add(desc.GetPrivateData());
+            desc = section.GetNumDescriptor(1);
+            result.Add(desc);
+            result.Add(desc.GetPrivateData());
+            result.Add(section);
+            result.Add(section.GetPrivateData());
+
+            return result;
+        }
+
+        static SectionControlMixer GetMixerControl(string name, int min, int max,
+            CTL_ELEM_ACCESS[] access, int reg, uint get, uint put, uint info)
+        {
+            var control = new SectionControlMixer();
+            control.Identifier = name;
+            control.Index = 0;
+            control.Invert = false;
+            control.Channel = new ChannelMap[]
+            {
+                new ChannelMap() { Identifier = ChannelName.FrontLeft, Reg = reg },
+                new ChannelMap() { Identifier = ChannelName.FrontRight, Reg = reg },
+            };
+            control.Ops = new Ops() { Identifier = "ctl", Get = get, Put = put, Info = info };
+            control.Min = min;
+            control.Max = max;
+            control.NoPm = (reg == Constants.NOPM) ? true : (bool?)null;
+            control.Access = access;
+
+            return control;
+        }
+
+        static IEnumerable<Section> GetModuleControls(Module module, Path path, ModuleType[] templates)
+        {
+            var result = new List<Section>();
+
+            if (module.Type == "gain")
+            {
+                result.Add(GetMixerControl("Ramp Duration",
+                    Constants.GAIN_TC_MIN, Constants.GAIN_TC_MAX, null,
+                    Constants.NOPM, Constants.SKL_CTL_RAMP_DURATION,
+                    Constants.SKL_CTL_RAMP_DURATION, TPLG_CTL.VOLSW));
+
+                result.Add(GetMixerControl("Ramp Type",
+                    Constants.GAIN_RT_MIN, Constants.GAIN_RT_MAX, null,
+                    Constants.NOPM, Constants.SKL_CTL_RAMP_TYPE,
+                    Constants.SKL_CTL_RAMP_TYPE, TPLG_CTL.VOLSW));
+
+                CTL_ELEM_ACCESS[] access = new[]
+                    { CTL_ELEM_ACCESS.TLV_READ, CTL_ELEM_ACCESS.READWRITE };
+
+                result.Add(GetMixerControl("Volume",
+                    Constants.GAIN_MIN_INDEX, Constants.GAIN_MAX_INDEX,
+                    access, 0, Constants.SKL_CTL_VOLUME,
+                    Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
+            }
+            else if (module.Type == "mixin")
+            {
+                string name = $"{path.Name} {module.Type} Switch";
+                result.Add(GetMixerControl(name,
+                    0, 1, null, Constants.NOPM, TPLG_CTL.DAPM_VOLSW,
+                    TPLG_CTL.DAPM_VOLSW, TPLG_CTL.DAPM_VOLSW));
+            }
+            else if (module.Type == "probe")
+            {
+                var template = templates.GetTemplate(module.Type);
+                if (template.Params != null)
+                    foreach (var param in template.Params)
+                        result.AddRange(ToSections(param, Constants.SKL_CTL_TLV_PROBE,
+                                                          Constants.SKL_CTL_TLV_PROBE));
+            }
+
+            return result;
+        }
+
+        static uint? GetEventType(Path path, Module module)
+        {
+            uint? result = (uint)SKL_EVENT_TYPE.PGA;
+            if (module.ModulePosition == ModulePosition.SOURCE)
+                if (path.Order == 0)
+                    result = (uint)SKL_EVENT_TYPE.VMIXER;
+                else
+                    result = (uint)SKL_EVENT_TYPE.MIXER;
+            return result;
+        }
+
+        static DAPM_EVENT? GetEventFlags(Path path, Module module)
+        {
+            if (module.ModulePosition == ModulePosition.SOURCE)
+                if (path.Order == 0)
+                    return Constants.VMIX;
+                else
+                    return Constants.MIX;
+            else if (module.ModulePosition == ModulePosition.SINK &&
+                    path.Order != 7 && path.ConnType != ConnType.NONE)
+                return Constants.PGAL;
+            return null;
+        }
+
+        static uint? GetSubseq(Path path, Module module)
+        {
+            bool isSource = (module.ModulePosition == ModulePosition.SOURCE);
+            // FE pipeline
+            if (path.ConnType == ConnType.HOST_DMA ||
+                path.ConnType == ConnType.HDMI_HOST_DMA)
+            {
+                if (path.Order == 0)
+                    return isSource ? HDA_DAPM_SUBSEQ.FE_SRC_MIX
+                                    : HDA_DAPM_SUBSEQ.FE_SRC_PGA;
+                else if (path.Order == 7)
+                    return isSource ? HDA_DAPM_SUBSEQ.FE_SINK_MIX
+                                    : HDA_DAPM_SUBSEQ.FE_SINK_PGA;
+            }
+            // BE pipeline
+            else if (path.ConnType == ConnType.LINK_DMA)
+            {
+                // First pipeline
+                if (path.Order == 0)
+                    return isSource ? HDA_DAPM_SUBSEQ.BE_SRC_MIX
+                                    : HDA_DAPM_SUBSEQ.BE_SRC_PGA;
+                // Last pipeline
+                else if (path.Order == 7)
+                    return isSource ? HDA_DAPM_SUBSEQ.BE_SINK_MIX
+                                    : HDA_DAPM_SUBSEQ.BE_SINK_PGA;
+            }
+
+            // Intermediate pipeline
+            return isSource ? HDA_DAPM_SUBSEQ.INTERMEDIATE_MIX : HDA_DAPM_SUBSEQ.INTERMEDIATE_PGA;
+        }
+
+        public static IEnumerable<Section> ToSections(Modules modules, Path path, ModuleType[] templates)
+        {
+            var result = new List<Section>();
+
+            for (int i = 0; i < modules.Module.Length; i++)
+            {
+                Module module = modules.Module[i];
+                var sections = ToSections(module, path, templates, i);
+                var controls = GetModuleControls(module, path, templates);
+
+                var widget = new SectionWidget();
+                widget.Identifier = $"{path.Name} {module.Type}";
+                if (i == 0)
+                    widget.Type = TPLG_DAPM.MIXER;
+                else
+                    widget.Type = TPLG_DAPM.PGA;
+                widget.NoPm = true;
+                widget.Data = sections.Where(s => s is SectionData)
+                    .Select(s => s.Identifier).ToArray();
+                widget.EventType = GetEventType(path, module);
+                widget.EventFlags = GetEventFlags(path, module);
+                widget.Subseq = GetSubseq(path, module);
+
+                if (controls.Any())
+                {
+                    var ids = controls.Where(
+                        c => c.GetType().IsSubclassOf(typeof(SectionControl))
+                    ).Select(c => c.Identifier).ToArray();
+
+                    if (controls.First() is SectionControlMixer)
+                        widget.Mixer = ids;
+                    else if (controls.First() is SectionControlEnum)
+                        widget.Enum = ids;
+                    else
+                        widget.Bytes = ids;
+                }
+
+                result.AddRange(sections);
+                result.AddRange(controls);
+                result.Add(widget);
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<VendorTuples> ToTuples(ModuleParams param, int id)
+        {
+            var shorts = new VendorTuples<ushort>();
+            shorts.Identifier = $"u16_pipe_mod_cfg_{id}";
+            shorts.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.CFG_MOD_RES_ID, param.ResIdx),
+                GetTuple(SKL_TKN.CFG_MOD_FMT_ID, param.IntfIdx)
+            };
+
+            return new[] { shorts };
+        }
+
+        public static IEnumerable<VendorTuples> ToTuples(PcmFormat format, int id)
+        {
+            var result = new List<VendorTuples>();
+            string dir = (format.Dir == PinDir.IN) ? "in" : "out";
+
+            var words = new VendorTuples<uint>();
+            words.Identifier = $"_pipe_u32_{dir}_fmt_{id}";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)format.Dir),
+                GetTuple(SKL_TKN.U32_CFG_FREQ, format.SampleRate)
+            };
+
+            result.Add(words);
+            words = new VendorTuples<uint>();
+            words.Identifier = $"_pipe_u8_{dir}_fmt_{id}";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U8_CFG_BPS, format.Bps),
+                GetTuple(SKL_TKN.U8_CFG_CHAN, format.ChannelCount)
+            };
+
+            result.Add(words);
+            return result;
+        }
+
+        public static IEnumerable<VendorTuples> ToTuples(PathConfiguration config, Module module, int id)
+        {
+            var result = new List<VendorTuples>();
+            var words = new VendorTuples<uint>();
+            words.Identifier = $"_pipe_{id}";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_PIPE_CONFIG_ID, config.ConfigIdx),
+                GetTuple(SKL_TKN.U32_PATH_MEM_PGS, config.PathResources.MemPages)
+            };
+
+            result.Add(words);
+            var formats = config.PcmFormats.OrderBy(f => f.Dir).ToArray();
+            for (int i = 0; i < formats.Length; i++)
+                result.AddRange(ToTuples(formats[i], i));
+
+            ModuleParams param = config.ModuleParams.First(p => p.Module.Equals(module.Type));
+            result.AddRange(ToTuples(param, id));
+
+            return result;
+        }
+
+        public static IEnumerable<VendorTuples> ToTuples(PathConfigurations configs, Module module)
+        {
+            var result = new List<VendorTuples>();
+
+            for (int i = 0; i < configs.PathConfiguration.Length; i++)
+                result.AddRange(ToTuples(configs.PathConfiguration[i], module, i));
+
+            return result;
+        }
+
+        public static IEnumerable<Section> ToSections(PathConfigurations configs, Path path)
+        {
+            var result = new List<Section>();
+            if (configs.PathConfiguration.Length <= 1)
+                return result;
+
+            var control = new SectionControlEnum();
+            control.Identifier = $"{path.Name} pcm cfg";
+            var text = new SectionText();
+            text.Identifier = $"enum_{path.Name} pcm cfg";
+
+            var strs = new List<string>();
+            var str = new StringBuilder();
+            foreach (var cfg in configs.PathConfiguration)
+            {
+                str.Clear();
+                PcmFormat fmt = cfg.PcmFormats.First(f => f.Dir == PinDir.IN);
+                str.Append($"IN:f{fmt.SampleRate}-c{fmt.ChannelCount}-b{fmt.Bps}");
+                fmt = cfg.PcmFormats.First(f => f.Dir == PinDir.OUT);
+                str.Append($" OUT:f{fmt.SampleRate}-c{fmt.ChannelCount}-b{fmt.Bps}");
+                strs.Add(str.ToString());
+            }
+
+            text.Values = strs.ToArray();
+            control.Ops = new Ops()
+            {
+                Identifier = "ctl",
+                Get = Constants.SKL_CTL_MULTI_IO_SELECT,
+                Put = Constants.SKL_CTL_MULTI_IO_SELECT,
+                Info = Constants.SKL_CTL_MULTI_IO_SELECT
+            };
+            control.Access = new[]
+            {
+                CTL_ELEM_ACCESS.READ,
+                CTL_ELEM_ACCESS.WRITE,
+                CTL_ELEM_ACCESS.READWRITE
+            };
+            control.Texts = text.Identifier;
+            control.Data = control.Identifier;
+
+            result.Add(control);
+            result.Add(text);
+
+            return result;
+        }
+
+        public static IEnumerable<Section> ToSections(Path path, ModuleType[] templates)
+        {
+            var result = new List<Section>();
+
+            result.AddRange(ToSections(path.Modules, path, templates));
+            result.AddRange(ToSections(path.PathConfigurations, path));
+
+            var widget = new SectionWidget();
+            widget.Identifier = path.Name;
+            widget.Type = (path.Direction == Direction.CAPTURE) ? TPLG_DAPM.AIF_IN
+                                                                : TPLG_DAPM.AIF_OUT;
+            widget.NoPm = true;
+            result.Add(widget);
+
+            return result;
+        }
+
+        static string GetModuleShortName(string module)
+        {
+            switch (module)
+            {
+                case "copier":
+                    return "cpr";
+
+                case "mixin":
+                    return "mi";
+
+                case "mixout":
+                    return "mo";
+
+                default:
+                    return module;
+            }
+        }
+
+        static string GetPathModuleId(Path path, string module, uint instance)
+        {
+            string result = $"{path.Name} {GetModuleShortName(module)}";
+
+            if (module.GetModuleType() != SKL_MODULE_TYPE.MIXER)
+                result += $" {instance}";
+            return result;
+        }
+
+        static string GetPathModuleId(Path path, Module module)
+        {
+            return GetPathModuleId(path, module.Type, module.Instance);
+        }
+
         public static IEnumerable<Section> ToSections(System system)
         {
             if (system == null)
@@ -419,6 +897,15 @@ namespace itt
 
             ModuleType[] templates = sub.ModuleTypes;
             result.AddRange(GetSections(templates));
+
+            // Convert Subsystem with pipelines and connectors
+            sub = subsystems.SingleOrDefault(
+                e => e.Paths != null && e.PathConnectors != null);
+            if (sub != null)
+            {
+                foreach (var path in sub.Paths.Path)
+                    result.AddRange(ToSections(path, templates));
+            }
 
             return result;
         }
