@@ -515,10 +515,10 @@ namespace itt
     [Serializable]
     public enum Domain
     {
+        [XmlEnum(Name = "LL")]
+        LL,
         [XmlEnum(Name = "DP")]
         DP,
-        [XmlEnum(Name = "LL")]
-        LL
     };
 
     [Serializable]
