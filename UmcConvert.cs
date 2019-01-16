@@ -805,7 +805,7 @@ namespace itt
                 Identifier = "ctl",
                 Get = Constants.SKL_CTL_MULTI_IO_SELECT,
                 Put = Constants.SKL_CTL_MULTI_IO_SELECT,
-                Info = Constants.SKL_CTL_MULTI_IO_SELECT
+                Info = TPLG_CTL.ENUM
             };
             control.Access = new[]
             {
