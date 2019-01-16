@@ -451,7 +451,7 @@ namespace itt
 
         public static bool IsDynamic(this IEnumerable<VendorTuples> tuples)
         {
-            return tuples.Any(t => t.GetType() == typeof(VendorTuples<Guid>));
+            return tuples.All(t => t.GetType() != typeof(VendorTuples<Guid>));
         }
 
         public static IEnumerable<Section> ToSections(Module module, Path path, ModuleType[] templates, int id)
