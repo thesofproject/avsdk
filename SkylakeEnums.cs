@@ -43,7 +43,7 @@
         U8_OUT_QUEUE_COUNT,
         U8_TIME_SLOT,
         U8_CORE_ID,
-        U8_MOD_TYPE,
+        U8_MODULE_TYPE,
         U8_CONN_TYPE,
         U8_DEV_TYPE,
         U8_HW_CONN_TYPE,
