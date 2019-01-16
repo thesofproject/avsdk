@@ -211,7 +211,7 @@ namespace itt
             var outputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.OUT).ToArray();
 
             var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_mod_type_{mod}_res_{id}";
+            words.Identifier = $"u32_mod_type_{mod}_intf_{id}";
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.MM_U32_FMT_ID, ifaces.IntfIdx),
@@ -258,7 +258,7 @@ namespace itt
         {
             var result = new List<VendorTuples>();
             var words = new VendorTuples<uint>();
-            words.Identifier += $"u32_mod_type_0_res_{id}";
+            words.Identifier = $"u32_mod_type_{mod}_res_{id}";
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.MM_U32_RES_ID, (uint)id),
@@ -724,7 +724,7 @@ namespace itt
             string dir = (format.Dir == PinDir.IN) ? "in" : "out";
 
             var words = new VendorTuples<uint>();
-            words.Identifier = $"_pipe_u32_{dir}_fmt_{id}";
+            words.Identifier = $"_pipe_u32_cfg_{dir}_fmt_{id}";
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)format.Dir),
@@ -733,7 +733,7 @@ namespace itt
 
             result.Add(words);
             words = new VendorTuples<uint>();
-            words.Identifier = $"_pipe_u8_{dir}_fmt_{id}";
+            words.Identifier = $"_pipe_u8_cfg_{dir}_fmt_{id}";
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U8_CFG_BPS, format.Bps),
