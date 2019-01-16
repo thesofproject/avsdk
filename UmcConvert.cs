@@ -208,7 +208,7 @@ namespace itt
         {
             var result = new List<VendorTuples>();
             var inputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.IN).ToArray();
-            var outputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.OUT).ToArray();
+            var outputIfaces = ifaces.Interface.Except(inputIfaces).ToArray();
 
             var words = new VendorTuples<uint>();
             words.Identifier = $"u32_mod_type_{mod}_intf_{id}";
@@ -221,8 +221,10 @@ namespace itt
 
             result.Add(words);
 
-            for (int i = 0; i < ifaces.Interface.Length; i++)
-                result.AddRange(ToTuples(ifaces.Interface[i], mod, id, i));
+            for (int i = 0; i < inputIfaces.Length; i++)
+                result.AddRange(ToTuples(inputIfaces[i], mod, id, i));
+            for (int i = 0; i < outputIfaces.Length; i++)
+                result.AddRange(ToTuples(outputIfaces[i], mod, id, i));
             return result;
         }
 
