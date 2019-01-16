@@ -904,8 +904,8 @@ namespace itt
                     lines.Add(line.ToString());
                 }
 
-                if (path.Device == null)
-                    continue;
+                if (string.IsNullOrWhiteSpace(path.Device))
+                    goto Port;
 
                 line.Clear();
                 if (path.Direction == Direction.PLAYBACK)
@@ -919,6 +919,26 @@ namespace itt
                     Link last = path.Links.Last();
                     line.Append($"{path.Device}, , ");
                     line.Append(GetPathModuleId(path, last.To));
+                }
+
+                lines.Add(line.ToString());
+
+            Port:
+                if (string.IsNullOrWhiteSpace(path.Port))
+                    continue;
+
+                line.Clear();
+                if (path.Direction == Direction.PLAYBACK)
+                {
+                    Module sink = path.Modules.Module.Last(m => m.ModulePosition == ModulePosition.SINK);
+                    line.Append($"{path.Port}, , ");
+                    line.Append(GetPathModuleId(path, sink));
+                }
+                else if (path.Direction == Direction.CAPTURE)
+                {
+                    Module source = path.Modules.Module.First(m => m.ModulePosition == ModulePosition.SOURCE);
+                    line.Append(GetPathModuleId(path, source));
+                    line.Append($", , {path.Port}");
                 }
 
                 lines.Add(line.ToString());
