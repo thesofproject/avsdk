@@ -588,7 +588,7 @@ namespace itt
             }
             else if (module.Type == "mixin")
             {
-                string name = $"{path.Name} {module.Type} Switch";
+                string name = $"{GetPathModuleId(path, module)} Switch";
                 result.Add(GetMixerControl(name,
                     0, 1, null, Constants.NOPM, TPLG_CTL.DAPM_VOLSW,
                     TPLG_CTL.DAPM_VOLSW, TPLG_CTL.DAPM_VOLSW));
@@ -671,7 +671,7 @@ namespace itt
                 var controls = GetModuleControls(module, path, templates);
 
                 var widget = new SectionWidget();
-                widget.Identifier = $"{path.Name} {module.Type}";
+                widget.Identifier = GetPathModuleId(path, module);
                 if (i == 0)
                     widget.Type = TPLG_DAPM.MIXER;
                 else
@@ -930,7 +930,7 @@ namespace itt
                         Link link = sinkPath.Links.First(l => l.From.Module.Equals(sink.Module));
                         line.Clear();
                         line.Append(GetPathModuleId(sinkPath, link.From));
-                        line.Append($", {srcPath.Name} Switch, ");
+                        line.Append($", {GetPathModuleId(srcPath, source)} Switch, ");
                         line.Append(GetPathModuleId(srcPath, source));
                         lines.Add(line.ToString());
                     }
