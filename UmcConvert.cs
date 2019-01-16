@@ -756,7 +756,10 @@ namespace itt
             };
 
             result.Add(words);
-            var formats = config.PcmFormats.OrderBy(f => f.Dir).ToArray();
+            var formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
+            for (int i = 0; i < formats.Length; i++)
+                result.AddRange(ToTuples(formats[i], i));
+            formats = config.PcmFormats.Except(formats).ToArray();
             for (int i = 0; i < formats.Length; i++)
                 result.AddRange(ToTuples(formats[i], i));
 
