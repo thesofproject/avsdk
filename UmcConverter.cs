@@ -925,81 +925,118 @@ namespace itt
             return GetPathModuleId(path, endpoint.Module, endpoint.Instance);
         }
 
+        static string GetPathFirstLine(Path path)
+        {
+            var line = new StringBuilder();
+
+            if (path.Direction == Direction.PLAYBACK &&
+                path.Device != null)
+            {
+                Link first = path.Links.First();
+                line.Append(GetPathModuleId(path, first.From));
+                line.Append($", , {path.Device}");
+            }
+            else if (path.Direction == Direction.CAPTURE &&
+                path.Port != null)
+            {
+                Module source = path.Modules.Module.First(
+                    m => m.ModulePosition == ModulePosition.SOURCE);
+                line.Append(GetPathModuleId(path, source));
+                line.Append($", , {path.Port}");
+            }
+
+            return line.ToString();
+        }
+
+        static string GetPathLastLine(Path path)
+        {
+            var line = new StringBuilder();
+
+            if (path.Direction == Direction.PLAYBACK &&
+                path.Port != null)
+            {
+                Module sink = path.Modules.Module.Last(
+                    m => m.ModulePosition == ModulePosition.SINK);
+                line.Append($"{path.Port}, , ");
+                line.Append(GetPathModuleId(path, sink));
+            }
+            else if (path.Direction == Direction.CAPTURE &&
+                path.Device != null)
+            {
+                Link last = path.Links.Last();
+                line.Append($"{path.Device}, , ");
+                line.Append(GetPathModuleId(path, last.To));
+            }
+
+            return line.ToString();
+        }
+
+        static IEnumerable<string> GetPathLines(Path path)
+        {
+            var result = new List<string>();
+            var lines = new StringBuilder();
+
+            string line = GetPathFirstLine(path);
+            if (!string.IsNullOrEmpty(line))
+                result.Add(line);
+
+            foreach (var link in path.Links)
+            {
+                lines.Clear();
+                lines.Append(GetPathModuleId(path, link.To));
+                lines.Append(", , ");
+                lines.Append(GetPathModuleId(path, link.From));
+                result.Add(lines.ToString());
+            }
+
+            line = GetPathLastLine(path);
+            if (!string.IsNullOrEmpty(line))
+                result.Add(line);
+
+            return result;
+        }
+
+        IEnumerable<string> GetConnectorLines(PathConnector connector)
+        {
+            var result = new List<string>();
+            var line = new StringBuilder();
+
+            foreach (var input in connector.Input)
+            {
+                Path source = paths.Path.First(p => p.Name.Equals(input.PathName));
+                foreach (var output in connector.Output)
+                {
+                    Path sink = paths.Path.First(p => p.Name.Equals(output.PathName));
+                    Link link = sink.Links.First(l => l.From.Module.Equals(output.Module));
+                    line.Clear();
+                    line.Append(GetPathModuleId(sink, link.From));
+                    line.Append($", {GetPathModuleId(source, input)} Switch, ");
+                    line.Append(GetPathModuleId(source, input));
+                    result.Add(line.ToString());
+                }
+            }
+
+            return result;
+        }
+
         public SectionGraph GetGraphSection()
         {
             var graph = new SectionGraph();
             graph.Identifier = "Pipeline 1 Graph";
             var lines = new List<string>();
-            var line = new StringBuilder();
 
             foreach (var path in paths.Path)
-            {
-                foreach (var link in path.Links)
-                {
-                    line.Clear();
-                    line.Append(GetPathModuleId(path, link.To));
-                    line.Append(", , ");
-                    line.Append(GetPathModuleId(path, link.From));
-                    lines.Add(line.ToString());
-                }
-
-                if (string.IsNullOrWhiteSpace(path.Device))
-                    goto Port;
-
-                line.Clear();
-                if (path.Direction == Direction.PLAYBACK)
-                {
-                    Link first = path.Links.First();
-                    line.Append(GetPathModuleId(path, first.From));
-                    line.Append($", , {path.Device}");
-                }
-                else if (path.Direction == Direction.CAPTURE)
-                {
-                    Link last = path.Links.Last();
-                    line.Append($"{path.Device}, , ");
-                    line.Append(GetPathModuleId(path, last.To));
-                }
-
-                lines.Add(line.ToString());
-
-            Port:
-                if (string.IsNullOrWhiteSpace(path.Port))
-                    continue;
-
-                line.Clear();
-                if (path.Direction == Direction.PLAYBACK)
-                {
-                    Module sink = path.Modules.Module.Last(m => m.ModulePosition == ModulePosition.SINK);
-                    line.Append($"{path.Port}, , ");
-                    line.Append(GetPathModuleId(path, sink));
-                }
-                else if (path.Direction == Direction.CAPTURE)
-                {
-                    Module source = path.Modules.Module.First(m => m.ModulePosition == ModulePosition.SOURCE);
-                    line.Append(GetPathModuleId(path, source));
-                    line.Append($", , {path.Port}");
-                }
-
-                lines.Add(line.ToString());
-            }
-
+                lines.AddRange(GetPathLines(path));
+            //
+            // One could try to provide mixin-path <-> mixout-path ordering for Switches,
+            // yet sorting the paths and connectors is not as easy as it seems to be.
+            // There can be multiple paths matching multiple connectors with thier
+            // mixouts or mixins being relevant for multiple Switches simulatnously.
+            //
+            // Because of this, we simply dump Switches at the end of the graph.
+            //
             foreach (var connector in pathConnectors.PathConnector)
-            {
-                foreach (var source in connector.Input)
-                {
-                    Path srcPath = paths.Path.First(p => p.Name.Equals(source.PathName));
-                    foreach (var sink in connector.Output)
-                    {
-                        Path sinkPath = paths.Path.First(p => p.Name.Equals(sink.PathName));
-                        Link link = sinkPath.Links.First(l => l.From.Module.Equals(sink.Module));
-                        line.Clear();
-                        line.Append(GetPathModuleId(sinkPath, link.From));
-                        line.Append($", {GetPathModuleId(srcPath, source)} Switch, ");
-                        line.Append(GetPathModuleId(srcPath, source));
-                        lines.Add(line.ToString());
-                    }
-                }
-            }
+                lines.AddRange(GetConnectorLines(connector));
 
             graph.Lines = lines.ToArray();
             return graph;
