@@ -564,7 +564,7 @@ namespace itt
             return control;
         }
 
-        static IEnumerable<Section> GetModuleControls(Module module, Path path, ModuleType[] templates)
+        static IEnumerable<Section> GetModuleControls(Module module, Path path, ModuleType[] templates, PathConnectors pathConnectors)
         {
             var result = new List<Section>();
 
@@ -588,12 +588,19 @@ namespace itt
                     access, 0, Constants.SKL_CTL_VOLUME,
                     Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
             }
-            else if (module.Type == "mixin")
+            else if (module.Type == "mixout")
             {
-                string name = $"{GetPathModuleId(path, module)} Switch";
-                result.Add(GetMixerControl(name,
-                    0, 1, null, Constants.NOPM, TPLG_CTL.DAPM_VOLSW,
-                    TPLG_CTL.DAPM_VOLSW, TPLG_CTL.DAPM_VOLSW));
+                IEnumerable<PathConnector> connectors = pathConnectors.PathConnector.Where(
+                    c => c.Output.Any(
+                        o => o.PathName.Equals(path.Name) && o.Module.Equals(module.Type)));
+                foreach (var connector in connectors)
+                {
+                    InputOutput input = connector.Input.First(i => i.Module.Equals("mixin"));
+                    string name = $"{GetPathModuleId(new Path { Name = input.PathName }, input)} Switch";
+                    result.Add(GetMixerControl(name,
+                        0, 1, null, Constants.NOPM, TPLG_CTL.DAPM_VOLSW,
+                        TPLG_CTL.DAPM_VOLSW, TPLG_CTL.DAPM_VOLSW));
+                }
             }
             else if (module.Type == "probe")
             {
@@ -662,7 +669,7 @@ namespace itt
             return isSource ? HDA_DAPM_SUBSEQ.INTERMEDIATE_MIX : HDA_DAPM_SUBSEQ.INTERMEDIATE_PGA;
         }
 
-        public static IEnumerable<Section> ToSections(Modules modules, Path path, ModuleType[] templates)
+        public static IEnumerable<Section> ToSections(Modules modules, Path path, ModuleType[] templates, PathConnectors connectors)
         {
             var result = new List<Section>();
 
@@ -670,7 +677,7 @@ namespace itt
             {
                 Module module = modules.Module[i];
                 var sections = ToSections(module, path, templates, i);
-                var controls = GetModuleControls(module, path, templates);
+                var controls = GetModuleControls(module, path, templates, connectors);
 
                 var widget = new SectionWidget();
                 widget.Identifier = GetPathModuleId(path, module);
@@ -827,11 +834,11 @@ namespace itt
             return result;
         }
 
-        public static IEnumerable<Section> ToSections(Path path, ModuleType[] templates)
+        public static IEnumerable<Section> ToSections(Path path, ModuleType[] templates, PathConnectors connectors)
         {
             var result = new List<Section>();
 
-            result.AddRange(ToSections(path.Modules, path, templates));
+            result.AddRange(ToSections(path.Modules, path, templates, connectors));
             result.AddRange(ToSections(path.PathConfigurations, path));
 
             var widget = new SectionWidget();
@@ -1000,7 +1007,7 @@ namespace itt
             if (sub != null)
             {
                 foreach (var path in sub.Paths.Path)
-                    result.AddRange(ToSections(path, templates));
+                    result.AddRange(ToSections(path, templates, sub.PathConnectors));
                 result.AddRange(GetSections(sub.PathConnectors, sub.Paths));
             }
 
