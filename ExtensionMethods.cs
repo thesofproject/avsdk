@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace itt
 {
@@ -90,6 +93,25 @@ namespace itt
                 default:
                     return SKL_MODULE_TYPE.ALGO;
             }
+        }
+
+        internal static byte[] ToBytes(this string value)
+        {
+            var result = new List<uint>();
+            var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim());
+
+            foreach (var substr in substrs)
+            {
+                if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
+                    uint.TryParse(substr.Substring(2), NumberStyles.HexNumber,
+                                        CultureInfo.CurrentCulture, out uint val))
+                    result.Add(val);
+                else if (uint.TryParse(substr, out val))
+                    result.Add(val);
+            }
+
+            return result.SelectMany(e => BitConverter.GetBytes(e)).ToArray();
         }
     }
 }
