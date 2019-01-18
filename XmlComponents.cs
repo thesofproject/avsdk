@@ -7,8 +7,6 @@ namespace itt
     [XmlRoot("System")]
     public class System
     {
-        static System system;
-
         [XmlAttribute("name")]
         public string Name { get; set; }
         [XmlAttribute("version")]
@@ -16,16 +14,6 @@ namespace itt
 
         [XmlElement]
         public SubsystemType[] SubsystemType { get; set; }
-
-        public System()
-        {
-            system = this;
-        }
-
-        public static ModuleType[] GetModuleTypes()
-        {
-            return system.SubsystemType[1].ModuleTypes;
-        }
     }
 
     public class SubsystemType
