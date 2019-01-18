@@ -9,13 +9,13 @@ namespace itt
 {
     public sealed class UmcConverter
     {
-        public readonly FirmwareInfo[] ManifestData;
-        public readonly FirmwareConfig FirmwareConfig;
+        readonly FirmwareInfo[] manifestData;
+        readonly FirmwareConfig firmwareConfig;
 
-        public readonly ModuleType[] ModuleType;
+        readonly ModuleType[] moduleType;
 
-        public readonly Paths Paths;
-        public readonly PathConnectors PathConnectors;
+        readonly Paths paths;
+        readonly PathConnectors pathConnectors;
 
         public UmcConverter(System system)
         {
@@ -31,8 +31,8 @@ namespace itt
                 e => e.ManifestData != null && e.FirmwareConfig != null);
             if (sub != null)
             {
-                ManifestData = sub.ManifestData;
-                FirmwareConfig = sub.FirmwareConfig;
+                manifestData = sub.ManifestData;
+                firmwareConfig = sub.FirmwareConfig;
             }
 
             // Retrieve module types. If none found, bail out
@@ -40,15 +40,15 @@ namespace itt
             if (sub == null)
                 return;
 
-            ModuleType = sub.ModuleTypes;
+            moduleType = sub.ModuleTypes;
 
             // Retrieve paths and connectors
             sub = subsystems.SingleOrDefault(
                 e => e.Paths != null && e.PathConnectors != null);
             if (sub != null)
             {
-                Paths = sub.Paths;
-                PathConnectors = sub.PathConnectors;
+                paths = sub.Paths;
+                pathConnectors = sub.PathConnectors;
             }
         }
 
@@ -65,14 +65,14 @@ namespace itt
 
             var words = new VendorTuples<uint>();
             words.Identifier = "lib_count";
-            words.Tuples = new[] { GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)ManifestData.Length) };
+            words.Tuples = new[] { GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)manifestData.Length) };
             tuples.Add(words);
 
-            for (int i = 0; i < ManifestData.Length; i++)
+            for (int i = 0; i < manifestData.Length; i++)
             {
                 var strings = new VendorTuples<string>();
                 strings.Identifier = $"lib_name_{i}";
-                strings.Tuples = new[] { GetTuple(SKL_TKN.STR_LIB_NAME, ManifestData[i].BinaryName) };
+                strings.Tuples = new[] { GetTuple(SKL_TKN.STR_LIB_NAME, manifestData[i].BinaryName) };
                 tuples.Add(strings);
             }
 
@@ -158,7 +158,7 @@ namespace itt
 
         public IEnumerable<Section> GetClockControlSections()
         {
-            ClockControls controls = FirmwareConfig.ClockControls;
+            ClockControls controls = firmwareConfig.ClockControls;
             var result = new List<Section>();
             var ctrls = new List<ClockControl>();
 
@@ -188,7 +188,7 @@ namespace itt
 
         public IEnumerable<Section> GetFirmwareConfigSections()
         {
-            FirmwareConfig config = FirmwareConfig;
+            FirmwareConfig config = firmwareConfig;
             var result = new List<Section>();
 
             var tuples = new List<VendorTuples>();
@@ -404,11 +404,11 @@ namespace itt
 
             var bytes = new VendorTuples<byte>();
             bytes.Identifier = "u8_num_mod";
-            bytes.Tuples = new[] { GetTuple(SKL_TKN.U8_NUM_MOD, (byte)ModuleType.Length) };
+            bytes.Tuples = new[] { GetTuple(SKL_TKN.U8_NUM_MOD, (byte)moduleType.Length) };
             tuples.Add(bytes);
 
-            for (int i = 0; i < ModuleType.Length; i++)
-                tuples.AddRange(GetTuples(ModuleType[i], i));
+            for (int i = 0; i < moduleType.Length; i++)
+                tuples.AddRange(GetTuples(moduleType[i], i));
 
             section.Tuples = tuples.ToArray();
             SectionVendorTuples desc = section.GetSizeDescriptor();
@@ -422,7 +422,7 @@ namespace itt
 
         public ModuleType GetTemplate(string type)
         {
-            return ModuleType.SingleOrDefault(t => t.Name.Equals(type));
+            return moduleType.SingleOrDefault(t => t.Name.Equals(type));
         }
 
         IEnumerable<VendorTuples> GetPinTuples(uint pinCount, PinDir dir,
@@ -613,7 +613,7 @@ namespace itt
             }
             else if (module.Type == "mixout")
             {
-                IEnumerable<PathConnector> connectors = PathConnectors.PathConnector.Where(
+                IEnumerable<PathConnector> connectors = pathConnectors.PathConnector.Where(
                     c => c.Output.Any(
                         o => o.PathName.Equals(path.Name) && o.Module.Equals(module.Type)));
                 foreach (var connector in connectors)
@@ -877,7 +877,7 @@ namespace itt
         public IEnumerable<Section> GetPipelineSections()
         {
             var result = new List<Section>();
-            foreach (var path in Paths.Path)
+            foreach (var path in paths.Path)
                 result.AddRange(GetPathSections(path));
 
             return result;
@@ -932,7 +932,7 @@ namespace itt
             var lines = new List<string>();
             var line = new StringBuilder();
 
-            foreach (var path in Paths.Path)
+            foreach (var path in paths.Path)
             {
                 foreach (var link in path.Links)
                 {
@@ -983,14 +983,14 @@ namespace itt
                 lines.Add(line.ToString());
             }
 
-            foreach (var connector in PathConnectors.PathConnector)
+            foreach (var connector in pathConnectors.PathConnector)
             {
                 foreach (var source in connector.Input)
                 {
-                    Path srcPath = Paths.Path.First(p => p.Name.Equals(source.PathName));
+                    Path srcPath = paths.Path.First(p => p.Name.Equals(source.PathName));
                     foreach (var sink in connector.Output)
                     {
-                        Path sinkPath = Paths.Path.First(p => p.Name.Equals(sink.PathName));
+                        Path sinkPath = paths.Path.First(p => p.Name.Equals(sink.PathName));
                         Link link = sinkPath.Links.First(l => l.From.Module.Equals(sink.Module));
                         line.Clear();
                         line.Append(GetPathModuleId(sinkPath, link.From));
