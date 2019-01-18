@@ -52,12 +52,12 @@ namespace itt
             }
         }
 
-        internal static Tuple<string, T> GetTuple<T>(SKL_TKN token, T value)
+        static Tuple<string, T> GetTuple<T>(SKL_TKN token, T value)
         {
             return Tuple.Create(token.GetName(), value);
         }
 
-        public IEnumerable<Section> GetSections(FirmwareInfo[] infos)
+        public IEnumerable<Section> GetFirmwareInfoSections()
         {
             var result = new List<Section>();
             var section = new SectionSkylakeTuples("lib_data");
@@ -65,14 +65,14 @@ namespace itt
 
             var words = new VendorTuples<uint>();
             words.Identifier = "lib_count";
-            words.Tuples = new[] { GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)infos.Length) };
+            words.Tuples = new[] { GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)ManifestData.Length) };
             tuples.Add(words);
 
-            for (int i = 0; i < infos.Length; i++)
+            for (int i = 0; i < ManifestData.Length; i++)
             {
                 var strings = new VendorTuples<string>();
                 strings.Identifier = $"lib_name_{i}";
-                strings.Tuples = new[] { GetTuple(SKL_TKN.STR_LIB_NAME, infos[i].BinaryName) };
+                strings.Tuples = new[] { GetTuple(SKL_TKN.STR_LIB_NAME, ManifestData[i].BinaryName) };
                 tuples.Add(strings);
             }
 
@@ -86,7 +86,7 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<Section> ToSections(ClockControl control, int id)
+        IEnumerable<Section> GetSections(ClockControl control, int id)
         {
             var result = new List<Section>();
             AudioFormat fmt = control.AudioFormat;
@@ -156,8 +156,9 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<Section> ToSections(ClockControls controls)
+        public IEnumerable<Section> GetClockControlSections()
         {
+            ClockControls controls = FirmwareConfig.ClockControls;
             var result = new List<Section>();
             var ctrls = new List<ClockControl>();
 
@@ -167,11 +168,11 @@ namespace itt
                 ctrls.AddRange(controls.MClockControls);
 
             for (int i = 0; i < ctrls.Count; i++)
-                result.AddRange(ToSections(ctrls[i], i));
+                result.AddRange(GetSections(ctrls[i], i));
             return result;
         }
 
-        public IEnumerable<VendorTuples> ToTuples(DMABufferConfig buffer, int id)
+        IEnumerable<VendorTuples> GetTuples(DMABufferConfig buffer, int id)
         {
             var words = new VendorTuples<uint>();
             words.Identifier = $"u32_dma_buf_index_{id}";
@@ -185,8 +186,9 @@ namespace itt
             return new[] { words };
         }
 
-        public IEnumerable<Section> ToSections(FirmwareConfig config)
+        public IEnumerable<Section> GetFirmwareConfigSections()
         {
+            FirmwareConfig config = FirmwareConfig;
             var result = new List<Section>();
 
             var tuples = new List<VendorTuples>();
@@ -207,7 +209,7 @@ namespace itt
                     buf = config.DMABufferConfigs[i];
                 else
                     buf = new DMABufferConfig();
-                tuples.AddRange(ToTuples(buf, i));
+                tuples.AddRange(GetTuples(buf, i));
             }
 
             var section = new SectionSkylakeTuples("fw_cfg_data");
@@ -217,12 +219,12 @@ namespace itt
             result.Add(desc.GetPrivateData());
             result.Add(section);
             result.Add(section.GetPrivateData());
-            result.AddRange(ToSections(config.ClockControls));
+            result.AddRange(GetClockControlSections());
 
             return result;
         }
 
-        public IEnumerable<VendorTuples> ToTuples(Interface iface, int mod, int intf, int id)
+        IEnumerable<VendorTuples> GetTuples(Interface iface, int mod, int intf, int id)
         {
             string dir = (iface.Dir == PinDir.IN) ? "input" : "output";
             AudioFormat fmt = iface.AudioFormat;
@@ -246,7 +248,7 @@ namespace itt
             return new[] { words };
         }
 
-        public IEnumerable<VendorTuples> ToTuples(Interfaces ifaces, int mod, int id)
+        IEnumerable<VendorTuples> GetTuples(Interfaces ifaces, int mod, int id)
         {
             var result = new List<VendorTuples>();
             var inputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.IN).ToArray();
@@ -264,13 +266,13 @@ namespace itt
             result.Add(words);
 
             for (int i = 0; i < inputIfaces.Length; i++)
-                result.AddRange(ToTuples(inputIfaces[i], mod, id, i));
+                result.AddRange(GetTuples(inputIfaces[i], mod, id, i));
             for (int i = 0; i < outputIfaces.Length; i++)
-                result.AddRange(ToTuples(outputIfaces[i], mod, id, i));
+                result.AddRange(GetTuples(outputIfaces[i], mod, id, i));
             return result;
         }
 
-        public IEnumerable<VendorTuples> ToTuples(OutputPinFormat format, int mod, int res, int id)
+        IEnumerable<VendorTuples> GetTuples(OutputPinFormat format, int mod, int res, int id)
         {
             var words = new VendorTuples<uint>();
             words.Identifier = $"u32_mod_type_{mod}_res_{res}_output_{id}";
@@ -284,7 +286,7 @@ namespace itt
             return new[] { words };
         }
 
-        public IEnumerable<VendorTuples> ToTuples(InputPinFormat format, int mod, int res, int id)
+        IEnumerable<VendorTuples> GetTuples(InputPinFormat format, int mod, int res, int id)
         {
             var words = new VendorTuples<uint>();
             words.Identifier = $"u32_mod_type_{mod}_res_{res}_input_{id}";
@@ -298,7 +300,7 @@ namespace itt
             return new[] { words };
         }
 
-        public IEnumerable<VendorTuples> ToTuples(ModuleResources resources, int mod, int id)
+        IEnumerable<VendorTuples> GetTuples(ModuleResources resources, int mod, int id)
         {
             var result = new List<VendorTuples>();
             var words = new VendorTuples<uint>();
@@ -317,13 +319,13 @@ namespace itt
             result.Add(words);
 
             for (int i = 0; i < resources.InputPins.Length; i++)
-                result.AddRange(ToTuples(resources.InputPins[i], mod, id, i));
+                result.AddRange(GetTuples(resources.InputPins[i], mod, id, i));
             for (int i = 0; i < resources.OutputPins.Length; i++)
-                result.AddRange(ToTuples(resources.OutputPins[i], mod, id, i));
+                result.AddRange(GetTuples(resources.OutputPins[i], mod, id, i));
             return result;
         }
 
-        public IEnumerable<Section> ToSections(Param param, uint get, uint put)
+        IEnumerable<Section> GetSections(Param param, uint get, uint put)
         {
             var section = new SectionData();
             section.Identifier = $"{param.Name} params";
@@ -363,7 +365,7 @@ namespace itt
             return new Section[] { control, section };
         }
 
-        public IEnumerable<VendorTuples> ToTuples(ModuleType template, int id)
+        IEnumerable<VendorTuples> GetTuples(ModuleType template, int id)
         {
             var result = new List<VendorTuples>();
 
@@ -388,13 +390,13 @@ namespace itt
             result.Add(bytes);
 
             for (int i = 0; i < template.ModuleResourceList.Length; i++)
-                result.AddRange(ToTuples(template.ModuleResourceList[i], id, i));
+                result.AddRange(GetTuples(template.ModuleResourceList[i], id, i));
             for (int i = 0; i < template.ModuleInterfaceList.Length; i++)
-                result.AddRange(ToTuples(template.ModuleInterfaceList[i], id, i));
+                result.AddRange(GetTuples(template.ModuleInterfaceList[i], id, i));
             return result;
         }
 
-        public IEnumerable<Section> GetSections(ModuleType[] templates)
+        public IEnumerable<Section> GetModuleTypeSections()
         {
             var result = new List<Section>();
             var section = new SectionSkylakeTuples("mod_type_data");
@@ -402,11 +404,11 @@ namespace itt
 
             var bytes = new VendorTuples<byte>();
             bytes.Identifier = "u8_num_mod";
-            bytes.Tuples = new[] { GetTuple(SKL_TKN.U8_NUM_MOD, (byte)templates.Length) };
+            bytes.Tuples = new[] { GetTuple(SKL_TKN.U8_NUM_MOD, (byte)ModuleType.Length) };
             tuples.Add(bytes);
 
-            for (int i = 0; i < templates.Length; i++)
-                tuples.AddRange(ToTuples(templates[i], i));
+            for (int i = 0; i < ModuleType.Length; i++)
+                tuples.AddRange(GetTuples(ModuleType[i], i));
 
             section.Tuples = tuples.ToArray();
             SectionVendorTuples desc = section.GetSizeDescriptor();
@@ -424,7 +426,7 @@ namespace itt
         }
 
         IEnumerable<VendorTuples> GetPinTuples(uint pinCount, PinDir dir,
-            List<FromTo> sources, List<FromTo> sinks, ModuleType[] templates)
+            List<FromTo> sources, List<FromTo> sinks)
         {
             int anyCount = sources.Count(s => s.Interface == InterfaceName.ANY);
             bool dynamic = (anyCount == (sources.Count + sinks.Count));
@@ -479,7 +481,7 @@ namespace itt
             return tuples.All(t => t.GetType() != typeof(VendorTuples<Guid>));
         }
 
-        public IEnumerable<Section> ToSections(Module module, Path path, ModuleType[] templates, int id)
+        IEnumerable<Section> GetSections(Module module, Path path, int id)
         {
             if (!path.Modules.Module.Contains(module))
                 throw new ArgumentException("module is not owned by path specified");
@@ -488,14 +490,12 @@ namespace itt
             var links = path.Links.Where(l => l.To.Module.Equals(template.Name));
             var inTuples = GetPinTuples(template.InputPins, PinDir.IN,
                                         links.Select(l => l.To).ToList(),
-                                        links.Select(l => l.From).ToList(),
-                                        templates);
+                                        links.Select(l => l.From).ToList());
 
             links = path.Links.Where(l => l.From.Module.Equals(template.Name));
             var outTuples = GetPinTuples(template.OutputPins, PinDir.OUT,
                                         links.Select(l => l.From).ToList(),
-                                        links.Select(l => l.To).ToList(),
-                                        templates);
+                                        links.Select(l => l.To).ToList());
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
@@ -546,7 +546,7 @@ namespace itt
             };
 
             tuples.Add(words);
-            var configs = ToTuples(path.PathConfigurations, module);
+            var configs = GetTuples(path.PathConfigurations, module);
             tuples.AddRange(configs);
             tuples.AddRange(inTuples);
             tuples.AddRange(outTuples);
@@ -587,7 +587,7 @@ namespace itt
             return control;
         }
 
-        IEnumerable<Section> GetModuleControls(Module module, Path path, ModuleType[] templates, PathConnectors pathConnectors)
+        IEnumerable<Section> GetModuleControls(Module module, Path path)
         {
             var result = new List<Section>();
 
@@ -613,7 +613,7 @@ namespace itt
             }
             else if (module.Type == "mixout")
             {
-                IEnumerable<PathConnector> connectors = pathConnectors.PathConnector.Where(
+                IEnumerable<PathConnector> connectors = PathConnectors.PathConnector.Where(
                     c => c.Output.Any(
                         o => o.PathName.Equals(path.Name) && o.Module.Equals(module.Type)));
                 foreach (var connector in connectors)
@@ -630,7 +630,7 @@ namespace itt
                 var template = GetTemplate(module.Type);
                 if (template.Params != null)
                     foreach (var param in template.Params)
-                        result.AddRange(ToSections(param, Constants.SKL_CTL_TLV_PROBE,
+                        result.AddRange(GetSections(param, Constants.SKL_CTL_TLV_PROBE,
                                                           Constants.SKL_CTL_TLV_PROBE));
             }
 
@@ -692,15 +692,15 @@ namespace itt
             return isSource ? HDA_DAPM_SUBSEQ.INTERMEDIATE_MIX : HDA_DAPM_SUBSEQ.INTERMEDIATE_PGA;
         }
 
-        public IEnumerable<Section> ToSections(Modules modules, Path path, ModuleType[] templates, PathConnectors connectors)
+        IEnumerable<Section> GetPathModulesSections(Path path)
         {
             var result = new List<Section>();
 
-            for (int i = 0; i < modules.Module.Length; i++)
+            for (int i = 0; i < path.Modules.Module.Length; i++)
             {
-                Module module = modules.Module[i];
-                var sections = ToSections(module, path, templates, i);
-                var controls = GetModuleControls(module, path, templates, connectors);
+                Module module = path.Modules.Module[i];
+                var sections = GetSections(module, path, i);
+                var controls = GetModuleControls(module, path);
 
                 var widget = new SectionWidget();
                 widget.Identifier = GetPathModuleId(path, module);
@@ -737,7 +737,7 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<VendorTuples> ToTuples(ModuleParams param, int id)
+        IEnumerable<VendorTuples> GetTuples(ModuleParams param, int id)
         {
             var shorts = new VendorTuples<ushort>();
             shorts.Identifier = $"u16_pipe_mod_cfg_{id}";
@@ -750,7 +750,7 @@ namespace itt
             return new[] { shorts };
         }
 
-        public IEnumerable<VendorTuples> ToTuples(PcmFormat format, int id)
+        IEnumerable<VendorTuples> GetTuples(PcmFormat format, int id)
         {
             var result = new List<VendorTuples>();
             string dir = (format.Dir == PinDir.IN) ? "in" : "out";
@@ -776,7 +776,7 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<VendorTuples> ToTuples(PathConfiguration config, Module module, int id)
+        IEnumerable<VendorTuples> GetTuples(PathConfiguration config, Module module, int id)
         {
             var result = new List<VendorTuples>();
             var words = new VendorTuples<uint>();
@@ -790,31 +790,31 @@ namespace itt
             result.Add(words);
             var formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
             for (int i = 0; i < formats.Length; i++)
-                result.AddRange(ToTuples(formats[i], i));
+                result.AddRange(GetTuples(formats[i], i));
             formats = config.PcmFormats.Except(formats).ToArray();
             for (int i = 0; i < formats.Length; i++)
-                result.AddRange(ToTuples(formats[i], i));
+                result.AddRange(GetTuples(formats[i], i));
 
             ModuleParams param = config.ModuleParams.First(p => p.Module.Equals(module.Type));
-            result.AddRange(ToTuples(param, id));
+            result.AddRange(GetTuples(param, id));
 
             return result;
         }
 
-        public IEnumerable<VendorTuples> ToTuples(PathConfigurations configs, Module module)
+        IEnumerable<VendorTuples> GetTuples(PathConfigurations configs, Module module)
         {
             var result = new List<VendorTuples>();
 
             for (int i = 0; i < configs.PathConfiguration.Length; i++)
-                result.AddRange(ToTuples(configs.PathConfiguration[i], module, i));
+                result.AddRange(GetTuples(configs.PathConfiguration[i], module, i));
 
             return result;
         }
 
-        public IEnumerable<Section> ToSections(PathConfigurations configs, Path path)
+        IEnumerable<Section> GetPathConfigurationsSections(Path path)
         {
             var result = new List<Section>();
-            if (configs.PathConfiguration.Length <= 1)
+            if (path.PathConfigurations.PathConfiguration.Length <= 1)
                 return result;
 
             var control = new SectionControlEnum();
@@ -824,7 +824,7 @@ namespace itt
 
             var strs = new List<string>();
             var str = new StringBuilder();
-            foreach (var cfg in configs.PathConfiguration)
+            foreach (var cfg in path.PathConfigurations.PathConfiguration)
             {
                 str.Clear();
                 PcmFormat fmt = cfg.PcmFormats.First(f => f.Dir == PinDir.IN);
@@ -857,12 +857,12 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<Section> ToSections(Path path, ModuleType[] templates, PathConnectors connectors)
+        IEnumerable<Section> GetPathSections(Path path)
         {
             var result = new List<Section>();
 
-            result.AddRange(ToSections(path.Modules, path, templates, connectors));
-            result.AddRange(ToSections(path.PathConfigurations, path));
+            result.AddRange(GetPathModulesSections(path));
+            result.AddRange(GetPathConfigurationsSections(path));
 
             var widget = new SectionWidget();
             widget.Identifier = path.Name;
@@ -870,6 +870,15 @@ namespace itt
                                                                 : TPLG_DAPM.AIF_OUT;
             widget.NoPm = true;
             result.Add(widget);
+
+            return result;
+        }
+
+        public IEnumerable<Section> GetPipelineSections()
+        {
+            var result = new List<Section>();
+            foreach (var path in Paths.Path)
+                result.AddRange(GetPathSections(path));
 
             return result;
         }
@@ -916,14 +925,14 @@ namespace itt
             return GetPathModuleId(path, endpoint.Module, endpoint.Instance);
         }
 
-        public IEnumerable<Section> GetSections(PathConnectors connectors, Paths paths)
+        public SectionGraph GetGraphSection()
         {
             var graph = new SectionGraph();
             graph.Identifier = "Pipeline 1 Graph";
             var lines = new List<string>();
             var line = new StringBuilder();
 
-            foreach (var path in paths.Path)
+            foreach (var path in Paths.Path)
             {
                 foreach (var link in path.Links)
                 {
@@ -974,14 +983,14 @@ namespace itt
                 lines.Add(line.ToString());
             }
 
-            foreach (var connector in connectors.PathConnector)
+            foreach (var connector in PathConnectors.PathConnector)
             {
                 foreach (var source in connector.Input)
                 {
-                    Path srcPath = paths.Path.First(p => p.Name.Equals(source.PathName));
+                    Path srcPath = Paths.Path.First(p => p.Name.Equals(source.PathName));
                     foreach (var sink in connector.Output)
                     {
-                        Path sinkPath = paths.Path.First(p => p.Name.Equals(sink.PathName));
+                        Path sinkPath = Paths.Path.First(p => p.Name.Equals(sink.PathName));
                         Link link = sinkPath.Links.First(l => l.From.Module.Equals(sink.Module));
                         line.Clear();
                         line.Append(GetPathModuleId(sinkPath, link.From));
@@ -993,7 +1002,7 @@ namespace itt
             }
 
             graph.Lines = lines.ToArray();
-            return new[] { graph };
+            return graph;
         }
     }
 }
