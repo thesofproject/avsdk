@@ -160,8 +160,11 @@ namespace itt
         {
             ClockControls controls = firmwareConfig.ClockControls;
             var result = new List<Section>();
-            var ctrls = new List<ClockControl>();
 
+            if (firmwareConfig.ClockControls == null)
+                return result;
+
+            var ctrls = new List<ClockControl>();
             if (controls.I2SClockControls != null)
                 ctrls.AddRange(controls.I2SClockControls);
             if (controls.MClockControls != null)
