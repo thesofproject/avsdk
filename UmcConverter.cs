@@ -52,6 +52,26 @@ namespace itt
             }
         }
 
+        public IEnumerable<Section> GetAllSections()
+        {
+            var result = new List<Section>();
+
+            result.Add(new SectionSkylakeTokens());
+            if (manifestData != null)
+                result.AddRange(GetFirmwareInfoSections());
+            if (firmwareConfig != null)
+                result.AddRange(GetFirmwareConfigSections());
+
+            if (moduleType != null)
+            {
+                result.AddRange(GetModuleTypeSections());
+                result.AddRange(GetPipelineSections());
+                result.Add(GetGraphSection());
+            }
+
+            return result;
+        }
+
         static Tuple<string, T> GetTuple<T>(SKL_TKN token, T value)
         {
             return Tuple.Create(token.GetName(), value);
