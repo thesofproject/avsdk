@@ -206,6 +206,14 @@ namespace itt
         public LowLatencySourceConfig[] LowLatencySourceConfigs;
     }
 
+    public class AstateTableConfig
+    {
+        [XmlAttribute("kcps")]
+        public uint Kcps { get; set; }
+        [XmlAttribute("clk_src")]
+        public uint ClkSrc { get; set; }
+    }
+
     public struct DMABufferConfig
     {
         [XmlAttribute("min_size_bytes")]
@@ -224,6 +232,7 @@ namespace itt
         public uint FastClockFrequencyHz { get; set; }
 
         public DMABufferConfig[] DMABufferConfigs;
+        public AstateTableConfig[] AstateTableConfigs;
         public SchedulerConfiguration SchedulerConfiguration { get; set; }
         public ClockControls ClockControls { get; set; }
     }

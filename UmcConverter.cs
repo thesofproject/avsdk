@@ -210,6 +210,20 @@ namespace itt
             return new[] { words };
         }
 
+        IEnumerable<VendorTuples> GetTuples(AstateTableConfig astate, int id)
+        {
+            var words = new VendorTuples<uint>();
+            words.Identifier = $"u32_astate_table_index_{id}";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_ASTATE_IDX, (uint)id),
+                GetTuple(SKL_TKN.U32_ASTATE_KCPS, astate.Kcps),
+                GetTuple(SKL_TKN.U32_ASTATE_CLK_SRC, astate.ClkSrc)
+            };
+
+            return new[] { words };
+        }
+
         IEnumerable<VendorTuples> GetTuples(SchedulerConfiguration scheduler)
         {
             LowLatencySourceConfig[] configs = scheduler.LowLatencySourceConfigs;
@@ -255,6 +269,21 @@ namespace itt
                 else
                     buf = new DMABufferConfig();
                 tuples.AddRange(GetTuples(buf, i));
+            }
+
+            if (config.AstateTableConfigs != null)
+            {
+                AstateTableConfig[] astates = config.AstateTableConfigs;
+                words = new VendorTuples<uint>();
+                words.Identifier = "u32_astate_table";
+                words.Tuples = new[]
+                {
+                    GetTuple(SKL_TKN.U32_ASTATE_COUNT, (uint)astates.Length)
+                };
+
+                tuples.Add(words);
+                for (int i = 0; i < astates.Length; i++)
+                    tuples.AddRange(GetTuples(astates[i], i));
             }
 
             if (config.SchedulerConfiguration != null)
