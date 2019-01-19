@@ -1,4 +1,6 @@
-﻿namespace itt
+﻿using System;
+
+namespace itt
 {
     public enum SKL_MODULE_TYPE
     {
@@ -132,5 +134,36 @@
 
         U32_FMT_CFG_IDX,
         MAX = U32_FMT_CFG_IDX,
+    }
+
+    // Copied from pcm.h
+    [Flags]
+    public enum PCM_RATE
+    {
+        R5512       = (1 << 0),   // 5512Hz
+        R8000       = (1 << 1),   // 8000Hz
+        R11025      = (1 << 2),   // 11025Hz
+        R16000      = (1 << 3),   // 16000Hz
+        R22050      = (1 << 4),   // 22050Hz
+        R32000      = (1 << 5),   // 32000Hz
+        R44100      = (1 << 6),   // 44100Hz
+        R48000      = (1 << 7),   // 48000Hz
+        R64000      = (1 << 8),   // 64000Hz
+        R88200      = (1 << 9),   // 88200Hz
+        R96000      = (1 << 10),  // 96000Hz
+        R176400     = (1 << 11),  // 176400Hz
+        R192000     = (1 << 12),  // 192000Hz
+        CONTINUOUS  = (1 << 30),  // continuous range
+        KNOT        = (1 << 31)   // supports more non-continuos rates
+    }
+
+    // Referred from include/uapi/sound/asound.h
+    [Flags]
+    public enum PCM_FMTBIT : uint
+    {
+        S16_LE   = (1 << 2),
+        S24_LE   = (1 << 6),
+        S32_LE   = (1 << 10),
+        S24_3LE  = (1 << 32)
     }
 }

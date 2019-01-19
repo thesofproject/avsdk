@@ -67,6 +67,7 @@ namespace itt
                 result.AddRange(GetModuleTypeSections());
                 result.AddRange(GetPipelineSections());
                 result.Add(GetGraphSection());
+                result.AddRange(GetPathsPCMSections());
             }
 
             return result;
@@ -942,6 +943,80 @@ namespace itt
             var result = new List<Section>();
             foreach (var path in paths.Path)
                 result.AddRange(GetPathSections(path));
+
+            return result;
+        }
+
+        SectionPCMCapabilities GetPathPCMCapabilities(Path path)
+        {
+            PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.IN
+                                                                : PinDir.OUT;
+            PathConfiguration[] configurations = path.PathConfigurations.PathConfiguration;
+            IEnumerable<PcmFormat> formats = configurations.SelectMany(
+                p => p.PcmFormats.Where(f => f.Dir == dir));
+
+            IEnumerable<PCM_RATE> rates = formats.Select(f => f.SampleRate.ToRate()).Distinct();
+            IEnumerable<uint> channels = formats.Select(f => f.ChannelCount).Distinct();
+            IEnumerable<PCM_FMTBIT> bps = formats.Select(f => f.Bps.ToFmtbit()).Distinct();
+
+            var result = new SectionPCMCapabilities();
+            result.Identifier = path.Device;
+            result.Formats = string.Join(", ", bps);
+            result.Rates = string.Join(", ", rates.Select(r => r.GetString()));
+            result.ChannelMin = channels.Min();
+            result.ChannelMax = channels.Max();
+
+            return result;
+        }
+
+        IEnumerable<Section> GetPathsPCMSections()
+        {
+            var result = new List<Section>();
+            IEnumerable<Path> fePaths = paths.Path.Where(
+                p => p.Device != null && p.DaiName != null && p.DaiLinkName != null);
+
+            if (fePaths.Count() == 0)
+                return result;
+
+            var groups = fePaths.GroupBy(p => p.DaiLinkName).ToArray();
+            for (int i = 0; i < groups.Length; i++)
+            {
+                var group = groups[i];
+                var section = new SectionPCM();
+                section.Identifier = group.Key;
+                section.ID = 0u;
+                section.DAI = new DAI()
+                {
+                    Identifier = group.First().DaiName,
+                    ID = (uint)i
+                };
+
+                Path path = group.FirstOrDefault(p => p.Direction == Direction.PLAYBACK);
+                if (path != null)
+                {
+                    SectionPCMCapabilities caps = GetPathPCMCapabilities(path);
+                    result.Add(caps);
+                    section.Playback = new DAILink()
+                    {
+                        Identifier = "playback",
+                        Capabilities = caps.Identifier
+                    };
+                }
+
+                path = group.FirstOrDefault(p => p.Direction == Direction.CAPTURE);
+                if (path != null)
+                {
+                    SectionPCMCapabilities caps = GetPathPCMCapabilities(path);
+                    result.Add(caps);
+                    section.Capture = new DAILink()
+                    {
+                        Identifier = "capture",
+                        Capabilities = caps.Identifier
+                    };
+                }
+
+                result.Add(section);
+            }
 
             return result;
         }

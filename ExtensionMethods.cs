@@ -113,5 +113,84 @@ namespace itt
 
             return result.SelectMany(e => BitConverter.GetBytes(e)).ToArray();
         }
+
+        internal static PCM_RATE ToRate(this uint value)
+        {
+            switch (value)
+            {
+                case 5512:
+                    return PCM_RATE.R5512;
+                case 8000:
+                    return PCM_RATE.R8000;
+                case 11025:
+                    return PCM_RATE.R11025;
+                case 16000:
+                    return PCM_RATE.R16000;
+                case 22050:
+                    return PCM_RATE.R22050;
+                case 32000:
+                    return PCM_RATE.R32000;
+                case 44100:
+                    return PCM_RATE.R44100;
+                case 48000:
+                    return PCM_RATE.R48000;
+                case 64000:
+                    return PCM_RATE.R64000;
+                case 88200:
+                    return PCM_RATE.R88200;
+                case 96000:
+                    return PCM_RATE.R96000;
+                case 176400:
+                    return PCM_RATE.R176400;
+                case 192000:
+                    return PCM_RATE.R192000;
+                case 0:
+                case 24000:
+                case 37800:
+                    return PCM_RATE.KNOT;
+
+                default:
+                    throw new NotSupportedException(nameof(value));
+            }
+        }
+
+        internal static string GetString(this PCM_RATE value)
+        {
+            switch (value)
+            {
+                case PCM_RATE.R5512:
+                case PCM_RATE.R8000:
+                case PCM_RATE.R11025:
+                case PCM_RATE.R16000:
+                case PCM_RATE.R22050:
+                case PCM_RATE.R32000:
+                case PCM_RATE.R44100:
+                case PCM_RATE.R48000:
+                case PCM_RATE.R64000:
+                case PCM_RATE.R88200:
+                case PCM_RATE.R96000:
+                case PCM_RATE.R176400:
+                case PCM_RATE.R192000:
+                    return value.ToString().Substring(1);
+
+                default:
+                    return value.ToString();
+            }
+        }
+
+        internal static PCM_FMTBIT ToFmtbit(this uint value)
+        {
+            switch (value)
+            {
+                case 16:
+                    return PCM_FMTBIT.S16_LE;
+                case 24:
+                    return PCM_FMTBIT.S24_LE;
+                case 32:
+                    return PCM_FMTBIT.S32_LE;
+                default:
+                    throw new NotSupportedException(nameof(value));
+            }
+        }
     }
 }
