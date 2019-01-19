@@ -179,7 +179,7 @@ namespace itt
     public class LowLatencySourceConfig
     {
         [XmlAttribute("lls_idx")]
-        public uint LlsIdx { get; set; }
+        public uint LlsIdx { get; set; } // ignored
         [XmlAttribute("v_index")]
         public uint VIndex { get; set; }
         [XmlAttribute("dma_type")]

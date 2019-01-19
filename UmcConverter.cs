@@ -210,6 +210,27 @@ namespace itt
             return new[] { words };
         }
 
+        IEnumerable<VendorTuples> GetTuples(SchedulerConfiguration scheduler)
+        {
+            LowLatencySourceConfig[] configs = scheduler.LowLatencySourceConfigs;
+            uint config = configs[0].DmaType << 8 | configs[0].VIndex;
+
+            var words = new VendorTuples<uint>();
+            words.Identifier = $"u32_sch_cfg";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_SCH_TYPE, Constants.SCHEDULER_CONFIG),
+                GetTuple(SKL_TKN.U32_SCH_SIZE, sizeof(uint) * (uint)(4 + configs.Length)),
+                GetTuple(SKL_TKN.U32_SCH_SYS_TICK_MUL, scheduler.SystemTickMultiplier),
+                GetTuple(SKL_TKN.U32_SCH_SYS_TICK_DIV, scheduler.SystemTickDivider),
+                GetTuple(SKL_TKN.U32_SCH_SYS_TICK_LL_SRC, (uint)scheduler.LowLatencyInterruptSource),
+                GetTuple(SKL_TKN.U32_SCH_SYS_TICK_CFG_LEN, (uint)configs.Length), // we support only 1 anyway
+                GetTuple(SKL_TKN.U32_SCH_SYS_TICK_CFG, config)
+            };
+
+            return new[] { words };
+        }
+
         public IEnumerable<Section> GetFirmwareConfigSections()
         {
             FirmwareConfig config = firmwareConfig;
@@ -235,6 +256,9 @@ namespace itt
                     buf = new DMABufferConfig();
                 tuples.AddRange(GetTuples(buf, i));
             }
+
+            if (config.SchedulerConfiguration != null)
+                tuples.AddRange(GetTuples(config.SchedulerConfiguration));
 
             var section = new SectionSkylakeTuples("fw_cfg_data");
             section.Tuples = tuples.ToArray();

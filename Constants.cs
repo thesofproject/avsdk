@@ -7,6 +7,7 @@ namespace itt
         public const uint DMA_CLK_CONTROLS        = 1;
         public const uint DMA_TRANSMISSION_START  = 2;
         public const uint DMA_TRANSMISSION_STOP   = 3;
+        public const uint SCHEDULER_CONFIG        = 18;
 
         public const uint MAX_IN_QUEUE   = 8;
         public const uint MAX_OUT_QUEUE  = 8;
