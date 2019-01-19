@@ -443,6 +443,42 @@ namespace itt
             return result;
         }
 
+        IEnumerable<Section> GetSections(Path path, Module module, InitParam param)
+        {
+            var result = new List<Section>();
+
+            string prefix = $"{GetPathModuleId(path, module)} bin_blk_{(uint)param.SetParams}";
+            var section = new SectionSkylakeTuples($"{prefix}_tkn");
+            byte[] defVal = param.DefaultValue.ToBytes();
+
+            var words = new VendorTuples<uint>();
+            words.Identifier = "u32_data";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_FMT_CFG_IDX, (uint)param.SetParams),
+                GetTuple(SKL_TKN.U32_CAPS_SIZE, (uint)defVal.Length),
+                GetTuple(SKL_TKN.U32_CAPS_SET_PARAMS, (uint)param.SetParams),
+                GetTuple(SKL_TKN.U32_CAPS_PARAMS_ID, param.ParamId)
+            };
+
+            section.Tuples = new[] { words };
+            SectionVendorTuples desc = section.GetSizeDescriptor();
+            result.Add(desc);
+            result.Add(desc.GetPrivateData());
+            result.Add(section);
+            result.Add(section.GetPrivateData());
+
+            var priv = new SectionData();
+            priv.Identifier = $"{prefix}_data";
+            priv.Bytes = defVal;
+            desc = priv.GetSizeDescriptor(defVal.Length, SKL_BLOCK_TYPE.BINARY);
+            result.Add(desc);
+            result.Add(desc.GetPrivateData());
+            result.Add(priv);
+
+            return result;
+        }
+
         public ModuleType GetTemplate(string type)
         {
             return moduleType.SingleOrDefault(t => t.Name.Equals(type));
@@ -585,6 +621,10 @@ namespace itt
             result.Add(desc.GetPrivateData());
             result.Add(section);
             result.Add(section.GetPrivateData());
+
+            if (module.InitParams != null)
+                foreach (var initParam in module.InitParams)
+                    result.AddRange(GetSections(path, module, initParam));
 
             return result;
         }
