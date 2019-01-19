@@ -822,19 +822,19 @@ namespace itt
             var text = new SectionText();
             text.Identifier = $"enum_{path.Name} pcm cfg";
 
-            var strs = new List<string>();
-            var str = new StringBuilder();
+            var values = new List<string>();
+            var value = new StringBuilder();
             foreach (var cfg in path.PathConfigurations.PathConfiguration)
             {
-                str.Clear();
+                value.Clear();
                 PcmFormat fmt = cfg.PcmFormats.First(f => f.Dir == PinDir.IN);
-                str.Append($"IN:f{fmt.SampleRate}-c{fmt.ChannelCount}-b{fmt.Bps}");
+                value.Append($"IN:f{fmt.SampleRate}-c{fmt.ChannelCount}-b{fmt.Bps}");
                 fmt = cfg.PcmFormats.First(f => f.Dir == PinDir.OUT);
-                str.Append($" OUT:f{fmt.SampleRate}-c{fmt.ChannelCount}-b{fmt.Bps}");
-                strs.Add(str.ToString());
+                value.Append($" OUT:f{fmt.SampleRate}-c{fmt.ChannelCount}-b{fmt.Bps}");
+                values.Add(value.ToString());
             }
 
-            text.Values = strs.ToArray();
+            text.Values = values.ToArray();
             control.Ops = new Ops()
             {
                 Identifier = "ctl",
