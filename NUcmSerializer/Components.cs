@@ -658,14 +658,16 @@ namespace NUmcSerializer
     {
         [UmcElement("formats")]
         public string Formats { get; set; }
+        [UmcElement("rates")]
+        public string Rates { get; set; }
         [UmcElement("rate_min")]
-        public uint RateMin { get; set; }
+        public uint? RateMin { get; set; }
         [UmcElement("rate_max")]
-        public uint RateMax { get; set; }
+        public uint? RateMax { get; set; }
         [UmcElement("channel_min")]
-        public byte ChannelMin { get; set; }
+        public uint ChannelMin { get; set; }
         [UmcElement("channel_max")]
-        public byte ChannelMax { get; set; }
+        public uint ChannelMax { get; set; }
 
         public SectionPCMCapabilities(string identifier)
             : base(identifier)
