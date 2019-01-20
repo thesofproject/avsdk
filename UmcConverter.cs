@@ -408,23 +408,27 @@ namespace itt
             section.Identifier = $"{param.Name} params";
             byte[] defVal = param.DefaultValue.ToBytes();
 
+            // Round size to dwords
+            int size = (int)Math.Ceiling(param.Size / 4d) * 4;
+            size = Math.Max(size, defVal.Length);
+
             var data = new DfwAlgoData();
             data.SetParams = param.SetParams;
             data.RuntimeApplicable = param.RuntimeApplicable;
             data.ValueCacheable = param.ValueCacheable;
             data.NotificationCtrl = param.NotificationCtrl;
             data.ParamId = param.paramId;
-            data.Size = (uint)defVal.Length;
+            data.Size = (uint)size;
 
             byte[] bytes = MarshalHelper.StructureToBytes(data);
             int offset = bytes.Length - Marshal.SizeOf(data.Data);
-            Array.Resize(ref bytes, offset + defVal.Length);
+            Array.Resize(ref bytes, offset + size);
             defVal.CopyTo(bytes, offset);
             section.Bytes = bytes;
 
             var control = new SectionControlBytes();
             control.Identifier = section.Identifier;
-            control.Max = (int)data.Size;
+            control.Max = size;
             control.Mask = 0;
             control.Base = 0;
             control.NumRegs = 0;
