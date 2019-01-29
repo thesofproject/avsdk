@@ -723,6 +723,36 @@ namespace itt
             return new Ops { Get = call, Put = call };
         }
 
+        IEnumerable<Section> GetBytesControls()
+        {
+            var result = new List<Section>();
+
+            foreach (var path in paths.Path)
+            {
+                foreach (var module in path.Modules.Module)
+                {
+                    Param[] prms = module.Params;
+                    if (prms == null)
+                        prms = GetTemplate(module.Type).Params;
+
+                    if (prms == null)
+                        continue;
+
+                    Ops ops = GetControlBytesExtOps(module.Type);
+                    foreach (var param in prms)
+                    {
+                        string name = $"{param.Name} param";
+                        if (result.Any(s => s.Identifier.Equals(name)))
+                            continue;
+
+                        result.AddRange(GetSections(param, ops));
+                    }
+                }
+            }
+
+            return result;
+        }
+
         IEnumerable<Section> GetMixerControls()
         {
             var result = new List<Section>();
@@ -851,6 +881,18 @@ namespace itt
 
                 result.AddRange(sections);
                 result.Add(widget);
+
+                // Set widget's Bytes property if any
+                Param[] prms = module.Params;
+                if (prms == null)
+                    prms = GetTemplate(module.Type).Params;
+                if (prms != null)
+                {
+                    var bytes = new List<string>();
+                    foreach (var param in prms)
+                        bytes.Add($"{param.Name} param");
+                    widget.Bytes = bytes.ToArray();
+                }
 
                 // Set widget's Mixer property if any
                 if (!module.Type.Equals("mixout"))
@@ -1020,6 +1062,7 @@ namespace itt
                 result.AddRange(GetPathSections(path));
 
             result.AddRange(GetMixerControls());
+            result.AddRange(GetBytesControls());
             return result;
         }
 
