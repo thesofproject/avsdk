@@ -670,7 +670,7 @@ namespace itt
             return result;
         }
 
-        public static bool IsDynamic(IEnumerable<VendorTuples> tuples)
+        static bool IsDynamic(IEnumerable<VendorTuples> tuples)
         {
             return tuples.All(t => t.GetType() != typeof(VendorTuples<Guid>));
         }
