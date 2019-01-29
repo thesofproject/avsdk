@@ -87,6 +87,25 @@ namespace NUmcSerializer
 
     internal static class ExtensionMethods
     {
+        internal static byte[] ToBytes(this string value)
+        {
+            var result = new List<byte>();
+            var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim());
+
+            foreach (var substr in substrs)
+            {
+                if (substr.StartsWith("0x") &&
+                    byte.TryParse(substr.Substring(2), NumberStyles.HexNumber,
+                                        CultureInfo.InvariantCulture, out byte val))
+                    result.Add(val);
+                else if (byte.TryParse(substr, out val))
+                    result.Add(val);
+            }
+
+            return result.ToArray();
+        }
+
         internal static ushort[] ToUInts16(this string value)
         {
             var result = new List<ushort>();
@@ -123,11 +142,6 @@ namespace NUmcSerializer
             }
 
             return result.ToArray();
-        }
-
-        internal static byte[] ToBytes(this string value)
-        {
-            return ToUInts32(value).SelectMany(e => BitConverter.GetBytes(e)).ToArray();
         }
 
         internal static T GetAttributeOfType<T>(this Enum value)
