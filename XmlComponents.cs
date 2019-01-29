@@ -364,14 +364,14 @@ namespace itt
 
     public class Param
     {
-		internal uint paramId;
+        internal uint paramId;
       
         [XmlAttribute("name")]
         public string Name { get; set; }
         [XmlAttribute("param_id")]
         public string ParamId
-		{
-			get
+        {
+            get
             {
                 return string.Format("0x{0:X8}", paramId);
             }
@@ -379,7 +379,7 @@ namespace itt
             {
                 paramId = (value != null) ? value.ToUInt32() : 0;
             }
-		}
+        }
 
         [XmlAttribute("size")]
         public uint Size { get; set; }
@@ -551,8 +551,8 @@ namespace itt
         public Param[] Params;
     }
 
-	[XmlType("Modules")]
-	public class Modules
+    [XmlType("Modules")]
+    public class Modules
     {
         [XmlAttribute("description")]
         public string Description { get; set; }
@@ -616,19 +616,19 @@ namespace itt
         public uint MemPages { get; set; }
     }
 
-	public class ModuleParams
+    public class ModuleParams
     {
         [XmlAttribute("module")]
         public string Module { get; set; }
         [XmlAttribute("instance")]
         public uint Instance { get; set; }
         [XmlAttribute("res_idx")]
-		public ushort ResIdx { get; set; }
+        public ushort ResIdx { get; set; }
         [XmlAttribute("intf_idx")]
-		public ushort IntfIdx { get; set; }
-	}
+        public ushort IntfIdx { get; set; }
+    }
 
-	public class PcmFormat
+    public class PcmFormat
     {
         [XmlAttribute("dir")]
         public PinDir Dir { get; set; }
@@ -640,7 +640,7 @@ namespace itt
         public uint Bps { get; set; }
     }
 
-	public class PathConfiguration
+    public class PathConfiguration
     {
         [XmlAttribute("config_name")]
         public string ConfigName { get; set; }
@@ -650,16 +650,16 @@ namespace itt
         [XmlElement]
         public ModuleParams[] ModuleParams { get; set; }
         public PathResources PathResources;
-	}
+    }
 
     [XmlType("PathConfigurations")]
-	public class PathConfigurations
+    public class PathConfigurations
     {
         [XmlAttribute("description")]
         public string Description { get; set; }
         [XmlElement]
         public PathConfiguration[] PathConfiguration { get; set; }
-	}
+    }
 
     [Serializable]
     public enum D0i3Caps
@@ -694,7 +694,7 @@ namespace itt
         LINK_DMA,
     };
 
-	public class Path
+    public class Path
     {
         [XmlAttribute("name")]
         public string Name { get; set; }
@@ -730,16 +730,16 @@ namespace itt
         public PathConfigurations PathConfigurations { get; set; }
         public Link[] Links { get; set; }
         public Modules Modules { get; set; }
-	}
+    }
 
     [XmlType("Paths")]
-	public class Paths
+    public class Paths
     {
         [XmlAttribute("description")]
         public string Description { get; set; }
         [XmlElement]
         public Path[] Path { get; set; }
-	}
+    }
 
     public class InputOutput
     {
