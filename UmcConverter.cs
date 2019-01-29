@@ -52,6 +52,63 @@ namespace itt
             }
         }
 
+        static Tuple<string, T> GetTuple<T>(SKL_TKN token, T value)
+        {
+            return Tuple.Create(token.GetName(), value);
+        }
+
+        static string GetModuleShortName(string module)
+        {
+            switch (module)
+            {
+                case "copier":
+                    return "cpr";
+
+                case "mixin":
+                    return "mi";
+
+                case "mixout":
+                    return "mo";
+
+                default:
+                    return module;
+            }
+        }
+
+        static string GetPathModuleId(string path, string module, uint instance)
+        {
+            string result = $"{path} {GetModuleShortName(module)}";
+
+            if (module.GetModuleType() != SKL_MODULE_TYPE.MIXER)
+                result += $" {instance}";
+            return result;
+        }
+
+        static string GetPathModuleId(Path path, Module module)
+        {
+            return GetPathModuleId(path.Name, module.Type, module.Instance);
+        }
+
+        static string GetPathModuleId(Path path, FromTo endpoint)
+        {
+            return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
+        }
+
+        static string GetPathModuleId(Path path, InputOutput endpoint)
+        {
+            return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
+        }
+
+        static string GetMixerId(string path, string module)
+        {
+            return $"{GetPathModuleId(path, module, 0)} Switch";
+        }
+
+        public ModuleType GetTemplate(string type)
+        {
+            return moduleType.SingleOrDefault(t => t.Name.Equals(type));
+        }
+
         public IEnumerable<Section> GetAllSections()
         {
             var result = new List<Section>();
@@ -71,11 +128,6 @@ namespace itt
             }
 
             return result;
-        }
-
-        static Tuple<string, T> GetTuple<T>(SKL_TKN token, T value)
-        {
-            return Tuple.Create(token.GetName(), value);
         }
 
         public IEnumerable<Section> GetFirmwareInfoSections()
@@ -402,50 +454,6 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetSections(Param param, Ops extOps)
-        {
-            var section = new SectionData();
-            section.Identifier = $"{param.Name} params";
-            byte[] defVal = param.DefaultValue.ToBytes();
-
-            // Round size to dwords
-            int size = (int)Math.Ceiling(param.Size / 4d) * 4;
-            size = Math.Max(size, defVal.Length);
-
-            var data = new DfwAlgoData();
-            data.SetParams = param.SetParams;
-            data.RuntimeApplicable = param.RuntimeApplicable;
-            data.ValueCacheable = param.ValueCacheable;
-            data.NotificationCtrl = param.NotificationCtrl;
-            data.ParamId = param.paramId;
-            data.Size = (uint)size;
-
-            byte[] bytes = MarshalHelper.StructureToBytes(data);
-            int offset = bytes.Length - Marshal.SizeOf(data.Data);
-            Array.Resize(ref bytes, offset + size);
-            defVal.CopyTo(bytes, offset);
-            section.Bytes = bytes;
-
-            var control = new SectionControlBytes();
-            control.Identifier = section.Identifier;
-            control.Max = size;
-            control.Mask = 0;
-            control.Base = 0;
-            control.NumRegs = 0;
-            control.Ops = new Ops { Identifier = "ctl", Info = TPLG_CTL.BYTES };
-            control.Access = new[]
-            {
-                CTL_ELEM_ACCESS.TLV_READ,
-                CTL_ELEM_ACCESS.TLV_WRITE,
-                CTL_ELEM_ACCESS.TLV_READWRITE,
-                CTL_ELEM_ACCESS.TLV_CALLBACK
-            };
-            control.ExtOps = extOps;
-            control.Data = section.Identifier;
-
-            return new Section[] { control, section };
-        }
-
         IEnumerable<VendorTuples> GetTuples(ModuleType template, int id)
         {
             var result = new List<VendorTuples>();
@@ -537,9 +545,78 @@ namespace itt
             return result;
         }
 
-        public ModuleType GetTemplate(string type)
+        IEnumerable<VendorTuples> GetTuples(ModuleParams param, int id)
         {
-            return moduleType.SingleOrDefault(t => t.Name.Equals(type));
+            var shorts = new VendorTuples<ushort>();
+            shorts.Identifier = $"u16_pipe_mod_cfg_{id}";
+            shorts.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.CFG_MOD_RES_ID, param.ResIdx),
+                GetTuple(SKL_TKN.CFG_MOD_FMT_ID, param.IntfIdx)
+            };
+
+            return new[] { shorts };
+        }
+
+        IEnumerable<VendorTuples> GetTuples(PcmFormat format, int id)
+        {
+            var result = new List<VendorTuples>();
+            string dir = (format.Dir == PinDir.IN) ? "in" : "out";
+
+            var words = new VendorTuples<uint>();
+            words.Identifier = $"_pipe_u32_cfg_{dir}_fmt_{id}";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)format.Dir),
+                GetTuple(SKL_TKN.U32_CFG_FREQ, format.SampleRate)
+            };
+
+            result.Add(words);
+            words = new VendorTuples<uint>();
+            words.Identifier = $"_pipe_u8_cfg_{dir}_fmt_{id}";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U8_CFG_BPS, format.Bps),
+                GetTuple(SKL_TKN.U8_CFG_CHAN, format.ChannelCount)
+            };
+
+            result.Add(words);
+            return result;
+        }
+
+        IEnumerable<VendorTuples> GetTuples(PathConfiguration config, Module module, int id)
+        {
+            var result = new List<VendorTuples>();
+            var words = new VendorTuples<uint>();
+            words.Identifier = $"_pipe_{id}";
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_PIPE_CONFIG_ID, config.ConfigIdx),
+                GetTuple(SKL_TKN.U32_PATH_MEM_PGS, config.PathResources.MemPages)
+            };
+
+            result.Add(words);
+            var formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
+            for (int i = 0; i < formats.Length; i++)
+                result.AddRange(GetTuples(formats[i], i));
+            formats = config.PcmFormats.Except(formats).ToArray();
+            for (int i = 0; i < formats.Length; i++)
+                result.AddRange(GetTuples(formats[i], i));
+
+            ModuleParams param = config.ModuleParams.First(p => p.Module.Equals(module.Type));
+            result.AddRange(GetTuples(param, id));
+
+            return result;
+        }
+
+        IEnumerable<VendorTuples> GetTuples(PathConfigurations configs, Module module)
+        {
+            var result = new List<VendorTuples>();
+
+            for (int i = 0; i < configs.PathConfiguration.Length; i++)
+                result.AddRange(GetTuples(configs.PathConfiguration[i], module, i));
+
+            return result;
         }
 
         IEnumerable<VendorTuples> GetPinTuples(uint pinCount, PinDir dir,
@@ -691,117 +768,6 @@ namespace itt
             return result;
         }
 
-        SectionControlMixer GetMixerControl(string name, int min, int max,
-            CTL_ELEM_ACCESS[] access, int reg, uint get, uint put, uint info)
-        {
-            var control = new SectionControlMixer();
-            control.Identifier = name;
-            control.Index = 0;
-            control.Invert = false;
-            control.Channel = new ChannelMap[]
-            {
-                new ChannelMap() { Identifier = ChannelName.FrontLeft, Reg = reg },
-                new ChannelMap() { Identifier = ChannelName.FrontRight, Reg = reg },
-            };
-            control.Ops = new Ops() { Identifier = "ctl", Get = get, Put = put, Info = info };
-            control.Min = min;
-            control.Max = max;
-            control.NoPm = (reg == Constants.NOPM) ? true : (bool?)null;
-            control.Access = access;
-
-            return control;
-        }
-
-        static Ops GetControlBytesExtOps(string module)
-        {
-            uint call;
-            if (module.Equals("probe"))
-                call = Constants.SKL_CTL_TLV_PROBE;
-            else
-                call = Constants.SKL_CTL_TLV_BYTE;
-
-            return new Ops { Get = call, Put = call };
-        }
-
-        IEnumerable<Section> GetBytesControls()
-        {
-            var result = new List<Section>();
-
-            foreach (var path in paths.Path)
-            {
-                foreach (var module in path.Modules.Module)
-                {
-                    Param[] prms = module.Params;
-                    if (prms == null)
-                        prms = GetTemplate(module.Type).Params;
-
-                    if (prms == null)
-                        continue;
-
-                    Ops ops = GetControlBytesExtOps(module.Type);
-                    foreach (var param in prms)
-                    {
-                        string name = $"{param.Name} param";
-                        if (result.Any(s => s.Identifier.Equals(name)))
-                            continue;
-
-                        result.AddRange(GetSections(param, ops));
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        IEnumerable<Section> GetMixerControls()
-        {
-            var result = new List<Section>();
-            bool gainExists = false;
-
-            foreach (var path in paths.Path)
-            {
-                foreach (var module in path.Modules.Module)
-                {
-                    if (module.Type.Equals("gain"))
-                        gainExists = true;
-                    else if (module.Type.Equals("mixin"))
-                        result.Add(GetMixerControl(
-                            GetMixerId(path.Name, module.Type),
-                            0, 1, null,
-                            Constants.NOPM,
-                            TPLG_CTL.DAPM_VOLSW,
-                            TPLG_CTL.DAPM_VOLSW,
-                            TPLG_CTL.DAPM_VOLSW));
-                }
-            }
-
-            if (gainExists)
-            {
-                result.Add(GetMixerControl("Ramp Duration",
-                    Constants.GAIN_TC_MIN, Constants.GAIN_TC_MAX, null,
-                    Constants.NOPM, Constants.SKL_CTL_RAMP_DURATION,
-                    Constants.SKL_CTL_RAMP_DURATION, TPLG_CTL.VOLSW));
-
-                result.Add(GetMixerControl("Ramp Type",
-                    Constants.GAIN_RT_MIN, Constants.GAIN_RT_MAX, null,
-                    Constants.NOPM, Constants.SKL_CTL_RAMP_TYPE,
-                    Constants.SKL_CTL_RAMP_TYPE, TPLG_CTL.VOLSW));
-
-                CTL_ELEM_ACCESS[] access = new[]
-                {
-                    CTL_ELEM_ACCESS.TLV_READ,
-                    CTL_ELEM_ACCESS.READWRITE
-                };
-
-                result.Add(GetMixerControl("Volume",
-                    Constants.GAIN_MIN_INDEX, Constants.GAIN_MAX_INDEX,
-                    access, 0, Constants.SKL_CTL_VOLUME,
-                    Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
-            }
-
-            return result;
-        }
-
         static uint? GetEventType(Path path, Module module)
         {
             uint? result = (uint)SKL_EVENT_TYPE.PGA;
@@ -918,80 +884,6 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(ModuleParams param, int id)
-        {
-            var shorts = new VendorTuples<ushort>();
-            shorts.Identifier = $"u16_pipe_mod_cfg_{id}";
-            shorts.Tuples = new[]
-            {
-                GetTuple(SKL_TKN.CFG_MOD_RES_ID, param.ResIdx),
-                GetTuple(SKL_TKN.CFG_MOD_FMT_ID, param.IntfIdx)
-            };
-
-            return new[] { shorts };
-        }
-
-        IEnumerable<VendorTuples> GetTuples(PcmFormat format, int id)
-        {
-            var result = new List<VendorTuples>();
-            string dir = (format.Dir == PinDir.IN) ? "in" : "out";
-
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"_pipe_u32_cfg_{dir}_fmt_{id}";
-            words.Tuples = new[]
-            {
-                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)format.Dir),
-                GetTuple(SKL_TKN.U32_CFG_FREQ, format.SampleRate)
-            };
-
-            result.Add(words);
-            words = new VendorTuples<uint>();
-            words.Identifier = $"_pipe_u8_cfg_{dir}_fmt_{id}";
-            words.Tuples = new[]
-            {
-                GetTuple(SKL_TKN.U8_CFG_BPS, format.Bps),
-                GetTuple(SKL_TKN.U8_CFG_CHAN, format.ChannelCount)
-            };
-
-            result.Add(words);
-            return result;
-        }
-
-        IEnumerable<VendorTuples> GetTuples(PathConfiguration config, Module module, int id)
-        {
-            var result = new List<VendorTuples>();
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"_pipe_{id}";
-            words.Tuples = new[]
-            {
-                GetTuple(SKL_TKN.U32_PIPE_CONFIG_ID, config.ConfigIdx),
-                GetTuple(SKL_TKN.U32_PATH_MEM_PGS, config.PathResources.MemPages)
-            };
-
-            result.Add(words);
-            var formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
-            for (int i = 0; i < formats.Length; i++)
-                result.AddRange(GetTuples(formats[i], i));
-            formats = config.PcmFormats.Except(formats).ToArray();
-            for (int i = 0; i < formats.Length; i++)
-                result.AddRange(GetTuples(formats[i], i));
-
-            ModuleParams param = config.ModuleParams.First(p => p.Module.Equals(module.Type));
-            result.AddRange(GetTuples(param, id));
-
-            return result;
-        }
-
-        IEnumerable<VendorTuples> GetTuples(PathConfigurations configs, Module module)
-        {
-            var result = new List<VendorTuples>();
-
-            for (int i = 0; i < configs.PathConfiguration.Length; i++)
-                result.AddRange(GetTuples(configs.PathConfiguration[i], module, i));
-
-            return result;
-        }
-
         IEnumerable<Section> GetPathConfigurationsSections(Path path)
         {
             var result = new List<Section>();
@@ -1055,6 +947,161 @@ namespace itt
             return result;
         }
 
+        IEnumerable<Section> GetSections(Param param, Ops extOps)
+        {
+            var section = new SectionData();
+            section.Identifier = $"{param.Name} params";
+            byte[] defVal = param.DefaultValue.ToBytes();
+
+            // Round size to dwords
+            int size = (int)Math.Ceiling(param.Size / 4d) * 4;
+            size = Math.Max(size, defVal.Length);
+
+            var data = new DfwAlgoData();
+            data.SetParams = param.SetParams;
+            data.RuntimeApplicable = param.RuntimeApplicable;
+            data.ValueCacheable = param.ValueCacheable;
+            data.NotificationCtrl = param.NotificationCtrl;
+            data.ParamId = param.paramId;
+            data.Size = (uint)size;
+
+            byte[] bytes = MarshalHelper.StructureToBytes(data);
+            int offset = bytes.Length - Marshal.SizeOf(data.Data);
+            Array.Resize(ref bytes, offset + size);
+            defVal.CopyTo(bytes, offset);
+            section.Bytes = bytes;
+
+            var control = new SectionControlBytes();
+            control.Identifier = section.Identifier;
+            control.Max = size;
+            control.Mask = 0;
+            control.Base = 0;
+            control.NumRegs = 0;
+            control.Ops = new Ops { Identifier = "ctl", Info = TPLG_CTL.BYTES };
+            control.Access = new[]
+            {
+                CTL_ELEM_ACCESS.TLV_READ,
+                CTL_ELEM_ACCESS.TLV_WRITE,
+                CTL_ELEM_ACCESS.TLV_READWRITE,
+                CTL_ELEM_ACCESS.TLV_CALLBACK
+            };
+            control.ExtOps = extOps;
+            control.Data = section.Identifier;
+
+            return new Section[] { control, section };
+        }
+
+        static Ops GetControlBytesExtOps(string module)
+        {
+            uint call;
+            if (module.Equals("probe"))
+                call = Constants.SKL_CTL_TLV_PROBE;
+            else
+                call = Constants.SKL_CTL_TLV_BYTE;
+
+            return new Ops { Get = call, Put = call };
+        }
+
+        IEnumerable<Section> GetBytesControls()
+        {
+            var result = new List<Section>();
+
+            foreach (var path in paths.Path)
+            {
+                foreach (var module in path.Modules.Module)
+                {
+                    Param[] prms = module.Params;
+                    if (prms == null)
+                        prms = GetTemplate(module.Type).Params;
+
+                    if (prms == null)
+                        continue;
+
+                    Ops ops = GetControlBytesExtOps(module.Type);
+                    foreach (var param in prms)
+                    {
+                        string name = $"{param.Name} param";
+                        if (result.Any(s => s.Identifier.Equals(name)))
+                            continue;
+
+                        result.AddRange(GetSections(param, ops));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        static SectionControlMixer GetMixerControl(string name, int min, int max,
+            CTL_ELEM_ACCESS[] access, int reg, uint get, uint put, uint info)
+        {
+            var control = new SectionControlMixer();
+            control.Identifier = name;
+            control.Index = 0;
+            control.Invert = false;
+            control.Channel = new ChannelMap[]
+            {
+                new ChannelMap() { Identifier = ChannelName.FrontLeft, Reg = reg },
+                new ChannelMap() { Identifier = ChannelName.FrontRight, Reg = reg },
+            };
+            control.Ops = new Ops() { Identifier = "ctl", Get = get, Put = put, Info = info };
+            control.Min = min;
+            control.Max = max;
+            control.NoPm = (reg == Constants.NOPM) ? true : (bool?)null;
+            control.Access = access;
+
+            return control;
+        }
+
+        IEnumerable<Section> GetMixerControls()
+        {
+            var result = new List<Section>();
+            bool gainExists = false;
+
+            foreach (var path in paths.Path)
+            {
+                foreach (var module in path.Modules.Module)
+                {
+                    if (module.Type.Equals("gain"))
+                        gainExists = true;
+                    else if (module.Type.Equals("mixin"))
+                        result.Add(GetMixerControl(
+                            GetMixerId(path.Name, module.Type),
+                            0, 1, null,
+                            Constants.NOPM,
+                            TPLG_CTL.DAPM_VOLSW,
+                            TPLG_CTL.DAPM_VOLSW,
+                            TPLG_CTL.DAPM_VOLSW));
+                }
+            }
+
+            if (gainExists)
+            {
+                result.Add(GetMixerControl("Ramp Duration",
+                    Constants.GAIN_TC_MIN, Constants.GAIN_TC_MAX, null,
+                    Constants.NOPM, Constants.SKL_CTL_RAMP_DURATION,
+                    Constants.SKL_CTL_RAMP_DURATION, TPLG_CTL.VOLSW));
+
+                result.Add(GetMixerControl("Ramp Type",
+                    Constants.GAIN_RT_MIN, Constants.GAIN_RT_MAX, null,
+                    Constants.NOPM, Constants.SKL_CTL_RAMP_TYPE,
+                    Constants.SKL_CTL_RAMP_TYPE, TPLG_CTL.VOLSW));
+
+                CTL_ELEM_ACCESS[] access = new[]
+                {
+                    CTL_ELEM_ACCESS.TLV_READ,
+                    CTL_ELEM_ACCESS.READWRITE
+                };
+
+                result.Add(GetMixerControl("Volume",
+                    Constants.GAIN_MIN_INDEX, Constants.GAIN_MAX_INDEX,
+                    access, 0, Constants.SKL_CTL_VOLUME,
+                    Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
+            }
+
+            return result;
+        }
+
         public IEnumerable<Section> GetPipelineSections()
         {
             var result = new List<Section>();
@@ -1064,127 +1111,6 @@ namespace itt
             result.AddRange(GetMixerControls());
             result.AddRange(GetBytesControls());
             return result;
-        }
-
-        SectionPCMCapabilities GetPathPCMCapabilities(Path path)
-        {
-            PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.IN
-                                                                : PinDir.OUT;
-            PathConfiguration[] configurations = path.PathConfigurations.PathConfiguration;
-            IEnumerable<PcmFormat> formats = configurations.SelectMany(
-                p => p.PcmFormats.Where(f => f.Dir == dir));
-
-            IEnumerable<PCM_RATE> rates = formats.Select(f => f.SampleRate.ToRate()).Distinct();
-            IEnumerable<uint> channels = formats.Select(f => f.ChannelCount).Distinct();
-            IEnumerable<PCM_FMTBIT> bps = formats.Select(f => f.Bps.ToFmtbit()).Distinct();
-
-            var result = new SectionPCMCapabilities();
-            result.Identifier = path.Device;
-            result.Formats = string.Join(", ", bps);
-            result.Rates = string.Join(", ", rates.Select(r => r.GetString()));
-            result.ChannelMin = channels.Min();
-            result.ChannelMax = channels.Max();
-
-            return result;
-        }
-
-        IEnumerable<Section> GetPathsPCMSections()
-        {
-            var result = new List<Section>();
-            IEnumerable<Path> fePaths = paths.Path.Where(
-                p => p.Device != null && p.DaiName != null && p.DaiLinkName != null);
-
-            if (fePaths.Count() == 0)
-                return result;
-
-            var groups = fePaths.GroupBy(p => p.DaiLinkName).ToArray();
-            for (int i = 0; i < groups.Length; i++)
-            {
-                var group = groups[i];
-                var section = new SectionPCM();
-                section.Identifier = group.Key;
-                section.ID = 0u;
-                section.DAI = new DAI()
-                {
-                    Identifier = group.First().DaiName,
-                    ID = (uint)i
-                };
-
-                Path path = group.FirstOrDefault(p => p.Direction == Direction.PLAYBACK);
-                if (path != null)
-                {
-                    SectionPCMCapabilities caps = GetPathPCMCapabilities(path);
-                    result.Add(caps);
-                    section.Playback = new DAILink()
-                    {
-                        Identifier = "playback",
-                        Capabilities = caps.Identifier
-                    };
-                }
-
-                path = group.FirstOrDefault(p => p.Direction == Direction.CAPTURE);
-                if (path != null)
-                {
-                    SectionPCMCapabilities caps = GetPathPCMCapabilities(path);
-                    result.Add(caps);
-                    section.Capture = new DAILink()
-                    {
-                        Identifier = "capture",
-                        Capabilities = caps.Identifier
-                    };
-                }
-
-                result.Add(section);
-            }
-
-            return result;
-        }
-
-        static string GetModuleShortName(string module)
-        {
-            switch (module)
-            {
-                case "copier":
-                    return "cpr";
-
-                case "mixin":
-                    return "mi";
-
-                case "mixout":
-                    return "mo";
-
-                default:
-                    return module;
-            }
-        }
-
-        static string GetPathModuleId(string path, string module, uint instance)
-        {
-            string result = $"{path} {GetModuleShortName(module)}";
-
-            if (module.GetModuleType() != SKL_MODULE_TYPE.MIXER)
-                result += $" {instance}";
-            return result;
-        }
-
-        static string GetPathModuleId(Path path, Module module)
-        {
-            return GetPathModuleId(path.Name, module.Type, module.Instance);
-        }
-
-        static string GetPathModuleId(Path path, FromTo endpoint)
-        {
-            return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
-        }
-
-        static string GetPathModuleId(Path path, InputOutput endpoint)
-        {
-            return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
-        }
-
-        static string GetMixerId(string path, string module)
-        {
-            return $"{GetPathModuleId(path, module, 0)} Switch";
         }
 
         static string GetPathFirstLine(Path path)
@@ -1302,6 +1228,80 @@ namespace itt
 
             graph.Lines = lines.ToArray();
             return graph;
+        }
+
+        SectionPCMCapabilities GetPathPCMCapabilities(Path path)
+        {
+            PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.IN
+                                                                : PinDir.OUT;
+            PathConfiguration[] configurations = path.PathConfigurations.PathConfiguration;
+            IEnumerable<PcmFormat> formats = configurations.SelectMany(
+                p => p.PcmFormats.Where(f => f.Dir == dir));
+
+            IEnumerable<PCM_RATE> rates = formats.Select(f => f.SampleRate.ToRate()).Distinct();
+            IEnumerable<uint> channels = formats.Select(f => f.ChannelCount).Distinct();
+            IEnumerable<PCM_FMTBIT> bps = formats.Select(f => f.Bps.ToFmtbit()).Distinct();
+
+            var result = new SectionPCMCapabilities();
+            result.Identifier = path.Device;
+            result.Formats = string.Join(", ", bps);
+            result.Rates = string.Join(", ", rates.Select(r => r.GetString()));
+            result.ChannelMin = channels.Min();
+            result.ChannelMax = channels.Max();
+
+            return result;
+        }
+
+        IEnumerable<Section> GetPathsPCMSections()
+        {
+            var result = new List<Section>();
+            IEnumerable<Path> fePaths = paths.Path.Where(
+                p => p.Device != null && p.DaiName != null && p.DaiLinkName != null);
+
+            if (fePaths.Count() == 0)
+                return result;
+
+            var groups = fePaths.GroupBy(p => p.DaiLinkName).ToArray();
+            for (int i = 0; i < groups.Length; i++)
+            {
+                var group = groups[i];
+                var section = new SectionPCM();
+                section.Identifier = group.Key;
+                section.ID = 0u;
+                section.DAI = new DAI()
+                {
+                    Identifier = group.First().DaiName,
+                    ID = (uint)i
+                };
+
+                Path path = group.FirstOrDefault(p => p.Direction == Direction.PLAYBACK);
+                if (path != null)
+                {
+                    SectionPCMCapabilities caps = GetPathPCMCapabilities(path);
+                    result.Add(caps);
+                    section.Playback = new DAILink()
+                    {
+                        Identifier = "playback",
+                        Capabilities = caps.Identifier
+                    };
+                }
+
+                path = group.FirstOrDefault(p => p.Direction == Direction.CAPTURE);
+                if (path != null)
+                {
+                    SectionPCMCapabilities caps = GetPathPCMCapabilities(path);
+                    result.Add(caps);
+                    section.Capture = new DAILink()
+                    {
+                        Identifier = "capture",
+                        Capabilities = caps.Identifier
+                    };
+                }
+
+                result.Add(section);
+            }
+
+            return result;
         }
     }
 }
