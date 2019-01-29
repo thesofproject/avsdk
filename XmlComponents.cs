@@ -270,13 +270,6 @@ namespace itt
         public uint PreloadPages { get; set; }
     }
 
-    public class Manifest : SubsystemType
-    {
-        public FirmwareInfo[] ManifestData { get; set; }
-        public FirmwareConfig FirmwareConfig;
-        public DriverConfig DriverConfig;
-    }
-
     [Serializable]
     public enum PinDir
     {
@@ -491,11 +484,6 @@ namespace itt
         public ModuleResources[] ModuleResourceList { get; set; }
         [XmlArray("ModuleInterfaceList")]
         public Interfaces[] ModuleInterfaceList { get; set; }
-    }
-
-    public class ModuleList : SubsystemType
-    {
-        public ModuleType[] ModuleTypes { get; set; }
     }
 
     [Serializable]
@@ -785,11 +773,5 @@ namespace itt
         public string Description { get; set; }
         [XmlElement]
         public PathConnector[] PathConnector { get; set; }
-    }
-
-    public class PipelineList : SubsystemType
-    {
-        public Path[] Paths;
-        public PathConnector[] PathConnectors;
     }
 }
