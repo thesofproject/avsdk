@@ -137,15 +137,13 @@ namespace itt
             var section = new SectionSkylakeTuples("lib_data");
             var tuples = new List<VendorTuples>();
 
-            var words = new VendorTuples<uint>();
-            words.Identifier = "lib_count";
+            var words = new VendorTuples<uint>("lib_count");
             words.Tuples = new[] { GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)manifestData.Length) };
             tuples.Add(words);
 
             for (int i = 0; i < manifestData.Length; i++)
             {
-                var strings = new VendorTuples<string>();
-                strings.Identifier = $"lib_name_{i}";
+                var strings = new VendorTuples<string>($"lib_name_{i}");
                 strings.Tuples = new[] { GetTuple(SKL_TKN.STR_LIB_NAME, manifestData[i].BinaryName) };
                 tuples.Add(strings);
             }
@@ -166,8 +164,7 @@ namespace itt
             AudioFormat fmt = control.AudioFormat;
             var section = new SectionSkylakeTuples($"dmactrl_cfg{id}");
 
-            var words = new VendorTuples<uint>();
-            words.Identifier = "u32_data";
+            var words = new VendorTuples<uint>("u32_data");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_DMACTRL_CFG_IDX, (uint)id),
@@ -187,8 +184,7 @@ namespace itt
             result.Add(section);
             result.Add(section.GetPrivateData());
 
-            var priv = new SectionData();
-            priv.Identifier = $"dmactrl_data{id}";
+            var priv = new SectionData($"dmactrl_data{id}");
             var dmactrl = new DmactrlCtrl();
             if (control.EnableSclk && control.EnableFsclk)
             {
@@ -251,8 +247,7 @@ namespace itt
 
         IEnumerable<VendorTuples> GetTuples(DMABufferConfig buffer, int id)
         {
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_dma_buf_index_{id}";
+            var words = new VendorTuples<uint>($"u32_dma_buf_index_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_DMA_IDX, (uint)id),
@@ -265,8 +260,7 @@ namespace itt
 
         IEnumerable<VendorTuples> GetTuples(AstateTableConfig astate, int id)
         {
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_astate_table_index_{id}";
+            var words = new VendorTuples<uint>($"u32_astate_table_index_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_ASTATE_IDX, (uint)id),
@@ -282,8 +276,7 @@ namespace itt
             LowLatencySourceConfig[] configs = scheduler.LowLatencySourceConfigs;
             uint config = configs[0].DmaType << 8 | configs[0].VIndex;
 
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_sch_cfg";
+            var words = new VendorTuples<uint>($"u32_sch_cfg");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_SCH_TYPE, Constants.SCHEDULER_CONFIG),
@@ -304,8 +297,7 @@ namespace itt
             var result = new List<Section>();
 
             var tuples = new List<VendorTuples>();
-            var words = new VendorTuples<uint>();
-            words.Identifier = "u32_dma_buf";
+            var words = new VendorTuples<uint>("u32_dma_buf");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_DMA_TYPE, 4u),
@@ -327,8 +319,7 @@ namespace itt
             if (config.AstateTableConfigs != null)
             {
                 AstateTableConfig[] astates = config.AstateTableConfigs;
-                words = new VendorTuples<uint>();
-                words.Identifier = "u32_astate_table";
+                words = new VendorTuples<uint>("u32_astate_table");
                 words.Tuples = new[]
                 {
                     GetTuple(SKL_TKN.U32_ASTATE_COUNT, (uint)astates.Length)
@@ -359,8 +350,7 @@ namespace itt
             string dir = (iface.Dir == PinDir.IN) ? "input" : "output";
             AudioFormat fmt = iface.AudioFormat;
 
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_mod_type_{mod}_intf_{intf}_{dir}_{id}";
+            var words = new VendorTuples<uint>($"u32_mod_type_{mod}_intf_{intf}_{dir}_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)iface.Dir),
@@ -384,8 +374,7 @@ namespace itt
             var inputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.IN).ToArray();
             var outputIfaces = ifaces.Interface.Except(inputIfaces).ToArray();
 
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_mod_type_{mod}_intf_{id}";
+            var words = new VendorTuples<uint>($"u32_mod_type_{mod}_intf_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.MM_U32_FMT_ID, ifaces.IntfIdx),
@@ -404,8 +393,7 @@ namespace itt
 
         IEnumerable<VendorTuples> GetTuples(OutputPinFormat format, int mod, int res, int id)
         {
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_mod_type_{mod}_res_{res}_output_{id}";
+            var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{res}_output_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)PinDir.OUT),
@@ -418,8 +406,7 @@ namespace itt
 
         IEnumerable<VendorTuples> GetTuples(InputPinFormat format, int mod, int res, int id)
         {
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_mod_type_{mod}_res_{res}_input_{id}";
+            var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{res}_input_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)PinDir.IN),
@@ -433,8 +420,7 @@ namespace itt
         IEnumerable<VendorTuples> GetTuples(ModuleResources resources, int mod, int id)
         {
             var result = new List<VendorTuples>();
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"u32_mod_type_{mod}_res_{id}";
+            var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.MM_U32_RES_ID, (uint)id),
@@ -459,13 +445,11 @@ namespace itt
         {
             var result = new List<VendorTuples>();
 
-            var uuids = new VendorTuples<Guid>();
-            uuids.Identifier = $"mod_{id}";
+            var uuids = new VendorTuples<Guid>($"mod_{id}");
             uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.uuid) };
             result.Add(uuids);
 
-            var bytes = new VendorTuples<byte>();
-            bytes.Identifier = $"u8_mod_type_{id}";
+            var bytes = new VendorTuples<byte>($"u8_mod_type_{id}");
             bytes.Tuples = new[]
             {
                 GetTuple(SKL_TKN.MM_U8_MOD_IDX, (byte)id),
@@ -492,8 +476,7 @@ namespace itt
             var section = new SectionSkylakeTuples("mod_type_data");
             var tuples = new List<VendorTuples>();
 
-            var bytes = new VendorTuples<byte>();
-            bytes.Identifier = "u8_num_mod";
+            var bytes = new VendorTuples<byte>("u8_num_mod");
             bytes.Tuples = new[] { GetTuple(SKL_TKN.U8_NUM_MOD, (byte)moduleType.Length) };
             tuples.Add(bytes);
 
@@ -518,8 +501,7 @@ namespace itt
             var section = new SectionSkylakeTuples($"{prefix}_tkn");
             byte[] defVal = param.DefaultValue.ToBytes();
 
-            var words = new VendorTuples<uint>();
-            words.Identifier = "u32_data";
+            var words = new VendorTuples<uint>("u32_data");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_FMT_CFG_IDX, (uint)param.SetParams),
@@ -535,8 +517,7 @@ namespace itt
             result.Add(section);
             result.Add(section.GetPrivateData());
 
-            var priv = new SectionData();
-            priv.Identifier = $"{prefix}_data";
+            var priv = new SectionData($"{prefix}_data");
             priv.Bytes = defVal;
             desc = priv.GetSizeDescriptor(defVal.Length, SKL_BLOCK_TYPE.BINARY);
             result.Add(desc);
@@ -548,8 +529,7 @@ namespace itt
 
         IEnumerable<VendorTuples> GetTuples(ModuleParams param, int id)
         {
-            var shorts = new VendorTuples<ushort>();
-            shorts.Identifier = $"u16_pipe_mod_cfg_{id}";
+            var shorts = new VendorTuples<ushort>($"u16_pipe_mod_cfg_{id}");
             shorts.Tuples = new[]
             {
                 GetTuple(SKL_TKN.CFG_MOD_RES_ID, param.ResIdx),
@@ -564,8 +544,7 @@ namespace itt
             var result = new List<VendorTuples>();
             string dir = (format.Dir == PinDir.IN) ? "in" : "out";
 
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"_pipe_u32_cfg_{dir}_fmt_{id}";
+            var words = new VendorTuples<uint>($"_pipe_u32_cfg_{dir}_fmt_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)format.Dir),
@@ -573,8 +552,7 @@ namespace itt
             };
 
             result.Add(words);
-            words = new VendorTuples<uint>();
-            words.Identifier = $"_pipe_u8_cfg_{dir}_fmt_{id}";
+            words = new VendorTuples<uint>($"_pipe_u8_cfg_{dir}_fmt_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U8_CFG_BPS, format.Bps),
@@ -588,8 +566,7 @@ namespace itt
         IEnumerable<VendorTuples> GetTuples(PathConfiguration config, Module module, int id)
         {
             var result = new List<VendorTuples>();
-            var words = new VendorTuples<uint>();
-            words.Identifier = $"_pipe_{id}";
+            var words = new VendorTuples<uint>($"_pipe_{id}");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_PIPE_CONFIG_ID, config.ConfigIdx),
@@ -636,8 +613,7 @@ namespace itt
             {
                 uint modId = 0, instId = 0;
                 var uuid = Guid.Empty;
-                var words = new VendorTuples<uint>();
-                words.Identifier = $"{str}_pin_{i}";
+                var words = new VendorTuples<uint>($"{str}_pin_{i}");
 
                 int index = sources.FindIndex(
                     s => ((uint)s.Interface & (maxQueue - 1)) == i);
@@ -661,8 +637,7 @@ namespace itt
                 result.Add(words);
                 if (!dynamic)
                 {
-                    var uuids = new VendorTuples<Guid>();
-                    uuids.Identifier = $"{str}_pin_{i}";
+                    var uuids = new VendorTuples<Guid>($"{str}_pin_{i}");
                     uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, uuid) };
                     result.Add(uuids);
                 }
@@ -694,8 +669,7 @@ namespace itt
             uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.uuid) };
 
             tuples.Add(uuids);
-            var bytes = new VendorTuples<byte>();
-            bytes.Identifier = "u8_data";
+            var bytes = new VendorTuples<byte>("u8_data");
             bytes.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U8_IN_PIN_TYPE, (byte)template.InputPinType),
@@ -711,16 +685,14 @@ namespace itt
             };
 
             tuples.Add(bytes);
-            var shorts = new VendorTuples<ushort>();
-            shorts.Identifier = "u16_data";
+            var shorts = new VendorTuples<ushort>("u16_data");
             shorts.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U16_MOD_INST_ID, (ushort)id)
             };
 
             tuples.Add(shorts);
-            var words = new VendorTuples<uint>();
-            words.Identifier = "u32_data";
+            var words = new VendorTuples<uint>("u32_data");
             words.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U32_VBUS_ID, module.Port.GetValue()),
@@ -830,8 +802,7 @@ namespace itt
                 Module module = path.Modules.Module[i];
                 var sections = GetSections(module, path, i);
 
-                var widget = new SectionWidget();
-                widget.Identifier = GetPathModuleId(path, module);
+                var widget = new SectionWidget(GetPathModuleId(path, module));
                 if (i == 0)
                     widget.Type = TPLG_DAPM.MIXER;
                 else
@@ -888,13 +859,11 @@ namespace itt
             if (path.PathConfigurations.PathConfiguration.Length <= 1)
                 return result;
 
-            var control = new SectionControlEnum();
-            control.Identifier = $"{path.Name} pcm cfg";
-            var text = new SectionText();
-            text.Identifier = $"enum_{path.Name} pcm cfg";
-
+            var control = new SectionControlEnum($"{path.Name} pcm cfg");
+            var text = new SectionText($"enum_{path.Name} pcm cfg");
             var values = new List<string>();
             var value = new StringBuilder();
+
             foreach (var cfg in path.PathConfigurations.PathConfiguration)
             {
                 value.Clear();
@@ -906,9 +875,8 @@ namespace itt
             }
 
             text.Values = values.ToArray();
-            control.Ops = new Ops()
+            control.Ops = new Ops("ctl")
             {
-                Identifier = "ctl",
                 Get = Constants.SKL_CTL_MULTI_IO_SELECT,
                 Put = Constants.SKL_CTL_MULTI_IO_SELECT,
                 Info = TPLG_CTL.ENUM
@@ -935,8 +903,7 @@ namespace itt
             result.AddRange(GetPathModulesSections(path));
             result.AddRange(GetPathConfigurationsSections(path));
 
-            var widget = new SectionWidget();
-            widget.Identifier = path.Name;
+            var widget = new SectionWidget(path.Name);
             widget.Type = (path.Direction == Direction.CAPTURE) ? TPLG_DAPM.AIF_IN
                                                                 : TPLG_DAPM.AIF_OUT;
             widget.NoPm = true;
@@ -947,8 +914,7 @@ namespace itt
 
         IEnumerable<Section> GetSections(Param param, Ops extOps)
         {
-            var section = new SectionData();
-            section.Identifier = $"{param.Name} params";
+            var section = new SectionData($"{param.Name} params");
             byte[] defVal = param.DefaultValue.ToBytes();
 
             // Round size to dwords
@@ -969,13 +935,12 @@ namespace itt
             defVal.CopyTo(bytes, offset);
             section.Bytes = bytes;
 
-            var control = new SectionControlBytes();
-            control.Identifier = section.Identifier;
+            var control = new SectionControlBytes(section.Identifier);
             control.Max = size;
             control.Mask = 0;
             control.Base = 0;
             control.NumRegs = 0;
-            control.Ops = new Ops { Identifier = "ctl", Info = TPLG_CTL.BYTES };
+            control.Ops = new Ops("ctl") { Info = TPLG_CTL.BYTES };
             control.Access = new[]
             {
                 CTL_ELEM_ACCESS.TLV_READ,
@@ -1033,16 +998,15 @@ namespace itt
         static SectionControlMixer GetMixerControl(string name, int min, int max,
             CTL_ELEM_ACCESS[] access, int reg, uint get, uint put, uint info)
         {
-            var control = new SectionControlMixer();
-            control.Identifier = name;
+            var control = new SectionControlMixer(name);
             control.Index = 0;
             control.Invert = false;
             control.Channel = new ChannelMap[]
             {
-                new ChannelMap() { Identifier = ChannelName.FrontLeft, Reg = reg },
-                new ChannelMap() { Identifier = ChannelName.FrontRight, Reg = reg },
+                new ChannelMap(ChannelName.FrontLeft) { Reg = reg },
+                new ChannelMap(ChannelName.FrontRight) { Reg = reg },
             };
-            control.Ops = new Ops() { Identifier = "ctl", Get = get, Put = put, Info = info };
+            control.Ops = new Ops("ctl") { Get = get, Put = put, Info = info };
             control.Min = min;
             control.Max = max;
             control.NoPm = (reg == Constants.NOPM) ? true : (bool?)null;
@@ -1207,8 +1171,7 @@ namespace itt
 
         public SectionGraph GetGraphSection()
         {
-            var graph = new SectionGraph();
-            graph.Identifier = "Pipeline 1 Graph";
+            var graph = new SectionGraph("Pipeline 1 Graph");
             var lines = new List<string>();
 
             foreach (var path in paths.Path)
@@ -1240,8 +1203,7 @@ namespace itt
             IEnumerable<uint> channels = formats.Select(f => f.ChannelCount).Distinct();
             IEnumerable<PCM_FMTBIT> bps = formats.Select(f => f.Bps.ToFmtbit()).Distinct();
 
-            var result = new SectionPCMCapabilities();
-            result.Identifier = path.Device;
+            var result = new SectionPCMCapabilities(path.Device);
             result.Formats = string.Join(", ", bps);
             result.Rates = string.Join(", ", rates.Select(r => r.GetString()));
             result.ChannelMin = channels.Min();
@@ -1263,25 +1225,17 @@ namespace itt
             for (int i = 0; i < groups.Length; i++)
             {
                 var group = groups[i];
-                var section = new SectionPCM();
-                section.Identifier = group.Key;
+                var section = new SectionPCM(group.Key);
                 section.ID = 0u;
-                section.DAI = new DAI()
-                {
-                    Identifier = group.First().DaiName,
-                    ID = (uint)i
-                };
+                section.DAI = new DAI(group.First().DaiName) { ID = (uint)i };
 
                 Path path = group.FirstOrDefault(p => p.Direction == Direction.PLAYBACK);
                 if (path != null)
                 {
                     SectionPCMCapabilities caps = GetPCMCapabilities(path);
                     result.Add(caps);
-                    section.Playback = new DAILink()
-                    {
-                        Identifier = "playback",
-                        Capabilities = caps.Identifier
-                    };
+                    section.Playback = new DAILink("playback");
+                    section.Playback.Capabilities = caps.Identifier;
                 }
 
                 path = group.FirstOrDefault(p => p.Direction == Direction.CAPTURE);
@@ -1289,11 +1243,8 @@ namespace itt
                 {
                     SectionPCMCapabilities caps = GetPCMCapabilities(path);
                     result.Add(caps);
-                    section.Capture = new DAILink()
-                    {
-                        Identifier = "capture",
-                        Capabilities = caps.Identifier
-                    };
+                    section.Capture = new DAILink("capture");
+                    section.Capture.Capabilities = caps.Identifier;
                 }
 
                 result.Add(section);

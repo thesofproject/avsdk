@@ -11,9 +11,8 @@ namespace itt
         public const string IDENTIFIER = "skl_tokens";
 
         public SectionSkylakeTokens()
+            : base(IDENTIFIER)
         {
-            Identifier = IDENTIFIER;
-
             IEnumerable<SKL_TKN> values = Enum.GetValues(typeof(SKL_TKN)).Cast<SKL_TKN>();
             Tokens = values.Select(
                 t => Tuple.Create(t.GetName(), (uint)t)).ToArray();
@@ -24,8 +23,8 @@ namespace itt
     public class SectionSkylakeTuples : SectionVendorTuples
     {
         public SectionSkylakeTuples(string identifier)
+            : base(identifier)
         {
-            Identifier = identifier;
             Tokens = SectionSkylakeTokens.IDENTIFIER;
         }
     }
@@ -37,12 +36,10 @@ namespace itt
         {
             var desc = new SectionSkylakeTuples($"{section.Identifier}_size_desc");
 
-            var bytes = new VendorTuples<byte>();
-            bytes.Identifier = "u8_block_type";
+            var bytes = new VendorTuples<byte>("u8_block_type");
             bytes.Tuples = new[] { Tuple.Create(SKL_TKN.U8_BLOCK_TYPE.GetName(), (byte)type) };
 
-            var shorts = new VendorTuples<ushort>();
-            shorts.Identifier = "u16_size_desc";
+            var shorts = new VendorTuples<ushort>("u16_size_desc");
             shorts.Tuples = new[] { Tuple.Create(SKL_TKN.U16_BLOCK_SIZE.GetName(), (ushort)size) };
             desc.Tuples = new VendorTuples[] { bytes, shorts };
 
@@ -59,8 +56,7 @@ namespace itt
         {
             var desc = new SectionSkylakeTuples($"{section.Identifier} num_desc");
 
-            var bytes = new VendorTuples<byte>();
-            bytes.Identifier = "u8_num_blocks";
+            var bytes = new VendorTuples<byte>("u8_num_blocks");
             bytes.Tuples = new[] { Tuple.Create(SKL_TKN.U8_NUM_BLOCKS.GetName(), (byte)1) };
             desc.Tuples = new[] { bytes };
 
