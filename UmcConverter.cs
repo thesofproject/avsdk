@@ -112,16 +112,17 @@ namespace itt
         public IEnumerable<Section> GetAllSections()
         {
             var result = new List<Section>();
-
             result.Add(new SectionSkylakeTokens());
+
             if (manifestData != null)
                 result.AddRange(GetFirmwareInfoSections());
             if (firmwareConfig != null)
                 result.AddRange(GetFirmwareConfigSections());
-
             if (moduleType != null)
-            {
                 result.AddRange(GetModuleTypeSections());
+
+            if (paths != null && pathConnectors != null)
+            {
                 result.AddRange(GetPipelineSections());
                 result.Add(GetGraphSection());
                 result.AddRange(GetPathsPCMSections());
