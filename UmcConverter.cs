@@ -1096,9 +1096,9 @@ namespace itt
             }
         }
 
-        static string GetPathModuleId(Path path, string module, uint instance)
+        static string GetPathModuleId(string path, string module, uint instance)
         {
-            string result = $"{path.Name} {GetModuleShortName(module)}";
+            string result = $"{path} {GetModuleShortName(module)}";
 
             if (module.GetModuleType() != SKL_MODULE_TYPE.MIXER)
                 result += $" {instance}";
@@ -1107,17 +1107,17 @@ namespace itt
 
         static string GetPathModuleId(Path path, Module module)
         {
-            return GetPathModuleId(path, module.Type, module.Instance);
+            return GetPathModuleId(path.Name, module.Type, module.Instance);
         }
 
         static string GetPathModuleId(Path path, FromTo endpoint)
         {
-            return GetPathModuleId(path, endpoint.Module, endpoint.Instance);
+            return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
         }
 
         static string GetPathModuleId(Path path, InputOutput endpoint)
         {
-            return GetPathModuleId(path, endpoint.Module, endpoint.Instance);
+            return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
         }
 
         static string GetPathFirstLine(Path path)
