@@ -95,9 +95,9 @@ namespace NUmcSerializer
 
             foreach (var substr in substrs)
             {
-                if (substr.StartsWith("0x") &&
+                if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     byte.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.InvariantCulture, out byte val))
+                                        CultureInfo.CurrentCulture, out byte val))
                     result.Add(val);
                 else if (byte.TryParse(substr, out val))
                     result.Add(val);
