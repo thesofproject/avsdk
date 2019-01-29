@@ -740,7 +740,7 @@ namespace itt
                 foreach (var connector in connectors)
                 {
                     InputOutput input = connector.Input.First(i => i.Module.Equals("mixin"));
-                    string name = $"{GetPathModuleId(new Path { Name = input.PathName }, input)} Switch";
+                    string name = GetMixerId(input.PathName, input.Module);
                     result.Add(GetMixerControl(name,
                         0, 1, null, Constants.NOPM, TPLG_CTL.DAPM_VOLSW,
                         TPLG_CTL.DAPM_VOLSW, TPLG_CTL.DAPM_VOLSW));
@@ -1120,6 +1120,11 @@ namespace itt
             return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
         }
 
+        static string GetMixerId(string path, string module)
+        {
+            return $"{GetPathModuleId(path, module, 0)} Switch";
+        }
+
         static string GetPathFirstLine(Path path)
         {
             var line = new StringBuilder();
@@ -1205,7 +1210,7 @@ namespace itt
                     Link link = sink.Links.First(l => l.From.Module.Equals(output.Module));
                     line.Clear();
                     line.Append(GetPathModuleId(sink, link.From));
-                    line.Append($", {GetPathModuleId(source, input)} Switch, ");
+                    line.Append($", {GetMixerId(source.Name, input.Module)}, ");
                     line.Append(GetPathModuleId(source, input));
                     result.Add(line.ToString());
                 }
