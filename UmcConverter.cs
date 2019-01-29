@@ -678,9 +678,6 @@ namespace itt
 
         IEnumerable<Section> GetSections(Module module, Path path, int id)
         {
-            if (!path.Modules.Module.Contains(module))
-                throw new ArgumentException("module is not owned by path specified");
-
             ModuleType template = GetTemplate(module.Type);
             var links = path.Links.Where(l => l.To.Module.Equals(template.Name));
             var inTuples = GetTuples(template.InputPins, PinDir.IN,
