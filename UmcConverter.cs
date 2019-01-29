@@ -402,7 +402,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetSections(Param param, uint get, uint put)
+        IEnumerable<Section> GetSections(Param param, Ops extOps)
         {
             var section = new SectionData();
             section.Identifier = $"{param.Name} params";
@@ -440,7 +440,7 @@ namespace itt
                 CTL_ELEM_ACCESS.TLV_READWRITE,
                 CTL_ELEM_ACCESS.TLV_CALLBACK
             };
-            control.ExtOps = new Ops { Get = get, Put = put };
+            control.ExtOps = extOps;
             control.Data = section.Identifier;
 
             return new Section[] { control, section };
@@ -708,6 +708,17 @@ namespace itt
             return control;
         }
 
+        static Ops GetControlBytesExtOps(string module)
+        {
+            uint call;
+            if (module.Equals("probe"))
+                call = Constants.SKL_CTL_TLV_PROBE;
+            else
+                call = Constants.SKL_CTL_TLV_BYTE;
+
+            return new Ops { Get = call, Put = call };
+        }
+
         IEnumerable<Section> GetModuleControls(Module module, Path path)
         {
             var result = new List<Section>();
@@ -751,8 +762,7 @@ namespace itt
                 var template = GetTemplate(module.Type);
                 if (template.Params != null)
                     foreach (var param in template.Params)
-                        result.AddRange(GetSections(param, Constants.SKL_CTL_TLV_PROBE,
-                                                          Constants.SKL_CTL_TLV_PROBE));
+                        result.AddRange(GetSections(param, GetControlBytesExtOps(module.Type)));
             }
 
             return result;
