@@ -723,11 +723,29 @@ namespace itt
             return new Ops { Get = call, Put = call };
         }
 
-        IEnumerable<Section> GetModuleControls(Module module, Path path)
+        IEnumerable<Section> GetMixerControls()
         {
             var result = new List<Section>();
+            bool gainExists = false;
 
-            if (module.Type == "gain")
+            foreach (var path in paths.Path)
+            {
+                foreach (var module in path.Modules.Module)
+                {
+                    if (module.Type.Equals("gain"))
+                        gainExists = true;
+                    else if (module.Type.Equals("mixin"))
+                        result.Add(GetMixerControl(
+                            GetMixerId(path.Name, module.Type),
+                            0, 1, null,
+                            Constants.NOPM,
+                            TPLG_CTL.DAPM_VOLSW,
+                            TPLG_CTL.DAPM_VOLSW,
+                            TPLG_CTL.DAPM_VOLSW));
+                }
+            }
+
+            if (gainExists)
             {
                 result.Add(GetMixerControl("Ramp Duration",
                     Constants.GAIN_TC_MIN, Constants.GAIN_TC_MAX, null,
@@ -740,33 +758,15 @@ namespace itt
                     Constants.SKL_CTL_RAMP_TYPE, TPLG_CTL.VOLSW));
 
                 CTL_ELEM_ACCESS[] access = new[]
-                    { CTL_ELEM_ACCESS.TLV_READ, CTL_ELEM_ACCESS.READWRITE };
+                {
+                    CTL_ELEM_ACCESS.TLV_READ,
+                    CTL_ELEM_ACCESS.READWRITE
+                };
 
                 result.Add(GetMixerControl("Volume",
                     Constants.GAIN_MIN_INDEX, Constants.GAIN_MAX_INDEX,
                     access, 0, Constants.SKL_CTL_VOLUME,
                     Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
-            }
-            else if (module.Type == "mixout")
-            {
-                IEnumerable<PathConnector> connectors = pathConnectors.PathConnector.Where(
-                    c => c.Output.Any(
-                        o => o.PathName.Equals(path.Name) && o.Module.Equals(module.Type)));
-                foreach (var connector in connectors)
-                {
-                    InputOutput input = connector.Input.First(i => i.Module.Equals("mixin"));
-                    string name = GetMixerId(input.PathName, input.Module);
-                    result.Add(GetMixerControl(name,
-                        0, 1, null, Constants.NOPM, TPLG_CTL.DAPM_VOLSW,
-                        TPLG_CTL.DAPM_VOLSW, TPLG_CTL.DAPM_VOLSW));
-                }
-            }
-            else if (module.Type == "probe")
-            {
-                var template = GetTemplate(module.Type);
-                if (template.Params != null)
-                    foreach (var param in template.Params)
-                        result.AddRange(GetSections(param, GetControlBytesExtOps(module.Type)));
             }
 
             return result;
@@ -835,7 +835,6 @@ namespace itt
             {
                 Module module = path.Modules.Module[i];
                 var sections = GetSections(module, path, i);
-                var controls = GetModuleControls(module, path);
 
                 var widget = new SectionWidget();
                 widget.Identifier = GetPathModuleId(path, module);
@@ -850,23 +849,28 @@ namespace itt
                 widget.EventFlags = GetEventFlags(path, module);
                 widget.Subseq = GetSubseq(path, module);
 
-                if (controls.Any())
-                {
-                    var ids = controls.Where(
-                        c => c.GetType().IsSubclassOf(typeof(SectionControl))
-                    ).Select(c => c.Identifier).ToArray();
-
-                    if (controls.First() is SectionControlMixer)
-                        widget.Mixer = ids;
-                    else if (controls.First() is SectionControlEnum)
-                        widget.Enum = ids;
-                    else
-                        widget.Bytes = ids;
-                }
-
                 result.AddRange(sections);
-                result.AddRange(controls);
                 result.Add(widget);
+
+                // Set widget's Mixer property if any
+                if (!module.Type.Equals("mixout"))
+                    continue;
+
+                IEnumerable<PathConnector> connectors =
+                    pathConnectors.PathConnector.Where(c => c.Output.Any(
+                        o => o.PathName.Equals(path.Name) && o.Module.Equals(module.Type)));
+                if (connectors.Any())
+                {
+                    var mixers = new List<string>();
+                    foreach (var connector in connectors)
+                    {
+                        InputOutput input = connector.Input.First(
+                            io => io.Module.Equals("mixin"));
+                        mixers.Add(GetMixerId(input.PathName, input.Module));
+                    }
+
+                    widget.Mixer = mixers.ToArray();
+                }
             }
 
             return result;
@@ -1015,6 +1019,7 @@ namespace itt
             foreach (var path in paths.Path)
                 result.AddRange(GetPathSections(path));
 
+            result.AddRange(GetMixerControls());
             return result;
         }
 
