@@ -125,7 +125,7 @@ namespace itt
             {
                 result.AddRange(GetPipelineSections());
                 result.Add(GetGraphSection());
-                result.AddRange(GetPathsPCMSections());
+                result.AddRange(GetPCMSections());
             }
 
             return result;
@@ -1228,7 +1228,7 @@ namespace itt
             return graph;
         }
 
-        SectionPCMCapabilities GetPathPCMCapabilities(Path path)
+        SectionPCMCapabilities GetPCMCapabilities(Path path)
         {
             PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.IN
                                                                 : PinDir.OUT;
@@ -1250,7 +1250,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetPathsPCMSections()
+        public IEnumerable<Section> GetPCMSections()
         {
             var result = new List<Section>();
             IEnumerable<Path> fePaths = paths.Path.Where(
@@ -1275,7 +1275,7 @@ namespace itt
                 Path path = group.FirstOrDefault(p => p.Direction == Direction.PLAYBACK);
                 if (path != null)
                 {
-                    SectionPCMCapabilities caps = GetPathPCMCapabilities(path);
+                    SectionPCMCapabilities caps = GetPCMCapabilities(path);
                     result.Add(caps);
                     section.Playback = new DAILink()
                     {
@@ -1287,7 +1287,7 @@ namespace itt
                 path = group.FirstOrDefault(p => p.Direction == Direction.CAPTURE);
                 if (path != null)
                 {
-                    SectionPCMCapabilities caps = GetPathPCMCapabilities(path);
+                    SectionPCMCapabilities caps = GetPCMCapabilities(path);
                     result.Add(caps);
                     section.Capture = new DAILink()
                     {
