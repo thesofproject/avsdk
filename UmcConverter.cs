@@ -501,11 +501,11 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetSections(Path path, Module module, InitParam param)
+        IEnumerable<Section> GetSections(InitParam param, string moduleId)
         {
             var result = new List<Section>();
 
-            string prefix = $"{GetPathModuleId(path, module)} bin_blk_{(uint)param.SetParams}";
+            string prefix = $"{moduleId} bin_blk_{(uint)param.SetParams}";
             var section = new SectionSkylakeTuples($"{prefix}_tkn");
             byte[] defVal = param.DefaultValue.ToBytes();
 
@@ -669,7 +669,8 @@ namespace itt
             tuples.AddRange(outTuples);
 
             var result = new List<Section>();
-            var section = new SectionSkylakeTuples(GetPathModuleId(path, module));
+            string moduleId = GetPathModuleId(path, module);
+            var section = new SectionSkylakeTuples(moduleId);
             section.Tuples = tuples.ToArray();
             SectionVendorTuples desc = section.GetSizeDescriptor();
             result.Add(desc);
@@ -680,9 +681,12 @@ namespace itt
             result.Add(section);
             result.Add(section.GetPrivateData());
 
-            if (module.InitParams != null)
-                foreach (var initParam in module.InitParams)
-                    result.AddRange(GetSections(path, module, initParam));
+            InitParam[] initParams = module.InitParams;
+            if (initParams == null)
+                initParams = template.InitParams;
+            if (initParams != null)
+                foreach (var initParam in initParams)
+                    result.AddRange(GetSections(initParam, moduleId));
 
             return result;
         }
