@@ -95,9 +95,9 @@ namespace NUmcSerializer
 
             foreach (var substr in substrs)
             {
-                if (substr.StartsWith("0x") &&
+                if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     ushort.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.InvariantCulture, out ushort val))
+                                        CultureInfo.CurrentCulture, out ushort val))
                     result.Add(val);
                 else if (ushort.TryParse(substr, out val))
                     result.Add(val);
@@ -114,9 +114,9 @@ namespace NUmcSerializer
 
             foreach (var substr in substrs)
             {
-                if (substr.StartsWith("0x") &&
+                if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     uint.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.InvariantCulture, out uint val))
+                                        CultureInfo.CurrentCulture, out uint val))
                     result.Add(val);
                 else if (uint.TryParse(substr, out val))
                     result.Add(val);
