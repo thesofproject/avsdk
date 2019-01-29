@@ -619,7 +619,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetPinTuples(uint pinCount, PinDir dir,
+        IEnumerable<VendorTuples> GetTuples(uint pinCount, PinDir dir,
             List<FromTo> sources, List<FromTo> sinks)
         {
             int anyCount = sources.Count(s => s.Interface == InterfaceName.ANY);
@@ -682,14 +682,14 @@ namespace itt
 
             ModuleType template = GetTemplate(module.Type);
             var links = path.Links.Where(l => l.To.Module.Equals(template.Name));
-            var inTuples = GetPinTuples(template.InputPins, PinDir.IN,
-                                        links.Select(l => l.To).ToList(),
-                                        links.Select(l => l.From).ToList());
+            var inTuples = GetTuples(template.InputPins, PinDir.IN,
+                                     links.Select(l => l.To).ToList(),
+                                     links.Select(l => l.From).ToList());
 
             links = path.Links.Where(l => l.From.Module.Equals(template.Name));
-            var outTuples = GetPinTuples(template.OutputPins, PinDir.OUT,
-                                        links.Select(l => l.From).ToList(),
-                                        links.Select(l => l.To).ToList());
+            var outTuples = GetTuples(template.OutputPins, PinDir.OUT,
+                                      links.Select(l => l.From).ToList(),
+                                      links.Select(l => l.To).ToList());
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
