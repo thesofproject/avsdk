@@ -95,23 +95,37 @@ namespace itt
             }
         }
 
-        internal static byte[] ToBytes(this string value)
+        internal static bool TryUInt32(this string value, out uint result)
+        {
+            if (value.StartsWith("0x", StringComparison.CurrentCulture))
+                return uint.TryParse(value.Substring(2), NumberStyles.HexNumber,
+                              CultureInfo.CurrentCulture, out result);
+
+            return uint.TryParse(value, out result);
+        }
+
+        internal static uint ToUInt32(this string value)
+        {
+            TryUInt32(value, out uint result);
+            return result;
+        }
+
+        internal static uint[] ToUInts32(this string value)
         {
             var result = new List<uint>();
             var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim());
 
             foreach (var substr in substrs)
-            {
-                if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
-                    uint.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.CurrentCulture, out uint val))
+                if (value.TryUInt32(out uint val))
                     result.Add(val);
-                else if (uint.TryParse(substr, out val))
-                    result.Add(val);
-            }
 
-            return result.SelectMany(e => BitConverter.GetBytes(e)).ToArray();
+            return result.ToArray();
+        }
+
+        internal static byte[] ToBytes(this string value)
+        {
+            return ToUInts32(value).SelectMany(e => BitConverter.GetBytes(e)).ToArray();
         }
 
         internal static PCM_RATE ToRate(this uint value)

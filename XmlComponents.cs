@@ -76,6 +76,10 @@ namespace itt
 
     public class AudioFormat
     {
+        internal uint channelMap;
+        internal uint interleaving;
+        internal uint sampleType;
+
         [XmlAttribute("sample_rate")]
         public uint SampleRate { get; set; }
         [XmlAttribute("sample_container")]
@@ -84,7 +88,6 @@ namespace itt
         public uint ChannelCount { get; set; }
         [XmlAttribute("sample_size")]
         public uint SampleSize { get; set; }
-        internal uint channelMap;
         [XmlAttribute("channel_map")]
         public string ChannelMap
         {
@@ -94,12 +97,11 @@ namespace itt
             }
             set
             {
-                channelMap = uint.Parse(value.Substring(2), NumberStyles.HexNumber);
+                channelMap = (value != null) ? value.ToUInt32() : 0;
             }
         }
         [XmlAttribute("channel_config")]
         public ChannelConfig ChannelConfig { get; set; }
-        internal uint interleaving;
         [XmlAttribute("interleaving")]
         public string Interleaving
         {
@@ -109,10 +111,9 @@ namespace itt
             }
             set
             {
-                interleaving = uint.Parse(value.Substring(2), NumberStyles.HexNumber);
+                interleaving = (value != null) ? value.ToUInt32() : 0;
             }
         }
-        internal uint sampleType;
         [XmlAttribute("sample_type")]
         public string SampleType
         {
@@ -122,7 +123,7 @@ namespace itt
             }
             set
             {
-                sampleType = uint.Parse(value.Substring(2), NumberStyles.HexNumber);
+                sampleType = (value != null) ? value.ToUInt32() : 0;
             }
         }
     };
@@ -374,13 +375,9 @@ namespace itt
             {
                 return string.Format("0x{0:X8}", paramId);
             }
-
             set
             {
-                if (value.StartsWith("0x"))
-                    paramId = uint.Parse(value.Substring(2), NumberStyles.HexNumber);
-                else
-                    paramId = uint.Parse(value);
+                paramId = (value != null) ? value.ToUInt32() : 0;
             }
 		}
 
