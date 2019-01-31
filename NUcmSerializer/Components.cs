@@ -196,7 +196,8 @@ namespace NUmcSerializer
         {
             get
             {
-                return (Bytes != null) ? string.Join(",", Bytes) : null;
+                return (Bytes == null) ? null :
+                    string.Join(", ", Bytes.Select(e => $"0x{e.ToString("X2")}"));
             }
 
             set
@@ -210,7 +211,8 @@ namespace NUmcSerializer
         {
             get
             {
-                return (Shorts != null) ? string.Join(",", Shorts) : null;
+                return (Shorts == null) ? null :
+                    string.Join(", ", Shorts.Select(e => $"0x{e.ToString("X4")}"));
             }
 
             set
@@ -224,7 +226,8 @@ namespace NUmcSerializer
         {
             get
             {
-                return (Words != null) ? string.Join(",", Words) : null;
+                return (Words == null) ? null :
+                    string.Join(", ", Words.Select(e => $"0x{e.ToString("X8")}"));
             }
 
             set
