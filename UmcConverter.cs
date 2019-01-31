@@ -890,8 +890,11 @@ namespace itt
             control.Texts = text.Identifier;
             control.Data = control.Identifier;
 
+            var priv = new SectionData(control.Identifier);
+            priv.Bytes = new byte[] { (byte)path.Id, 0, 0, 0 };
             result.Add(control);
             result.Add(text);
+            result.Add(priv);
 
             return result;
         }
