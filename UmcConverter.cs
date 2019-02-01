@@ -104,6 +104,11 @@ namespace itt
             return $"{GetPathModuleId(path, module, 0)} Switch";
         }
 
+        static string GetParamId(Param param)
+        {
+            return $"{param.Name} params";
+        }
+
         public ModuleType GetTemplate(string type)
         {
             return moduleType.SingleOrDefault(t => t.Name.Equals(type));
@@ -825,7 +830,7 @@ namespace itt
                 {
                     var bytes = new List<string>();
                     foreach (var param in prms)
-                        bytes.Add($"{param.Name} param");
+                        bytes.Add(GetParamId(param));
                     widget.Bytes = bytes.ToArray();
                 }
 
@@ -917,7 +922,7 @@ namespace itt
 
         IEnumerable<Section> GetSections(Param param, Ops extOps)
         {
-            var section = new SectionData($"{param.Name} params");
+            var section = new SectionData(GetParamId(param));
             byte[] defVal = param.DefaultValue.ToBytes();
 
             // Round size to dwords
@@ -986,7 +991,7 @@ namespace itt
                     Ops ops = GetControlBytesExtOps(module.Type);
                     foreach (var param in prms)
                     {
-                        string name = $"{param.Name} param";
+                        string name = GetParamId(param);
                         if (result.Any(s => s.Identifier.Equals(name)))
                             continue;
 
