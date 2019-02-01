@@ -75,7 +75,7 @@ namespace itt
             }
         }
 
-        static string GetPathModuleId(string path, string module, uint instance)
+        static string GetWidgetName(string path, string module, uint instance)
         {
             string result = $"{path} {GetModuleShortName(module)}";
 
@@ -84,27 +84,27 @@ namespace itt
             return result;
         }
 
-        static string GetPathModuleId(Path path, Module module)
+        static string GetWidgetName(Path path, Module module)
         {
-            return GetPathModuleId(path.Name, module.Type, module.Instance);
+            return GetWidgetName(path.Name, module.Type, module.Instance);
         }
 
-        static string GetPathModuleId(Path path, FromTo endpoint)
+        static string GetWidgetName(Path path, FromTo endpoint)
         {
-            return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
+            return GetWidgetName(path.Name, endpoint.Module, endpoint.Instance);
         }
 
-        static string GetPathModuleId(Path path, InputOutput endpoint)
+        static string GetWidgetName(Path path, InputOutput endpoint)
         {
-            return GetPathModuleId(path.Name, endpoint.Module, endpoint.Instance);
+            return GetWidgetName(path.Name, endpoint.Module, endpoint.Instance);
         }
 
-        static string GetMixerId(string path, string module)
+        static string GetMixerName(string path, string module)
         {
-            return $"{GetPathModuleId(path, module, 0)} Switch";
+            return $"{GetWidgetName(path, module, 0)} Switch";
         }
 
-        static string GetParamId(Param param)
+        static string GetParamName(Param param)
         {
             return $"{param.Name} params";
         }
@@ -716,7 +716,7 @@ namespace itt
             tuples.AddRange(outTuples);
 
             var result = new List<Section>();
-            string moduleId = GetPathModuleId(path, module);
+            string moduleId = GetWidgetName(path, module);
             var section = new SectionSkylakeTuples(moduleId);
             section.Tuples = tuples.ToArray();
             SectionVendorTuples desc = section.GetSizeDescriptor();
@@ -807,7 +807,7 @@ namespace itt
                 Module module = path.Modules.Module[i];
                 var sections = GetSections(module, path, i);
 
-                var widget = new SectionWidget(GetPathModuleId(path, module));
+                var widget = new SectionWidget(GetWidgetName(path, module));
                 if (i == 0)
                     widget.Type = TPLG_DAPM.MIXER;
                 else
@@ -830,7 +830,7 @@ namespace itt
                 {
                     var bytes = new List<string>();
                     foreach (var param in prms)
-                        bytes.Add(GetParamId(param));
+                        bytes.Add(GetParamName(param));
                     widget.Bytes = bytes.ToArray();
                 }
 
@@ -848,7 +848,7 @@ namespace itt
                     {
                         InputOutput input = connector.Input.First(
                             io => io.Module.Equals("mixin"));
-                        mixers.Add(GetMixerId(input.PathName, input.Module));
+                        mixers.Add(GetMixerName(input.PathName, input.Module));
                     }
 
                     widget.Mixer = mixers.ToArray();
@@ -922,7 +922,7 @@ namespace itt
 
         IEnumerable<Section> GetSections(Param param, Ops extOps)
         {
-            var section = new SectionData(GetParamId(param));
+            var section = new SectionData(GetParamName(param));
             byte[] defVal = param.DefaultValue.ToBytes();
 
             // Round size to dwords
@@ -991,7 +991,7 @@ namespace itt
                     Ops ops = GetControlBytesExtOps(module.Type);
                     foreach (var param in prms)
                     {
-                        string name = GetParamId(param);
+                        string name = GetParamName(param);
                         if (result.Any(s => s.Identifier.Equals(name)))
                             continue;
 
@@ -1036,7 +1036,7 @@ namespace itt
                         gainExists = true;
                     else if (module.Type.Equals("mixin"))
                         result.Add(GetMixerControl(
-                            GetMixerId(path.Name, module.Type),
+                            GetMixerName(path.Name, module.Type),
                             0, 1, null,
                             Constants.NOPM,
                             TPLG_CTL.DAPM_VOLSW,
@@ -1091,7 +1091,7 @@ namespace itt
                 path.Device != null)
             {
                 Link first = path.Links.First();
-                line.Append(GetPathModuleId(path, first.From));
+                line.Append(GetWidgetName(path, first.From));
                 line.Append($", , {path.Device}");
             }
             else if (path.Direction == Direction.CAPTURE &&
@@ -1099,7 +1099,7 @@ namespace itt
             {
                 Module source = path.Modules.Module.First(
                     m => m.ModulePosition == ModulePosition.SOURCE);
-                line.Append(GetPathModuleId(path, source));
+                line.Append(GetWidgetName(path, source));
                 line.Append($", , {path.Port}");
             }
 
@@ -1116,14 +1116,14 @@ namespace itt
                 Module sink = path.Modules.Module.Last(
                     m => m.ModulePosition == ModulePosition.SINK);
                 line.Append($"{path.Port}, , ");
-                line.Append(GetPathModuleId(path, sink));
+                line.Append(GetWidgetName(path, sink));
             }
             else if (path.Direction == Direction.CAPTURE &&
                 path.Device != null)
             {
                 Link last = path.Links.Last();
                 line.Append($"{path.Device}, , ");
-                line.Append(GetPathModuleId(path, last.To));
+                line.Append(GetWidgetName(path, last.To));
             }
 
             return line.ToString();
@@ -1141,9 +1141,9 @@ namespace itt
             foreach (var link in path.Links)
             {
                 lines.Clear();
-                lines.Append(GetPathModuleId(path, link.To));
+                lines.Append(GetWidgetName(path, link.To));
                 lines.Append(", , ");
-                lines.Append(GetPathModuleId(path, link.From));
+                lines.Append(GetWidgetName(path, link.From));
                 result.Add(lines.ToString());
             }
 
@@ -1167,9 +1167,9 @@ namespace itt
                     Path sink = paths.Path.First(p => p.Name.Equals(output.PathName));
                     Link link = sink.Links.First(l => l.From.Module.Equals(output.Module));
                     line.Clear();
-                    line.Append(GetPathModuleId(sink, link.From));
-                    line.Append($", {GetMixerId(source.Name, input.Module)}, ");
-                    line.Append(GetPathModuleId(source, input));
+                    line.Append(GetWidgetName(sink, link.From));
+                    line.Append($", {GetMixerName(source.Name, input.Module)}, ");
+                    line.Append(GetWidgetName(source, input));
                     result.Add(line.ToString());
                 }
             }
