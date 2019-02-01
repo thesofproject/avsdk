@@ -741,16 +741,10 @@ namespace itt
         public Path[] Path { get; set; }
     }
 
-    public class InputOutput
+    public class InputOutput : FromTo
     {
         [XmlAttribute("path_name")]
         public string PathName { get; set; }
-        [XmlAttribute("module")]
-        public string Module { get; set; }
-        [XmlAttribute("instance")]
-        public uint Instance { get; set; }
-        [XmlAttribute("interface")]
-        public InterfaceName Interface { get; set; }
     }
 
     public class PathConnector
