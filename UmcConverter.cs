@@ -688,7 +688,7 @@ namespace itt
             var shorts = new VendorTuples<ushort>("u16_data");
             shorts.Tuples = new[]
             {
-                GetTuple(SKL_TKN.U16_MOD_INST_ID, (ushort)id)
+                GetTuple(SKL_TKN.U16_MOD_INST_ID, (ushort)module.Instance)
             };
 
             tuples.Add(shorts);
