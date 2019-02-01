@@ -143,6 +143,13 @@ namespace itt
         BE
     };
 
+    public enum SKL_HW_CONN_TYPE
+    {
+        NONE = 0,
+        SOURCE = 1,
+        SINK = 2
+    };
+
     // Copied from pcm.h
     [Flags]
     public enum PCM_RATE

@@ -680,7 +680,7 @@ namespace itt
                 GetTuple(SKL_TKN.U8_CORE_ID, (byte)module.Affinity),
                 GetTuple(SKL_TKN.U8_MODULE_TYPE, (byte)module.Type.GetModuleType()),
                 GetTuple(SKL_TKN.U8_CONN_TYPE, path.ConnType.GetValue()),
-                GetTuple(SKL_TKN.U8_HW_CONN_TYPE, (byte)path.Direction),
+                GetTuple(SKL_TKN.U8_HW_CONN_TYPE, (byte)path.Direction.GetHwConnType()),
                 GetTuple(SKL_TKN.U8_DEV_TYPE, (byte)module.DevType),
             };
 

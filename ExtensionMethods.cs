@@ -66,6 +66,22 @@ namespace itt
             }
         }
 
+        internal static SKL_HW_CONN_TYPE GetHwConnType(this Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.PLAYBACK:
+                    return SKL_HW_CONN_TYPE.SOURCE;
+
+                case Direction.CAPTURE:
+                    return SKL_HW_CONN_TYPE.SINK;
+
+                case Direction.INVALID:
+                default:
+                    return SKL_HW_CONN_TYPE.NONE;
+            }
+        }
+
         internal static SKL_MODULE_TYPE GetModuleType(this string value)
         {
             switch (value)
