@@ -970,7 +970,7 @@ namespace itt
             else
                 call = Constants.SKL_CTL_TLV_BYTE;
 
-            return new Ops { Get = call, Put = call };
+            return new Ops("ctl") { Get = call, Put = call };
         }
 
         IEnumerable<Section> GetBytesControls()
