@@ -49,20 +49,20 @@ namespace itt
             }
         }
 
-        internal static byte GetValue(this ConnType connType)
+        internal static SKL_PIPE_CONN_TYPE GetValue(this ConnType connType)
         {
             switch (connType)
             {
                 case ConnType.HOST_DMA:
                 case ConnType.HDMI_HOST_DMA:
-                    return (byte)SKL_PIPE_CONN_TYPE.FE;
+                    return SKL_PIPE_CONN_TYPE.FE;
 
                 case ConnType.LINK_DMA:
-                    return (byte)SKL_PIPE_CONN_TYPE.BE;
+                    return SKL_PIPE_CONN_TYPE.BE;
 
-                default:
                 case ConnType.NONE:
-                    return (byte)SKL_PIPE_CONN_TYPE.NONE;
+                default:
+                    return SKL_PIPE_CONN_TYPE.NONE;
             }
         }
 

@@ -651,6 +651,34 @@ namespace itt
             return result;
         }
 
+        static SKL_PIPE_CONN_TYPE GetConnType(Path path, Module module)
+        {
+            if (module.Type.Equals("copier"))
+            {
+                if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
+                    && path.Direction != Direction.CAPTURE)
+                    return SKL_PIPE_CONN_TYPE.FE;
+                else if (path.ConnType == ConnType.LINK_DMA)
+                    return SKL_PIPE_CONN_TYPE.BE;
+            }
+
+            return SKL_PIPE_CONN_TYPE.NONE;
+        }
+
+        static SKL_PIPE_CONN_TYPE GetPipeConnType(Path path, Module module)
+        {
+            if (module.Type.Equals("copier"))
+            {
+                if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
+                    && path.Direction != Direction.CAPTURE)
+                    return SKL_PIPE_CONN_TYPE.FE;
+                else if (path.ConnType == ConnType.LINK_DMA)
+                    return SKL_PIPE_CONN_TYPE.BE;
+            }
+
+            return path.ConnType.GetValue();
+        }
+
         IEnumerable<Section> GetSections(Module module, Path path, int id)
         {
             ModuleType template = GetTemplate(module.Type);
@@ -679,7 +707,7 @@ namespace itt
                 GetTuple(SKL_TKN.U8_TIME_SLOT, (byte)module.TdmSlot),
                 GetTuple(SKL_TKN.U8_CORE_ID, (byte)module.Affinity),
                 GetTuple(SKL_TKN.U8_MODULE_TYPE, (byte)module.Type.GetModuleType()),
-                GetTuple(SKL_TKN.U8_CONN_TYPE, path.ConnType.GetValue()),
+                GetTuple(SKL_TKN.U8_CONN_TYPE, (byte)GetConnType(path, module)),
                 GetTuple(SKL_TKN.U8_HW_CONN_TYPE, (byte)path.Direction.GetHwConnType()),
                 GetTuple(SKL_TKN.U8_DEV_TYPE, (byte)module.DevType),
             };
@@ -699,7 +727,7 @@ namespace itt
                 GetTuple(SKL_TKN.U32_PARAMS_FIXUP, module.FixupMask),
                 GetTuple(SKL_TKN.U32_CONVERTER, module.ConverterMask),
                 GetTuple(SKL_TKN.U32_PIPE_ID, path.Id),
-                GetTuple(SKL_TKN.U32_PIPE_CONN_TYPE, (uint)path.ConnType.GetValue()),
+                GetTuple(SKL_TKN.U32_PIPE_CONN_TYPE, (uint)GetPipeConnType(path, module)),
                 GetTuple(SKL_TKN.U32_PIPE_PRIORITY, path.Priority),
                 GetTuple(SKL_TKN.U32_PMODE, Convert.ToUInt32(path.LpMode)),
                 GetTuple(SKL_TKN.U32_D0I3_CAPS, (uint)path.D0i3Caps),
