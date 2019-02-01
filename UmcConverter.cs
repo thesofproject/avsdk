@@ -651,11 +651,6 @@ namespace itt
             return result;
         }
 
-        static bool IsDynamic(IEnumerable<VendorTuples> tuples)
-        {
-            return tuples.All(t => t.GetType() != typeof(VendorTuples<Guid>));
-        }
-
         IEnumerable<Section> GetSections(Module module, Path path, int id)
         {
             ModuleType template = GetTemplate(module.Type);
@@ -741,6 +736,11 @@ namespace itt
                     result.AddRange(GetSections(initParam, moduleId));
 
             return result;
+
+            bool IsDynamic(IEnumerable<VendorTuples> vts)
+            {
+                return vts.All(t => t.GetType() != typeof(VendorTuples<Guid>));
+            }
         }
 
         static uint? GetEventType(Path path, Module module)
