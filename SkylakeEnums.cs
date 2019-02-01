@@ -136,6 +136,13 @@ namespace itt
         MAX = U32_FMT_CFG_IDX,
     }
 
+    public enum SKL_PIPE_CONN_TYPE
+    {
+        NONE = 0,
+        FE,
+        BE
+    };
+
     // Copied from pcm.h
     [Flags]
     public enum PCM_RATE

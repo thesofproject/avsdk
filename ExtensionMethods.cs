@@ -55,14 +55,14 @@ namespace itt
             {
                 case ConnType.HOST_DMA:
                 case ConnType.HDMI_HOST_DMA:
-                    return 1; // SKL_PIPE_CONN_TYPE_FE
+                    return (byte)SKL_PIPE_CONN_TYPE.FE;
 
                 case ConnType.LINK_DMA:
-                    return 2; // SKL_PIPE_CONN_TYPE_BE
+                    return (byte)SKL_PIPE_CONN_TYPE.BE;
 
                 default:
                 case ConnType.NONE:
-                    return 0; // SKL_PIPE_CONN_TYPE_NONE
+                    return (byte)SKL_PIPE_CONN_TYPE.NONE;
             }
         }
 
