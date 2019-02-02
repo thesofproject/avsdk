@@ -602,55 +602,6 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(uint pinCount, PinDir dir,
-            List<FromTo> sources, List<FromTo> sinks)
-        {
-            int anyCount = sources.Count(s => s.Interface == InterfaceName.ANY);
-            bool dynamic = (anyCount == (sources.Count + sinks.Count));
-            if (dynamic && anyCount > 0)
-                throw new InvalidOperationException();
-
-            var result = new List<VendorTuples>();
-            string str = (dir == PinDir.IN) ? "in" : "out";
-            uint maxQueue = (dir == PinDir.IN) ? Constants.MAX_IN_QUEUE
-                                               : Constants.MAX_OUT_QUEUE;
-            for (uint i = 0; i < pinCount; i++)
-            {
-                uint modId = 0, instId = 0;
-                var uuid = Guid.Empty;
-                var words = new VendorTuples<uint>($"{str}_pin_{i}");
-
-                int index = sources.FindIndex(
-                    s => ((uint)s.Interface & (maxQueue - 1)) == i);
-
-                if (!dynamic && index != -1)
-                {
-                    ModuleType template = GetTemplate(sinks[index].Module);
-                    instId = sinks[index].Instance;
-                    modId = template.ModuleId;
-                    uuid = template.uuid;
-                }
-
-                uint dirPinCount = (uint)dir | (((uint)dir & 0xf0 | i) << 4);
-                words.Tuples = new[]
-                {
-                    GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, dirPinCount),
-                    GetTuple(SKL_TKN.U32_PIN_MOD_ID, modId),
-                    GetTuple(SKL_TKN.U32_PIN_INST_ID, instId)
-                };
-
-                result.Add(words);
-                if (!dynamic)
-                {
-                    var uuids = new VendorTuples<Guid>($"{str}_pin_{i}");
-                    uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, uuid) };
-                    result.Add(uuids);
-                }
-            }
-
-            return result;
-        }
-
         static SKL_PIPE_CONN_TYPE GetConnType(Path path, Module module)
         {
             if (module.Type.Equals("copier"))
@@ -679,18 +630,97 @@ namespace itt
             return path.ConnType.GetValue();
         }
 
+        IEnumerable<VendorTuples> GetTuples(PinDir dir, uint pinCount, uint maxQueue,
+            IEnumerable<Tuple<FromTo, FromTo>> pairs)
+        {
+            int anyCount = pairs.Count(p => p.Item1.Interface == InterfaceName.ANY);
+            bool dynamic = anyCount == pairs.Count();
+            if (!dynamic && anyCount > 0)
+                throw new InvalidOperationException("static and dynamic pins cannot coexist");
+
+            string str = dir.ToString().ToLower();
+            var result = new List<VendorTuples>();
+
+            for (uint i = 0; i < pinCount; i++)
+            {
+                uint moduleId = 0, instanceId = 0;
+                Guid uuid = Guid.Empty;
+                if (!dynamic)
+                {
+                    Tuple<FromTo, FromTo> pair = pairs.FirstOrDefault(
+                        p => (uint)p.Item1.Interface % maxQueue == i);
+                    if (pair != null)
+                    {
+                        ModuleType template = GetTemplate(pair.Item2.Module);
+                        moduleId = template.ModuleId;
+                        instanceId = pair.Item2.Instance;
+                        uuid = template.uuid;
+                    }
+                }
+
+                uint dirPinCount = (uint)dir | (((uint)dir & 0xf0 | i) << 4);
+                var words = new VendorTuples<uint>($"{str}_pin_{i}");
+                words.Tuples = new[]
+                {
+                    GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, dirPinCount),
+                    GetTuple(SKL_TKN.U32_PIN_MOD_ID, moduleId),
+                    GetTuple(SKL_TKN.U32_PIN_INST_ID, instanceId)
+                };
+
+                result.Add(words);
+                if (dynamic)
+                    continue;
+
+                var uuids = new VendorTuples<Guid>($"{str}_pin_{i}");
+                uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, uuid) };
+                result.Add(uuids);
+            }
+
+            return result;
+        }
+
+        IEnumerable<VendorTuples> GetTuples(Module module, Path path, PinDir dir)
+        {
+            ModuleType template = GetTemplate(module.Type);
+            IEnumerable<Tuple<FromTo, FromTo>> pairs;
+            uint pinCount, maxQueue;
+
+            if (dir == PinDir.IN)
+            {
+                pinCount = template.InputPins;
+                maxQueue = Constants.MAX_IN_QUEUE;
+
+                var links = path.Links.Select(l => Tuple.Create(l.To, l.From));
+                var connectors = pathConnectors.PathConnector
+                    .Where(c => c.Output[0].PathName.Equals(path.Name))
+                    .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
+
+                pairs = links.Concat(connectors);
+            }
+            else
+            {
+                pinCount = template.OutputPins;
+                maxQueue = Constants.MAX_OUT_QUEUE;
+
+                var links = path.Links.Select(l => Tuple.Create(l.From, l.To));
+                var connectors = pathConnectors.PathConnector
+                    .Where(c => c.Input[0].PathName.Equals(path.Name))
+                    .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
+
+                pairs = links.Concat(connectors);
+            }
+
+            pairs = pairs.Where(
+                p => p.Item1.Module.Equals(module.Type) &&
+                     p.Item1.Instance == module.Instance);
+            return GetTuples(dir, pinCount, maxQueue, pairs);
+        }
+
         IEnumerable<Section> GetSections(Module module, Path path, int id)
         {
             ModuleType template = GetTemplate(module.Type);
-            var links = path.Links.Where(l => l.To.Module.Equals(template.Name));
-            var inTuples = GetTuples(template.InputPins, PinDir.IN,
-                                     links.Select(l => l.To).ToList(),
-                                     links.Select(l => l.From).ToList());
-
-            links = path.Links.Where(l => l.From.Module.Equals(template.Name));
-            var outTuples = GetTuples(template.OutputPins, PinDir.OUT,
-                                      links.Select(l => l.From).ToList(),
-                                      links.Select(l => l.To).ToList());
+            var inTuples = GetTuples(module, path, PinDir.IN);
+            var outTuples = GetTuples(module, path, PinDir.OUT);
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
