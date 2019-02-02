@@ -57,7 +57,7 @@ namespace itt
             var desc = new SectionSkylakeTuples($"{section.Identifier} num_desc");
 
             var bytes = new VendorTuples<byte>("u8_num_blocks");
-            bytes.Tuples = new[] { Tuple.Create(SKL_TKN.U8_NUM_BLOCKS.GetName(), (byte)1) };
+            bytes.Tuples = new[] { Tuple.Create(SKL_TKN.U8_NUM_BLOCKS.GetName(), (byte)num) };
             desc.Tuples = new[] { bytes };
 
             return desc;
