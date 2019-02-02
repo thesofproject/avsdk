@@ -61,7 +61,15 @@ namespace itt
             {
                 Console.WriteLine($"{appName} failed. Message: {ex.Message}");
                 if (ex.InnerException != null)
-                    Console.WriteLine($"InnerException: {ex.InnerException.Message}");
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                    Console.WriteLine("Inner stack trace:");
+                    Console.WriteLine(ex.InnerException.StackTrace);
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("Stack trace:");
+                Console.WriteLine(ex.StackTrace);
                 return 1;
             }
 
