@@ -31,11 +31,6 @@ namespace itt
         public const uint SKL_CTL_RAMP_DURATION    = 0x105;
         public const uint SKL_CTL_RAMP_TYPE        = 0x106;
 
-        // Max size of module init params
-        public const uint HDA_SST_CFG_MAX = 900;
-
-        public const uint SKL_UUID_STR_SZ = 40;
-
         public const int NOPM = -1;
 
         // Intel internal event flags
