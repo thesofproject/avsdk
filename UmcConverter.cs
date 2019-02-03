@@ -232,13 +232,10 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<Section> GetClockControlSections()
+        IEnumerable<Section> GetClockControlSections()
         {
             ClockControls controls = firmwareConfig.ClockControls;
             var result = new List<Section>();
-
-            if (firmwareConfig.ClockControls == null)
-                return result;
 
             var ctrls = new List<ClockControl>();
             if (controls.I2SClockControls != null)
@@ -300,26 +297,30 @@ namespace itt
         public IEnumerable<Section> GetFirmwareConfigSections()
         {
             FirmwareConfig config = firmwareConfig;
-            var result = new List<Section>();
-
             var tuples = new List<VendorTuples>();
-            var words = new VendorTuples<uint>("u32_dma_buf");
-            words.Tuples = new[]
-            {
-                GetTuple(SKL_TKN.U32_DMA_TYPE, 4u),
-                GetTuple(SKL_TKN.U32_DMA_SIZE, (uint)(config.DMABufferConfigs.Length *
-                                            Marshal.SizeOf(typeof(DMABufferConfig))))
-            };
+            VendorTuples<uint> words;
 
-            tuples.Add(words);
-            for (int i = 0; i < 24; i++)
+            if (config.DMABufferConfigs != null)
             {
-                DMABufferConfig buf;
-                if (i < config.DMABufferConfigs.Length)
-                    buf = config.DMABufferConfigs[i];
-                else
-                    buf = new DMABufferConfig();
-                tuples.AddRange(GetTuples(buf, i));
+                int length = config.DMABufferConfigs.Length;
+                words = new VendorTuples<uint>("u32_dma_buf");
+                words.Tuples = new[]
+                {
+                    GetTuple(SKL_TKN.U32_DMA_TYPE, 4u),
+                    GetTuple(SKL_TKN.U32_DMA_SIZE, (uint)(length *
+                            Marshal.SizeOf(typeof(DMABufferConfig))))
+                };
+
+                tuples.Add(words);
+                for (int i = 0; i < Constants.DMA_BUFFER_COUNT; i++)
+                {
+                    DMABufferConfig buf;
+                    if (i < length)
+                        buf = config.DMABufferConfigs[i];
+                    else
+                        buf = new DMABufferConfig();
+                    tuples.AddRange(GetTuples(buf, i));
+                }
             }
 
             if (config.AstateTableConfigs != null)
@@ -339,15 +340,20 @@ namespace itt
             if (config.SchedulerConfiguration != null)
                 tuples.AddRange(GetTuples(config.SchedulerConfiguration));
 
-            var section = new SectionSkylakeTuples("fw_cfg_data");
-            section.Tuples = tuples.ToArray();
-            SectionVendorTuples desc = section.GetSizeDescriptor();
-            result.Add(desc);
-            result.Add(desc.GetPrivateData());
-            result.Add(section);
-            result.Add(section.GetPrivateData());
-            result.AddRange(GetClockControlSections());
+            var result = new List<Section>();
+            if (tuples.Any())
+            {
+                var section = new SectionSkylakeTuples("fw_cfg_data");
+                section.Tuples = tuples.ToArray();
+                SectionVendorTuples desc = section.GetSizeDescriptor();
+                result.Add(desc);
+                result.Add(desc.GetPrivateData());
+                result.Add(section);
+                result.Add(section.GetPrivateData());
+            }
 
+            if (config.ClockControls != null)
+                result.AddRange(GetClockControlSections());
             return result;
         }
 
