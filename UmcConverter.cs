@@ -133,6 +133,7 @@ namespace itt
                 result.AddRange(GetPCMSections());
             }
 
+            result.AddRange(GetManifestSections(result));
             return result;
         }
 
@@ -1316,6 +1317,46 @@ namespace itt
                 result.Add(section);
             }
 
+            return result;
+        }
+
+        public IEnumerable<Section> GetManifestSections(IEnumerable<Section> current)
+        {
+            int num = 1;
+            if (manifestData != null)
+                num++;
+            FirmwareConfig config = firmwareConfig;
+            if (config != null)
+            {
+                if (config.DMABufferConfigs?.Length > 0 ||
+                    config.AstateTableConfigs?.Length > 0 ||
+                    config.SchedulerConfiguration?.LowLatencySourceConfigs?.Length > 0)
+                    num++;
+                if (config.ClockControls?.I2SClockControls != null)
+                    num += config.ClockControls.I2SClockControls.Length * 2;
+                if (config.ClockControls?.MClockControls != null)
+                    num += config.ClockControls.MClockControls.Length * 2;
+            }
+
+            var result = new List<Section>();
+            var manifest = new SectionManifest("manifest_data");
+            SectionVendorTuples desc = manifest.GetNumDescriptor(num);
+            result.Add(desc);
+            result.Add(desc.GetPrivateData());
+            result.Add(manifest);
+            IEnumerable<Section> sections = current.Concat(result);
+
+            var controls = sections.Where(s => s is SectionControl).Cast<SectionControl>();
+            controls = controls.Where(c => c.Data != null);
+            var widgets = sections.Where(s => s is SectionWidget).Cast<SectionWidget>();
+            widgets = widgets.Where(w => w.Data != null);
+
+            var privs = sections.Where(s => s is SectionData && s.Identifier != null);
+            privs = privs.Where(
+                p => !controls.Any(c => c.Data.Equals(p.Identifier)) &&
+                     !widgets.Any(w => w.Data.Contains(p.Identifier)));
+
+            manifest.Data = privs.Select(p => p.Identifier).ToArray();
             return result;
         }
     }
