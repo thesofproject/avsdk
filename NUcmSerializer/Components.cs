@@ -257,21 +257,12 @@ namespace NUmcSerializer
         public static int GetElementSize<T>()
         {
             Type type = typeof(T);
-            TypeCode code = Type.GetTypeCode(type);
-            switch (code)
-            {
-                case TypeCode.String:
-                    return CTL_ELEM_ID_NAME_MAXLEN;
 
-                case TypeCode.Object:
-                    if (type == typeof(Guid))
-                        return 16 * sizeof(byte);
-                    else
-                        return sizeof(uint);
-
-                default:
-                    return sizeof(uint);
-            }
+            if (type == typeof(string))
+                return CTL_ELEM_ID_NAME_MAXLEN;
+            else if (type == typeof(Guid))
+                return 16 * sizeof(byte);
+            return sizeof(uint);
         }
 
         public VendorTuples(string identifier)
