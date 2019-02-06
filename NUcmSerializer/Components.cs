@@ -267,22 +267,10 @@ namespace NUmcSerializer
                     if (type == typeof(Guid))
                         return 16 * sizeof(byte);
                     else
-                        return Marshal.SizeOf(type);
-
-                case TypeCode.Boolean:
-                    return sizeof(bool);
-
-                case TypeCode.Byte:
-                    return sizeof(byte);
-
-                case TypeCode.UInt16:
-                    return sizeof(ushort);
-
-                case TypeCode.UInt32:
-                    return sizeof(uint);
+                        return sizeof(uint);
 
                 default:
-                    return Marshal.SizeOf(type);
+                    return sizeof(uint);
             }
         }
 
