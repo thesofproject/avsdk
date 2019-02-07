@@ -835,33 +835,44 @@ namespace itt
 
         static uint? GetSubseq(Path path, Module module)
         {
+            SKL_MODULE_TYPE type = module.Type.GetModuleType();
+            if (type != SKL_MODULE_TYPE.COPIER &&
+                type != SKL_MODULE_TYPE.MIXER)
+                return null;
+
+            uint? subseq = 0;
             bool isSource = (module.ModulePosition == ModulePosition.SOURCE);
             // FE pipeline
             if (path.ConnType == ConnType.HOST_DMA ||
                 path.ConnType == ConnType.HDMI_HOST_DMA)
             {
                 if (path.Order == 0)
-                    return isSource ? HDA_DAPM_SUBSEQ.FE_SRC_MIX
-                                    : HDA_DAPM_SUBSEQ.FE_SRC_PGA;
+                    subseq = isSource ? HDA_DAPM_SUBSEQ.FE_SRC_MIX
+                                      : HDA_DAPM_SUBSEQ.FE_SRC_PGA;
                 else if (path.Order == 7)
-                    return isSource ? HDA_DAPM_SUBSEQ.FE_SINK_MIX
-                                    : HDA_DAPM_SUBSEQ.FE_SINK_PGA;
+                    subseq = isSource ? HDA_DAPM_SUBSEQ.FE_SINK_MIX
+                                      : HDA_DAPM_SUBSEQ.FE_SINK_PGA;
             }
             // BE pipeline
             else if (path.ConnType == ConnType.LINK_DMA)
             {
                 // First pipeline
                 if (path.Order == 0)
-                    return isSource ? HDA_DAPM_SUBSEQ.BE_SRC_MIX
-                                    : HDA_DAPM_SUBSEQ.BE_SRC_PGA;
+                    subseq = isSource ? HDA_DAPM_SUBSEQ.BE_SRC_MIX
+                                      : HDA_DAPM_SUBSEQ.BE_SRC_PGA;
                 // Last pipeline
                 else if (path.Order == 7)
-                    return isSource ? HDA_DAPM_SUBSEQ.BE_SINK_MIX
-                                    : HDA_DAPM_SUBSEQ.BE_SINK_PGA;
+                    subseq = isSource ? HDA_DAPM_SUBSEQ.BE_SINK_MIX
+                                      : HDA_DAPM_SUBSEQ.BE_SINK_PGA;
+            }
+            // Intermediate pipeline
+            else
+            {
+                subseq = isSource ? HDA_DAPM_SUBSEQ.INTERMEDIATE_MIX
+                                  : HDA_DAPM_SUBSEQ.INTERMEDIATE_PGA;
             }
 
-            // Intermediate pipeline
-            return isSource ? HDA_DAPM_SUBSEQ.INTERMEDIATE_MIX : HDA_DAPM_SUBSEQ.INTERMEDIATE_PGA;
+            return (subseq > 0) ? subseq : null;
         }
 
         IEnumerable<Section> GetPathModulesSections(Path path)
