@@ -1359,7 +1359,7 @@ namespace itt
             result.Add(desc);
             result.Add(desc.GetPrivateData());
             result.Add(manifest);
-            IEnumerable<Section> sections = current.Concat(result);
+            IEnumerable<Section> sections = result.Concat(current);
 
             var controls = sections.Where(s => s is SectionControl).Cast<SectionControl>();
             controls = controls.Where(c => c.Data != null);
