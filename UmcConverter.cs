@@ -1279,8 +1279,8 @@ namespace itt
             var result = new SectionPCMCapabilities(path.Device);
             result.Formats = string.Join(", ", bps);
             result.Rates = string.Join(", ", rates.Select(r => r.GetString()));
-            result.ChannelMin = channels.Min();
-            result.ChannelMax = channels.Max();
+            result.ChannelsMin = channels.Min();
+            result.ChannelsMax = channels.Max();
 
             return result;
         }
