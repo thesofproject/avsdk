@@ -190,10 +190,14 @@ namespace itt
     [Serializable]
     public enum InterruptSource
     {
-        [XmlEnum(Name = "LOW_POWER_TIMER_INTERRUPT_SOURCE")] LOW_POWER_TIMER,
-        [XmlEnum(Name = "DMIC_INTERRUPT_SOURCE")] DMIC,
-        [XmlEnum(Name = "DMA_GATEWAY_INTERRUPT_SOURCE")] DMA_GATEWAY,
-        [XmlEnum(Name = "HIGH_DEFINITION_AUDIO_INTERRUPT_SOURCE")] HIGH_DEFINITION_AUDIO
+        [XmlEnum(Name = "LOW_POWER_TIMER_INTERRUPT_SOURCE")]
+        LOW_POWER_TIMER = 1,
+        [XmlEnum(Name = "DMA_GATEWAY_INTERRUPT_SOURCE")]
+        DMA_GATEWAY = 2,
+        [XmlEnum(Name = "DMIC_INTERRUPT_SOURCE")]
+        DMIC,
+        [XmlEnum(Name = "HIGH_DEFINITION_AUDIO_INTERRUPT_SOURCE")]
+        HIGH_DEFINITION_AUDIO
     };
 
     public class SchedulerConfiguration
