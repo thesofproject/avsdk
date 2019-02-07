@@ -1123,15 +1123,9 @@ namespace itt
                     Constants.NOPM, Constants.SKL_CTL_RAMP_TYPE,
                     Constants.SKL_CTL_RAMP_TYPE, TPLG_CTL.VOLSW));
 
-                CTL_ELEM_ACCESS[] access = new[]
-                {
-                    CTL_ELEM_ACCESS.TLV_READ,
-                    CTL_ELEM_ACCESS.READWRITE
-                };
-
                 result.Add(GetMixerControl("Volume",
                     Constants.GAIN_MIN_INDEX, Constants.GAIN_MAX_INDEX,
-                    access, 0, Constants.SKL_CTL_VOLUME,
+                    null, 0, Constants.SKL_CTL_VOLUME,
                     Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
             }
 
