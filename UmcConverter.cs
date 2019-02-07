@@ -28,12 +28,13 @@ namespace itt
 
             // Retrieve manifest and firmware config
             SubsystemType sub = subsystems.SingleOrDefault(
-                e => e.ManifestData != null && e.FirmwareConfig != null);
+                e => e.ManifestData != null);
             if (sub != null)
-            {
                 manifestData = sub.ManifestData;
+            sub = subsystems.SingleOrDefault(
+                e => e.FirmwareConfig != null);
+            if (sub != null)
                 firmwareConfig = sub.FirmwareConfig;
-            }
 
             // Retrieve module types. If none found, bail out
             sub = subsystems.SingleOrDefault(e => e.ModuleTypes != null);
