@@ -1328,8 +1328,10 @@ namespace itt
 
         public IEnumerable<Section> GetManifestSections(IEnumerable<Section> current)
         {
-            int num = 1;
+            int num = 0;
             if (manifestData != null)
+                num++;
+            if (moduleType != null)
                 num++;
             FirmwareConfig config = firmwareConfig;
             if (config != null)
