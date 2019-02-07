@@ -530,7 +530,7 @@ namespace itt
         [XmlAttribute("affinity")]
         public uint Affinity { get; set; }
         [XmlAttribute("dev_type")]
-        public DEV_TYPE DevType { get; set; }
+        public DEV_TYPE DevType { get; set; } = DEV_TYPE.NONE;
         [XmlAttribute("port")]
         public Port Port { get; set; }
         [XmlAttribute("domain")]
