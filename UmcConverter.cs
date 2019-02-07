@@ -886,10 +886,7 @@ namespace itt
                 var sections = GetSections(module, path, i);
 
                 var widget = new SectionWidget(GetWidgetName(path, module));
-                if (i == 0)
-                    widget.Type = TPLG_DAPM.MIXER;
-                else
-                    widget.Type = TPLG_DAPM.PGA;
+                widget.Type = module.ModulePosition.ToDapm();
                 widget.NoPm = true;
                 widget.Data = sections.Where(s => s is SectionData)
                     .Select(s => s.Identifier).ToArray();

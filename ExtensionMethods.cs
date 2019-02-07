@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NUmcSerializer;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -142,6 +143,18 @@ namespace itt
         internal static byte[] ToBytes(this string value)
         {
             return ToUInts32(value).SelectMany(e => BitConverter.GetBytes(e)).ToArray();
+        }
+
+        internal static TPLG_DAPM ToDapm(this ModulePosition pos)
+        {
+            switch (pos)
+            {
+                case ModulePosition.SOURCE:
+                    return TPLG_DAPM.MIXER;
+
+                default:
+                    return TPLG_DAPM.PGA;
+            }
         }
 
         internal static PCM_RATE ToRate(this uint value)
