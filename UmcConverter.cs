@@ -977,11 +977,14 @@ namespace itt
             result.AddRange(GetPathModulesSections(path));
             result.AddRange(GetPathConfigurationsSections(path));
 
-            var widget = new SectionWidget(path.Name);
-            widget.Type = (path.Direction == Direction.CAPTURE) ? TPLG_DAPM.AIF_IN
-                                                                : TPLG_DAPM.AIF_OUT;
-            widget.NoPm = true;
-            result.Add(widget);
+            if (path.Port != null)
+            {
+                var widget = new SectionWidget(path.Port);
+                widget.Type = (path.Direction == Direction.CAPTURE) ? TPLG_DAPM.AIF_IN
+                                                                    : TPLG_DAPM.AIF_OUT;
+                widget.NoPm = true;
+                result.Add(widget);
+            }
 
             return result;
         }
