@@ -589,10 +589,10 @@ namespace itt
             result.Add(words);
             var formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
             for (int i = 0; i < formats.Length; i++)
-                result.AddRange(GetTuples(formats[i], i));
+                result.AddRange(GetTuples(formats[i], id));
             formats = config.PcmFormats.Except(formats).ToArray();
             for (int i = 0; i < formats.Length; i++)
-                result.AddRange(GetTuples(formats[i], i));
+                result.AddRange(GetTuples(formats[i], id));
 
             ModuleParams param = config.ModuleParams.First(p => p.Module.Equals(module.Type));
             result.AddRange(GetTuples(param, id));
