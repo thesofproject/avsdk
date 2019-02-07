@@ -788,19 +788,20 @@ namespace itt
             SectionVendorTuples desc = section.GetSizeDescriptor();
             result.Add(desc);
             result.Add(desc.GetPrivateData());
-            desc = section.GetNumDescriptor(1);
-            result.Add(desc);
-            result.Add(desc.GetPrivateData());
             result.Add(section);
             result.Add(section.GetPrivateData());
 
+            int num = 1;
             InitParam[] initParams = module.InitParams;
             if (initParams == null)
                 initParams = template.InitParams;
             if (initParams != null)
-                foreach (var initParam in initParams)
-                    result.AddRange(GetSections(initParam, moduleId));
+                for (int i = 0; i < initParams.Length; i++, num += 2)
+                    result.AddRange(GetSections(initParams[i], moduleId));
 
+            desc = section.GetNumDescriptor(num);
+            result.Insert(0, desc);
+            result.Insert(1, desc.GetPrivateData());
             return result;
 
             bool IsDynamic(IEnumerable<VendorTuples> vts)
