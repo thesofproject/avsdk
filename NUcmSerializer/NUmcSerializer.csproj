@@ -41,6 +41,7 @@
     <Compile Include="TypeHelper.cs" />
     <Compile Include="UmcSerializer.cs" />
     <Compile Include="UmcWriter.cs" />
+    <Compile Include="SectionComparer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
