@@ -130,6 +130,7 @@ namespace itt
             if (paths != null && pathConnectors != null)
             {
                 result.AddRange(GetPipelineSections());
+                result.AddRange(GetPathConnectorsSections());
                 result.Add(GetGraphSection());
                 result.AddRange(GetPCMSections());
             }
@@ -724,7 +725,7 @@ namespace itt
             return GetTuples(dir, pinCount, maxQueue, pairs);
         }
 
-        IEnumerable<Section> GetSections(Module module, Path path, int id)
+        IEnumerable<Section> GetSections(Module module, Path path)
         {
             ModuleType template = GetTemplate(module.Type);
             var inTuples = GetTuples(module, path, PinDir.IN);
@@ -876,59 +877,118 @@ namespace itt
             return (subseq > 0) ? subseq : null;
         }
 
-        IEnumerable<Section> GetPathModulesSections(Path path)
+        static Ops GetControlBytesExtOps(string module)
+        {
+            uint call;
+            if (module.Equals(ModuleNames.Probe))
+                call = Constants.SKL_CTL_TLV_PROBE;
+            else
+                call = Constants.SKL_CTL_TLV_BYTE;
+
+            return new Ops("ctl") { Get = call, Put = call };
+        }
+
+        IEnumerable<Section> GetBytesControls(Module module)
+        {
+            var result = new List<Section>();
+            Param[] prms = module.Params;
+
+            if (prms == null)
+                prms = GetTemplate(module.Type).Params;
+
+            if (prms != null)
+            {
+                Ops ops = GetControlBytesExtOps(module.Type);
+                foreach (var param in prms)
+                    result.AddRange(GetSections(param, ops));
+            }
+
+            return result;
+        }
+
+        static SectionControlMixer GetMixerControl(string name, int min, int max,
+            CTL_ELEM_ACCESS[] access, int reg, uint get, uint put, uint info)
+        {
+            var control = new SectionControlMixer(name);
+            control.Index = 0;
+            control.Invert = false;
+            control.Channel = new ChannelMap[]
+            {
+                new ChannelMap(ChannelName.FrontLeft) { Reg = reg },
+                new ChannelMap(ChannelName.FrontRight) { Reg = reg },
+            };
+            control.Ops = new Ops("ctl") { Get = get, Put = put, Info = info };
+            control.Min = min;
+            control.Max = max;
+            control.NoPm = (reg == Constants.NOPM) ? true : (bool?)null;
+            control.Access = access;
+
+            return control;
+        }
+
+        IEnumerable<Section> GetModuleControls(Module module)
         {
             var result = new List<Section>();
 
-            for (int i = 0; i < path.Modules.Module.Length; i++)
+            if (module.Type.Equals(ModuleNames.Gain))
             {
-                Module module = path.Modules.Module[i];
-                var sections = GetSections(module, path, i);
+                result.Add(GetMixerControl("Ramp Duration",
+                    Constants.GAIN_TC_MIN, Constants.GAIN_TC_MAX, null,
+                    Constants.NOPM, Constants.SKL_CTL_RAMP_DURATION,
+                    Constants.SKL_CTL_RAMP_DURATION, TPLG_CTL.VOLSW));
 
-                var widget = new SectionWidget(GetWidgetName(path, module));
-                widget.Type = module.ModulePosition.ToDapm();
-                widget.NoPm = true;
-                widget.Data = sections.Where(s => s is SectionData)
-                    .Select(s => s.Identifier).ToArray();
-                widget.EventType = GetEventType(path, module);
-                widget.EventFlags = GetEventFlags(path, module);
-                widget.Subseq = GetSubseq(path, module);
+                result.Add(GetMixerControl("Ramp Type",
+                    Constants.GAIN_RT_MIN, Constants.GAIN_RT_MAX, null,
+                    Constants.NOPM, Constants.SKL_CTL_RAMP_TYPE,
+                    Constants.SKL_CTL_RAMP_TYPE, TPLG_CTL.VOLSW));
 
-                result.AddRange(sections);
-                result.Add(widget);
-
-                // Set widget's Bytes property if any
-                Param[] prms = module.Params;
-                if (prms == null)
-                    prms = GetTemplate(module.Type).Params;
-                if (prms != null)
-                {
-                    var bytes = new List<string>();
-                    foreach (var param in prms)
-                        bytes.Add(GetParamName(param));
-                    widget.Bytes = bytes.ToArray();
-                }
-
-                // Set widget's Mixer property if any
-                if (!module.Type.Equals(ModuleNames.Mixout))
-                    continue;
-
-                IEnumerable<PathConnector> connectors =
-                    pathConnectors.PathConnector.Where(c => c.Output.Any(
-                        o => o.PathName.Equals(path.Name) && o.Module.Equals(module.Type)));
-                if (connectors.Any())
-                {
-                    var mixers = new List<string>();
-                    foreach (var connector in connectors)
-                    {
-                        InputOutput input = connector.Input.First(
-                            io => io.Module.Equals(ModuleNames.Mixin));
-                        mixers.Add(GetMixerName(input.PathName, input.Module));
-                    }
-
-                    widget.Mixer = mixers.ToArray();
-                }
+                result.Add(GetMixerControl("Volume",
+                    Constants.GAIN_MIN_INDEX, Constants.GAIN_MAX_INDEX,
+                    null, 0, Constants.SKL_CTL_VOLUME,
+                    Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
             }
+
+            return result;
+        }
+
+        IEnumerable<Section> GetPathModuleSections(Path path, Module module)
+        {
+            var result = new List<Section>();
+
+            IEnumerable<Section> sections = GetSections(module, path);
+            var widget = new SectionWidget(GetWidgetName(path, module));
+            widget.Type = module.ModulePosition.ToDapm();
+            widget.NoPm = true;
+            widget.Data = sections.Where(s => s is SectionData)
+                .Select(s => s.Identifier).ToArray();
+            widget.EventType = GetEventType(path, module);
+            widget.EventFlags = GetEventFlags(path, module);
+            widget.Subseq = GetSubseq(path, module);
+
+            result.AddRange(sections);
+            result.Add(widget);
+            result.AddRange(GetModuleControls(module));
+            result.AddRange(GetBytesControls(module));
+
+            IEnumerable<string> ids = result.OfType<SectionControlBytes>()
+                .Select(c => c.Identifier);
+            if (ids.Any())
+                widget.Bytes = ids.ToArray();
+
+            // Append mixers from path connectors
+            IEnumerable<PathConnector> connectors = pathConnectors.PathConnector.Where(
+                c => c.Type == LinkType.MIXER && c.Output.Any(
+                    o => o.PathName.Equals(path.Name) &&
+                         o.Module.Equals(module.Type) &&
+                         o.Instance == module.Instance));
+
+            IEnumerable<InputOutput> inputs = connectors.SelectMany(c => c.Input);
+            ids = result.OfType<SectionControlMixer>()
+                .Select(c => c.Identifier);
+            ids = ids.Concat(inputs.Select(
+                i => GetMixerName(i.PathName, i.Module)));
+            if (ids.Any())
+                widget.Mixer = ids.ToArray();
 
             return result;
         }
@@ -983,7 +1043,8 @@ namespace itt
         {
             var result = new List<Section>();
 
-            result.AddRange(GetPathModulesSections(path));
+            foreach (var module in path.Modules.Module)
+                result.AddRange(GetPathModuleSections(path, module));
             result.AddRange(GetPathConfigurationsSections(path));
 
             if (path.Port != null)
@@ -1040,118 +1101,35 @@ namespace itt
             return new Section[] { control, section };
         }
 
-        static Ops GetControlBytesExtOps(string module)
-        {
-            uint call;
-            if (module.Equals(ModuleNames.Probe))
-                call = Constants.SKL_CTL_TLV_PROBE;
-            else
-                call = Constants.SKL_CTL_TLV_BYTE;
-
-            return new Ops("ctl") { Get = call, Put = call };
-        }
-
-        IEnumerable<Section> GetBytesControls()
-        {
-            var result = new List<Section>();
-
-            foreach (var path in paths.Path)
-            {
-                foreach (var module in path.Modules.Module)
-                {
-                    Param[] prms = module.Params;
-                    if (prms == null)
-                        prms = GetTemplate(module.Type).Params;
-
-                    if (prms == null)
-                        continue;
-
-                    Ops ops = GetControlBytesExtOps(module.Type);
-                    foreach (var param in prms)
-                    {
-                        string name = GetParamName(param);
-                        if (result.Any(s => s.Identifier.Equals(name)))
-                            continue;
-
-                        result.AddRange(GetSections(param, ops));
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        static SectionControlMixer GetMixerControl(string name, int min, int max,
-            CTL_ELEM_ACCESS[] access, int reg, uint get, uint put, uint info)
-        {
-            var control = new SectionControlMixer(name);
-            control.Index = 0;
-            control.Invert = false;
-            control.Channel = new ChannelMap[]
-            {
-                new ChannelMap(ChannelName.FrontLeft) { Reg = reg },
-                new ChannelMap(ChannelName.FrontRight) { Reg = reg },
-            };
-            control.Ops = new Ops("ctl") { Get = get, Put = put, Info = info };
-            control.Min = min;
-            control.Max = max;
-            control.NoPm = (reg == Constants.NOPM) ? true : (bool?)null;
-            control.Access = access;
-
-            return control;
-        }
-
-        IEnumerable<Section> GetMixerControls()
-        {
-            var result = new List<Section>();
-            bool gainExists = false;
-
-            foreach (var path in paths.Path)
-            {
-                foreach (var module in path.Modules.Module)
-                {
-                    if (module.Type.Equals(ModuleNames.Gain))
-                        gainExists = true;
-                    else if (module.Type.Equals(ModuleNames.Mixin))
-                        result.Add(GetMixerControl(
-                            GetMixerName(path.Name, module.Type),
-                            0, 1, null,
-                            Constants.NOPM,
-                            TPLG_CTL.DAPM_VOLSW,
-                            TPLG_CTL.DAPM_VOLSW,
-                            TPLG_CTL.DAPM_VOLSW));
-                }
-            }
-
-            if (gainExists)
-            {
-                result.Add(GetMixerControl("Ramp Duration",
-                    Constants.GAIN_TC_MIN, Constants.GAIN_TC_MAX, null,
-                    Constants.NOPM, Constants.SKL_CTL_RAMP_DURATION,
-                    Constants.SKL_CTL_RAMP_DURATION, TPLG_CTL.VOLSW));
-
-                result.Add(GetMixerControl("Ramp Type",
-                    Constants.GAIN_RT_MIN, Constants.GAIN_RT_MAX, null,
-                    Constants.NOPM, Constants.SKL_CTL_RAMP_TYPE,
-                    Constants.SKL_CTL_RAMP_TYPE, TPLG_CTL.VOLSW));
-
-                result.Add(GetMixerControl("Volume",
-                    Constants.GAIN_MIN_INDEX, Constants.GAIN_MAX_INDEX,
-                    null, 0, Constants.SKL_CTL_VOLUME,
-                    Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
-            }
-
-            return result;
-        }
-
         public IEnumerable<Section> GetPipelineSections()
         {
             var result = new List<Section>();
             foreach (var path in paths.Path)
                 result.AddRange(GetPathSections(path));
 
-            result.AddRange(GetMixerControls());
-            result.AddRange(GetBytesControls());
+            result = result.Distinct(new SectionComparer()).ToList();
+            return result;
+        }
+
+        public IEnumerable<Section> GetPathConnectorsSections()
+        {
+            var result = new List<Section>();
+
+            foreach (var connector in pathConnectors.PathConnector)
+            {
+                if (connector.Type != LinkType.MIXER)
+                   continue;
+
+                foreach (var input in connector.Input)
+                    result.Add(GetMixerControl(
+                        GetMixerName(input.PathName, input.Module),
+                        0, 1, null, Constants.NOPM,
+                        TPLG_CTL.DAPM_VOLSW,
+                        TPLG_CTL.DAPM_VOLSW,
+                        TPLG_CTL.DAPM_VOLSW));
+            }
+
+            result = result.Distinct(new SectionComparer()).ToList();
             return result;
         }
 
