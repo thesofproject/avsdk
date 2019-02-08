@@ -62,13 +62,13 @@ namespace itt
         {
             switch (module)
             {
-                case "copier":
+                case ModuleNames.Copier:
                     return "cpr";
 
-                case "mixin":
+                case ModuleNames.Mixin:
                     return "mi";
 
-                case "mixout":
+                case ModuleNames.Mixout:
                     return "mo";
 
                 default:
@@ -612,7 +612,7 @@ namespace itt
 
         static SKL_PIPE_CONN_TYPE GetConnType(Path path, Module module)
         {
-            if (module.Type.Equals("copier"))
+            if (module.Type.Equals(ModuleNames.Copier))
             {
                 if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
                     && path.Direction != Direction.CAPTURE)
@@ -626,7 +626,7 @@ namespace itt
 
         static SKL_PIPE_CONN_TYPE GetPipeConnType(Path path, Module module)
         {
-            if (module.Type.Equals("copier"))
+            if (module.Type.Equals(ModuleNames.Copier))
             {
                 if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
                     && path.Direction != Direction.CAPTURE)
@@ -910,7 +910,7 @@ namespace itt
                 }
 
                 // Set widget's Mixer property if any
-                if (!module.Type.Equals("mixout"))
+                if (!module.Type.Equals(ModuleNames.Mixout))
                     continue;
 
                 IEnumerable<PathConnector> connectors =
@@ -922,7 +922,7 @@ namespace itt
                     foreach (var connector in connectors)
                     {
                         InputOutput input = connector.Input.First(
-                            io => io.Module.Equals("mixin"));
+                            io => io.Module.Equals(ModuleNames.Mixin));
                         mixers.Add(GetMixerName(input.PathName, input.Module));
                     }
 
@@ -1043,7 +1043,7 @@ namespace itt
         static Ops GetControlBytesExtOps(string module)
         {
             uint call;
-            if (module.Equals("probe"))
+            if (module.Equals(ModuleNames.Probe))
                 call = Constants.SKL_CTL_TLV_PROBE;
             else
                 call = Constants.SKL_CTL_TLV_BYTE;
@@ -1110,9 +1110,9 @@ namespace itt
             {
                 foreach (var module in path.Modules.Module)
                 {
-                    if (module.Type.Equals("gain"))
+                    if (module.Type.Equals(ModuleNames.Gain))
                         gainExists = true;
-                    else if (module.Type.Equals("mixin"))
+                    else if (module.Type.Equals(ModuleNames.Mixin))
                         result.Add(GetMixerControl(
                             GetMixerName(path.Name, module.Type),
                             0, 1, null,

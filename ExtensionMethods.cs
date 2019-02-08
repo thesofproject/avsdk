@@ -87,25 +87,24 @@ namespace itt
         {
             switch (value)
             {
-                case "mixin":
-                case "mixout":
+                case ModuleNames.Mixin:
+                case ModuleNames.Mixout:
                     return SKL_MODULE_TYPE.MIXER;
-                case "copier":
+                case ModuleNames.Copier:
                     return SKL_MODULE_TYPE.COPIER;
-                case "updownmixer":
-                case "updwmix":
+                case ModuleNames.UpDownMix:
                     return SKL_MODULE_TYPE.UPDWMIX;
-                case "srcintc":
+                case ModuleNames.Src:
                     return SKL_MODULE_TYPE.SRCINT;
-                case "mic_select":
+                case ModuleNames.MicSel:
                     return SKL_MODULE_TYPE.MIC_SELECT;
-                case "kpb":
+                case ModuleNames.Kpb:
                     return SKL_MODULE_TYPE.KPB;
-                case "probe":
+                case ModuleNames.Probe:
                     return SKL_MODULE_TYPE.PROBE;
-                case "asrc":
+                case ModuleNames.Asrc:
                     return SKL_MODULE_TYPE.ASRC;
-                case "gain":
+                case ModuleNames.Gain:
                     return SKL_MODULE_TYPE.GAIN;
                 default:
                     return SKL_MODULE_TYPE.ALGO;

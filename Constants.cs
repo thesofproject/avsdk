@@ -40,6 +40,30 @@ namespace itt
         public const DAPM_EVENT PGAL  = (DAPM_EVENT.PRE_PMU | DAPM_EVENT.POST_PMD);
     }
 
+    public static class ModuleNames
+    {
+        public const string Mixin = "mixin";
+        public const string Mixout = "mixout";
+        public const string Copier = "copier";
+        public const string PeakVolume = "peakvol";
+        public const string Gain = "gain";
+        public const string UpDownMix = "updwmix";
+        public const string Src = "srcintc";
+        public const string Asrc = "asrc";
+        public const string Wov = "wov";
+        public const string Aec = "aec";
+        public const string MicSel = "micsel";
+        public const string Mux = "mux";
+        public const string Kpb = "kpbuff";
+        public const string Probe = "probe";
+        public const string Eqiir = "eqiir";
+        public const string Eqfir = "eqfir";
+        public const string Eqdcr = "eqdcr";
+        public const string MDRC = "mdrc";
+        public const string Uplink = "uplink";
+        public const string Downlink = "downlink";
+    }
+
     //
     // This is for sorting which widgets will be triggered first
     // according to DAPM rules.
