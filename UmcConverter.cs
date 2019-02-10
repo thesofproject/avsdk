@@ -595,8 +595,10 @@ namespace itt
             for (int i = 0; i < formats.Length; i++)
                 result.AddRange(GetTuples(formats[i], id));
 
-            ModuleParams param = config.ModuleParams.First(p => p.Module.Equals(module.Type));
-            result.AddRange(GetTuples(param, id));
+            ModuleParams param = config.ModuleParams.FirstOrDefault(
+                p => p.Module.Equals(module.Type) && p.Instance == module.Instance);
+            if (param != null)
+                result.AddRange(GetTuples(param, id));
 
             return result;
         }
