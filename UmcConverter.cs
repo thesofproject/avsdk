@@ -1151,104 +1151,104 @@ namespace itt
             return result;
         }
 
-        static string GetPathFirstLine(Path path)
+        static string GetPathFirstRoute(Path path)
         {
-            var line = new StringBuilder();
+            var route = new StringBuilder();
 
             if (path.Direction == Direction.PLAYBACK &&
                 path.Device != null)
             {
                 Link first = path.Links.First();
-                line.Append(GetWidgetName(path, first.From));
-                line.Append($", , {path.Device}");
+                route.Append(GetWidgetName(path, first.From));
+                route.Append($", , {path.Device}");
             }
             else if (path.Direction == Direction.CAPTURE &&
                 path.Port != null)
             {
                 Module source = path.Modules.Module.First(
                     m => m.ModulePosition == ModulePosition.SOURCE);
-                line.Append(GetWidgetName(path, source));
-                line.Append($", , {path.Port}");
+                route.Append(GetWidgetName(path, source));
+                route.Append($", , {path.Port}");
             }
 
-            return line.ToString();
+            return route.ToString();
         }
 
-        static string GetPathLastLine(Path path)
+        static string GetPathLastRoute(Path path)
         {
-            var line = new StringBuilder();
+            var route = new StringBuilder();
 
             if (path.Direction == Direction.PLAYBACK &&
                 path.Port != null)
             {
                 Module sink = path.Modules.Module.Last(
                     m => m.ModulePosition == ModulePosition.SINK);
-                line.Append($"{path.Port}, , ");
-                line.Append(GetWidgetName(path, sink));
+                route.Append($"{path.Port}, , ");
+                route.Append(GetWidgetName(path, sink));
             }
             else if (path.Direction == Direction.CAPTURE &&
                 path.Device != null)
             {
                 Link last = path.Links.Last();
-                line.Append($"{path.Device}, , ");
-                line.Append(GetWidgetName(path, last.To));
+                route.Append($"{path.Device}, , ");
+                route.Append(GetWidgetName(path, last.To));
             }
 
-            return line.ToString();
+            return route.ToString();
         }
 
-        static IEnumerable<string> GetPathLines(Path path)
+        static IEnumerable<string> GetPathRoutes(Path path)
         {
             var result = new List<string>();
-            var lines = new StringBuilder();
+            var routes = new StringBuilder();
 
-            string line = GetPathFirstLine(path);
-            if (!string.IsNullOrEmpty(line))
-                result.Add(line);
+            string route = GetPathFirstRoute(path);
+            if (!string.IsNullOrEmpty(route))
+                result.Add(route);
 
             foreach (var link in path.Links)
             {
-                lines.Clear();
-                lines.Append(GetWidgetName(path, link.To));
-                lines.Append(", , ");
-                lines.Append(GetWidgetName(path, link.From));
-                result.Add(lines.ToString());
+                routes.Clear();
+                routes.Append(GetWidgetName(path, link.To));
+                routes.Append(", , ");
+                routes.Append(GetWidgetName(path, link.From));
+                result.Add(routes.ToString());
             }
 
-            line = GetPathLastLine(path);
-            if (!string.IsNullOrEmpty(line))
-                result.Add(line);
+            route = GetPathLastRoute(path);
+            if (!string.IsNullOrEmpty(route))
+                result.Add(route);
 
             return result;
         }
 
-        IEnumerable<string> GetConnectorLines(PathConnector connector)
+        IEnumerable<string> GetConnectorRoutes(PathConnector connector)
         {
             var result = new List<string>();
-            var line = new StringBuilder();
+            var route = new StringBuilder();
 
             foreach (var input in connector.Input)
             {
                 foreach (var output in connector.Output)
                 {
-                    line.Clear();
-                    line.Append(GetWidgetName(output.PathName, output.Module, output.Instance));
+                    route.Clear();
+                    route.Append(GetWidgetName(output.PathName, output.Module, output.Instance));
                     string control = string.Empty;
                     if (connector.Type == LinkType.MIXER)
                         control = GetMixerName(input.PathName, input.Module);
-                    line.Append($", {control}, ");
+                    route.Append($", {control}, ");
 
                     if (connector.Type == LinkType.SWITCH)
                     {
-                        line.Append(connector.Name);
-                        result.Add(line.ToString());
-                        line.Clear();
-                        line.Append(connector.Name);
-                        line.Append(", Switch, ");
+                        route.Append(connector.Name);
+                        result.Add(route.ToString());
+                        route.Clear();
+                        route.Append(connector.Name);
+                        route.Append(", Switch, ");
                     }
 
-                    line.Append(GetWidgetName(input.PathName, input.Module, input.Instance));
-                    result.Add(line.ToString());
+                    route.Append(GetWidgetName(input.PathName, input.Module, input.Instance));
+                    result.Add(route.ToString());
                 }
             }
 
@@ -1258,14 +1258,14 @@ namespace itt
         public SectionGraph GetGraphSection()
         {
             var graph = new SectionGraph("Pipeline 1 Graph");
-            var lines = new List<string>();
+            var routes = new List<string>();
 
             foreach (var path in paths.Path)
-                lines.AddRange(GetPathLines(path));
+                routes.AddRange(GetPathRoutes(path));
             foreach (var connector in pathConnectors.PathConnector)
-                lines.AddRange(GetConnectorLines(connector));
+                routes.AddRange(GetConnectorRoutes(connector));
 
-            graph.Lines = lines.ToArray();
+            graph.Lines = routes.ToArray();
             return graph;
         }
 
