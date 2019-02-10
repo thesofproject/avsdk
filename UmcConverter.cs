@@ -1301,17 +1301,19 @@ namespace itt
             if (fePaths.Count() == 0)
                 return result;
 
+            uint i = 0;
             var groups = fePaths.GroupBy(p => p.DaiLinkName).ToArray();
-            for (int i = 0; i < groups.Length; i++)
+            foreach (var group in groups)
             {
-                var group = groups[i];
                 var section = new SectionPCM(group.Key);
-                section.ID = 0u;
-                section.DAI = new DAI(group.First().DaiName) { ID = (uint)i };
+                section.DAI = new DAI(group.First().DaiName) { ID = i++ };
 
                 Path path = group.FirstOrDefault(p => p.Direction == Direction.PLAYBACK);
+                // Check playback path connection type for HDMI
                 if (path != null)
                 {
+                    if (path.ConnType == ConnType.HDMI_HOST_DMA)
+                        section.ID = 0xFF;
                     SectionPCMCapabilities caps = GetPCMCapabilities(path);
                     result.Add(caps);
                     section.Playback = new DAILink("playback");
