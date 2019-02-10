@@ -129,7 +129,7 @@ namespace itt
 
             if (paths != null && pathConnectors != null)
             {
-                result.AddRange(GetPipelineSections());
+                result.AddRange(GetPathsSections());
                 result.AddRange(GetPathConnectorsSections());
                 result.Add(GetGraphSection());
                 result.AddRange(GetPCMSections());
@@ -1101,7 +1101,7 @@ namespace itt
             return new Section[] { control, section };
         }
 
-        public IEnumerable<Section> GetPipelineSections()
+        public IEnumerable<Section> GetPathsSections()
         {
             var result = new List<Section>();
             foreach (var path in paths.Path)
