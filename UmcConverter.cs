@@ -1229,15 +1229,25 @@ namespace itt
 
             foreach (var input in connector.Input)
             {
-                Path source = paths.Path.First(p => p.Name.Equals(input.PathName));
                 foreach (var output in connector.Output)
                 {
-                    Path sink = paths.Path.First(p => p.Name.Equals(output.PathName));
-                    Link link = sink.Links.First(l => l.From.Module.Equals(output.Module));
                     line.Clear();
-                    line.Append(GetWidgetName(sink, link.From));
-                    line.Append($", {GetMixerName(source.Name, input.Module)}, ");
-                    line.Append(GetWidgetName(source, input));
+                    line.Append(GetWidgetName(output.PathName, output.Module, output.Instance));
+                    string control = string.Empty;
+                    if (connector.Type == LinkType.MIXER)
+                        control = GetMixerName(input.PathName, input.Module);
+                    line.Append($", {control}, ");
+
+                    if (connector.Type == LinkType.SWITCH)
+                    {
+                        line.Append(connector.Name);
+                        result.Add(line.ToString());
+                        line.Clear();
+                        line.Append(connector.Name);
+                        line.Append(", Switch, ");
+                    }
+
+                    line.Append(GetWidgetName(input.PathName, input.Module, input.Instance));
                     result.Add(line.ToString());
                 }
             }
@@ -1252,14 +1262,6 @@ namespace itt
 
             foreach (var path in paths.Path)
                 lines.AddRange(GetPathLines(path));
-            //
-            // One could try to provide mixin-path <-> mixout-path ordering for Switches,
-            // yet sorting the paths and connectors is not as easy as it seems to be.
-            // There can be multiple paths matching multiple connectors with thier
-            // mixouts or mixins being relevant for multiple Switches simulatnously.
-            //
-            // Because of this, we simply dump Switches at the end of the graph.
-            //
             foreach (var connector in pathConnectors.PathConnector)
                 lines.AddRange(GetConnectorLines(connector));
 
