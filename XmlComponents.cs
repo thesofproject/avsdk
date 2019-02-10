@@ -753,6 +753,8 @@ namespace itt
 
     public class PathConnector
     {
+        [XmlAttribute("name")]
+        public string Name;
         [XmlAttribute("type")]
         public LinkType Type;
         [XmlElement]

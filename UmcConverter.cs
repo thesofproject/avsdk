@@ -1115,11 +1115,10 @@ namespace itt
         {
             var result = new List<Section>();
 
-            foreach (var connector in pathConnectors.PathConnector)
+            IEnumerable<PathConnector> connectors = pathConnectors.PathConnector
+                .Where(c => c.Type == LinkType.MIXER);
+            foreach (var connector in connectors)
             {
-                if (connector.Type != LinkType.MIXER)
-                   continue;
-
                 foreach (var input in connector.Input)
                     result.Add(GetMixerControl(
                         GetMixerName(input.PathName, input.Module),
@@ -1127,6 +1126,25 @@ namespace itt
                         TPLG_CTL.DAPM_VOLSW,
                         TPLG_CTL.DAPM_VOLSW,
                         TPLG_CTL.DAPM_VOLSW));
+            }
+
+            connectors = pathConnectors.PathConnector
+                .Where(c => c.Type == LinkType.SWITCH);
+            foreach (var connector in connectors)
+            {
+                SectionControlMixer mixer = GetMixerControl("Switch",
+                    0, 1, null, Constants.NOPM,
+                    TPLG_CTL.DAPM_VOLSW,
+                    TPLG_CTL.DAPM_VOLSW,
+                    TPLG_CTL.DAPM_VOLSW);
+
+                var widget = new SectionWidget(connector.Name);
+                widget.Index = 0;
+                widget.Type = TPLG_DAPM.SWITCH;
+                widget.NoPm = true;
+                widget.Mixer = new[] { mixer.Identifier };
+                result.Add(mixer);
+                result.Add(widget);
             }
 
             result = result.Distinct(new SectionComparer()).ToList();
