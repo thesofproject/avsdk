@@ -460,7 +460,7 @@ namespace itt
             var result = new List<VendorTuples>();
 
             var uuids = new VendorTuples<Guid>($"mod_{id}");
-            uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.uuid) };
+            uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.Uuid) };
             result.Add(uuids);
 
             var bytes = new VendorTuples<byte>($"u8_mod_type_{id}");
@@ -663,7 +663,7 @@ namespace itt
                         ModuleType template = GetTemplate(pair.Item2.Module);
                         moduleId = template.ModuleId;
                         instanceId = pair.Item2.Instance;
-                        uuid = template.uuid;
+                        uuid = template.Uuid;
                     }
                 }
 
@@ -733,7 +733,7 @@ namespace itt
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
-            uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.uuid) };
+            uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.Uuid) };
 
             tuples.Add(uuids);
             var bytes = new VendorTuples<byte>("u8_data");

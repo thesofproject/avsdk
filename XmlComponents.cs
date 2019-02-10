@@ -431,27 +431,10 @@ namespace itt
 
     public class ModuleType
     {
-        internal Guid uuid;
         [XmlAttribute("name")]
         public string Name { get; set; }
         [XmlAttribute("uuid")]
-        public string Uuid
-        {
-            get
-            {
-                return uuid.ToString();
-            }
-
-            set
-            {
-                try
-                {
-                    uuid = new Guid(value);
-                }
-                catch { }
-            }
-        }
-
+        public Guid Uuid { get; set; }
         [XmlAttribute("module_id")]
         public uint ModuleId { get; set; }
         [XmlAttribute("loadable")]
