@@ -15,7 +15,6 @@ namespace itt
         {
             "--config",
             "--tplg-conf",
-            "--schema"
         };
 
         static int Main(string[] args)
@@ -62,6 +61,7 @@ namespace itt
                 Console.WriteLine($"{appName} failed. Message: {ex.Message}");
                 if (ex.InnerException != null)
                 {
+                    Console.WriteLine();
                     Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                     Console.WriteLine("Inner stack trace:");
                     Console.WriteLine(ex.InnerException.StackTrace);
@@ -91,9 +91,6 @@ namespace itt
             Console.WriteLine("\t--tplg-conf <path>    Path of output file to create");
             Console.WriteLine("\t--help                Show this message and exit");
             Console.WriteLine("\t--version             Output version information and exit");
-            Console.WriteLine();
-            Console.WriteLine("  Options:");
-            Console.WriteLine("\t--schema <path>       Validate --config XML using XML schema");
         }
 
         static Dictionary<string, string> ParseArguments(string[] args)
