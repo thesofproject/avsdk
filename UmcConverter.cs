@@ -95,9 +95,9 @@ namespace itt
             return GetWidgetName(path.Name, endpoint.Module, endpoint.Instance);
         }
 
-        static string GetWidgetName(Path path, InputOutput endpoint)
+        static string GetWidgetName(InputOutput endpoint)
         {
-            return GetWidgetName(path.Name, endpoint.Module, endpoint.Instance);
+            return GetWidgetName(endpoint.PathName, endpoint.Module, endpoint.Instance);
         }
 
         static string GetMixerName(string path, string module)
@@ -1234,7 +1234,7 @@ namespace itt
                 foreach (var output in connector.Output)
                 {
                     route.Clear();
-                    route.Append(GetWidgetName(output.PathName, output.Module, output.Instance));
+                    route.Append(GetWidgetName(output));
                     string control = string.Empty;
                     if (connector.Type == LinkType.MIXER)
                         control = GetMixerName(input.PathName, input.Module);
@@ -1249,7 +1249,7 @@ namespace itt
                         route.Append(", Switch, ");
                     }
 
-                    route.Append(GetWidgetName(input.PathName, input.Module, input.Instance));
+                    route.Append(GetWidgetName(input));
                     result.Add(route.ToString());
                 }
             }
