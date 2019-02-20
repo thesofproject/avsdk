@@ -19,7 +19,7 @@ namespace itt
         public const int GAIN_DB_STEP    = 10;
         public const int GAIN_DB_MIN     = -14400;
         public const int GAIN_TC_MIN     = 0;
-        public const int GAIN_TC_MAX     = 5000;
+        public const int GAIN_TC_MAX     = 10000000;
         public const int GAIN_RT_MIN     = 0;
         public const int GAIN_RT_MAX     = 2;
 
