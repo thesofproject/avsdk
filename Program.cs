@@ -10,21 +10,49 @@ namespace itt
 {
     class Program
     {
-        static readonly string appName = AppDomain.CurrentDomain.FriendlyName;
-        static readonly string[] options = new[]
+        struct Option
         {
-            "--config",
-            "--tplg-conf",
+            internal string Short;
+            internal string Long;
+
+            internal Option(string s, string l)
+            {
+                Short = s;
+                Long = l;
+            }
+
+            internal bool Matches(string arg)
+            {
+                return arg.Equals(Short) || arg.Equals(Long);
+            }
+
+            public override string ToString()
+            {
+                return $"{Short}, {Long}";
+            }
+        }
+
+        static Option Input = new Option("-c", "--config");
+        static Option Output = new Option("-o", "--tplg-conf");
+        static Option Help = new Option("-h", "--help");
+        static Option Version = new Option("-v", "--version");
+
+        static readonly string appName = AppDomain.CurrentDomain.FriendlyName;
+        static readonly Dictionary<string, Option> required =
+            new Dictionary<string, Option>
+        {
+            { "input", Input },
+            { "output", Output },
         };
 
         static int Main(string[] args)
         {
-            if (args.Contains("--help"))
+            if (args.Any(a => Help.Matches(a)))
             {
                 ShowHelp();
                 return 0;
             }
-            else if (args.Contains("--version"))
+            else if(args.Any(a => Version.Matches(a)))
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 Console.WriteLine($"Intel Topology Tool, version {version}");
@@ -32,10 +60,10 @@ namespace itt
             }
 
             var dictionary = ParseArguments(args);
-            if (!dictionary.ContainsKey("--config") ||
-                !dictionary.ContainsKey("--tplg-conf"))
+            if (!dictionary.ContainsKey("input") ||
+                !dictionary.ContainsKey("output"))
             {
-                Console.WriteLine($"Please specify --config and --tplg-conf arguments.");
+                Console.WriteLine($"Please specify -c and -o arguments.");
                 ShowShortHelp();
                 return 1;
             }
@@ -44,14 +72,14 @@ namespace itt
             {
                 System system;
                 var deserializer = new XmlSerializer(typeof(System));
-                using (var stream = new FileStream(dictionary["--config"], FileMode.Open))
+                using (var stream = new FileStream(dictionary["input"], FileMode.Open))
                 {
                     system = (System)deserializer.Deserialize(stream);
                 }
 
                 var serializer = new UmcSerializer();
                 var sections = new UmcConverter(system).GetAllSections();
-                using (var stream = new FileStream(dictionary["--tplg-conf"], FileMode.Create))
+                using (var stream = new FileStream(dictionary["output"], FileMode.Create))
                 {
                     serializer.Serialize(stream, sections);
                 }
@@ -83,14 +111,12 @@ namespace itt
 
         static void ShowHelp()
         {
-            Console.WriteLine($"Usage: {appName} --config <input> --tplg-conf <output> [OPTIONS]");
-            Console.WriteLine($"   or: {appName} --help");
-            Console.WriteLine($"   or: {appName} --version");
+            Console.WriteLine($"Usage: {appName} -c [INPUT] -o [OUTPUT]");
             Console.WriteLine();
-            Console.WriteLine("\t--config <path>       Path to XML document to convert");
-            Console.WriteLine("\t--tplg-conf <path>    Path of output file to create");
-            Console.WriteLine("\t--help                Show this message and exit");
-            Console.WriteLine("\t--version             Output version information and exit");
+            Console.WriteLine($"  {Input}=FILE\tPath to XML document to convert");
+            Console.WriteLine($"  {Output}=FILE\tPath to output file to create");
+            Console.WriteLine($"  {Help}\t\tShow this message and exit");
+            Console.WriteLine($"  {Version}\t\tOutput version information and exit");
         }
 
         static Dictionary<string, string> ParseArguments(string[] args)
@@ -100,12 +126,14 @@ namespace itt
 
             for (int i = 0; i <= last; i += 2)
             {
-                int index = Array.IndexOf(options, args[i]);
-                if (index == -1 || result.ContainsKey(options[index]))
+                string key = required.FirstOrDefault(
+                    p => p.Value.Matches(args[i])).Key;
+
+                if (key == null || result.ContainsKey(key))
                     continue;
 
-                result[options[index]] = args[i + 1];
-                if (result.Keys.Count == options.Length)
+                result[key] = args[i + 1];
+                if (result.Keys.Count == required.Count)
                     break;
             }
 
