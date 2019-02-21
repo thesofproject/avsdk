@@ -27,12 +27,10 @@ namespace itt
             SubsystemType[] subsystems = system.SubsystemType;
 
             // Retrieve manifest and firmware config
-            SubsystemType sub = subsystems.SingleOrDefault(
-                e => e.ManifestData != null);
+            SubsystemType sub = subsystems.SingleOrDefault(e => e.ManifestData != null);
             if (sub != null)
                 manifestData = sub.ManifestData;
-            sub = subsystems.SingleOrDefault(
-                e => e.FirmwareConfig != null);
+            sub = subsystems.SingleOrDefault(e => e.FirmwareConfig != null);
             if (sub != null)
                 firmwareConfig = sub.FirmwareConfig;
 
@@ -45,12 +43,14 @@ namespace itt
 
             // Retrieve paths and connectors
             sub = subsystems.SingleOrDefault(
-                e => e.Paths != null && e.PathConnectors != null);
+                e => e.Paths != null && e.Paths.Path != null);
             if (sub != null)
-            {
                 paths = sub.Paths;
+
+            sub = subsystems.SingleOrDefault(
+                e => e.PathConnectors != null && e.PathConnectors.PathConnector != null);
+            if (sub != null)
                 pathConnectors = sub.PathConnectors;
-            }
         }
 
         static Tuple<string, T> GetTuple<T>(SKL_TKN token, T value)
@@ -120,20 +120,14 @@ namespace itt
             var result = new List<Section>();
             result.Add(new SectionSkylakeTokens());
 
-            if (manifestData != null)
-                result.AddRange(GetFirmwareInfoSections());
-            if (firmwareConfig != null)
-                result.AddRange(GetFirmwareConfigSections());
-            if (moduleType != null)
-                result.AddRange(GetModuleTypeSections());
+            result.AddRange(GetFirmwareInfoSections());
+            result.AddRange(GetFirmwareConfigSections());
+            result.AddRange(GetModuleTypeSections());
 
-            if (paths != null && pathConnectors != null)
-            {
-                result.AddRange(GetPathsSections());
-                result.AddRange(GetPathConnectorsSections());
-                result.Add(GetGraphSection());
-                result.AddRange(GetPCMSections());
-            }
+            result.AddRange(GetPathsSections());
+            result.AddRange(GetPathConnectorsSections());
+            result.Add(GetGraphSection());
+            result.AddRange(GetPCMSections());
 
             result.AddRange(GetManifestSections(result));
             return result;
@@ -142,6 +136,8 @@ namespace itt
         public IEnumerable<Section> GetFirmwareInfoSections()
         {
             var result = new List<Section>();
+            if (manifestData == null)
+                return result;
             var section = new SectionSkylakeTuples("lib_data");
             var tuples = new List<VendorTuples>();
 
@@ -298,7 +294,11 @@ namespace itt
 
         public IEnumerable<Section> GetFirmwareConfigSections()
         {
+            var result = new List<Section>();
             FirmwareConfig config = firmwareConfig;
+            if (config == null)
+                return result;
+
             var tuples = new List<VendorTuples>();
             VendorTuples<uint> words;
 
@@ -342,7 +342,6 @@ namespace itt
             if (config.SchedulerConfiguration != null)
                 tuples.AddRange(GetTuples(config.SchedulerConfiguration));
 
-            var result = new List<Section>();
             if (tuples.Any())
             {
                 var section = new SectionSkylakeTuples("fw_cfg_data");
@@ -487,6 +486,8 @@ namespace itt
         public IEnumerable<Section> GetModuleTypeSections()
         {
             var result = new List<Section>();
+            if (moduleType == null)
+                return result;
             var section = new SectionSkylakeTuples("mod_type_data");
             var tuples = new List<VendorTuples>();
 
@@ -701,24 +702,30 @@ namespace itt
                 pinCount = template.InputPins;
                 maxQueue = Constants.MAX_IN_QUEUE;
 
-                var links = path.Links.Select(l => Tuple.Create(l.To, l.From));
-                var connectors = pathConnectors.PathConnector
-                    .Where(c => c.Output[0].PathName.Equals(path.Name))
-                    .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
+                pairs = path.Links.Select(l => Tuple.Create(l.To, l.From));
+                if (pathConnectors != null)
+                {
+                    var connectors = pathConnectors.PathConnector
+                        .Where(c => c.Output[0].PathName.Equals(path.Name))
+                        .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
 
-                pairs = links.Concat(connectors);
+                    pairs = pairs.Concat(connectors);
+                }
             }
             else
             {
                 pinCount = template.OutputPins;
                 maxQueue = Constants.MAX_OUT_QUEUE;
 
-                var links = path.Links.Select(l => Tuple.Create(l.From, l.To));
-                var connectors = pathConnectors.PathConnector
-                    .Where(c => c.Input[0].PathName.Equals(path.Name))
-                    .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
+                pairs = path.Links.Select(l => Tuple.Create(l.From, l.To));
+                if (pathConnectors != null)
+                {
+                    var connectors = pathConnectors.PathConnector
+                        .Where(c => c.Input[0].PathName.Equals(path.Name))
+                        .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
 
-                pairs = links.Concat(connectors);
+                    pairs = pairs.Concat(connectors);
+                }
             }
 
             pairs = pairs.Where(
@@ -977,21 +984,24 @@ namespace itt
             if (ids.Any())
                 widget.Bytes = ids.ToArray();
 
-            // Append mixers from path connectors
-            IEnumerable<PathConnector> connectors = pathConnectors.PathConnector.Where(
-                c => c.Type == LinkType.MIXER && c.Output.Any(
-                    o => o.PathName.Equals(path.Name) &&
-                         o.Module.Equals(module.Type) &&
-                         o.Instance == module.Instance));
-
-            IEnumerable<InputOutput> inputs = connectors.SelectMany(c => c.Input);
             ids = result.OfType<SectionControlMixer>()
                 .Select(c => c.Identifier);
-            ids = ids.Concat(inputs.Select(
-                i => GetMixerName(i.PathName, i.Module)));
+            // Append mixers from path connectors
+            if (pathConnectors != null)
+            {
+                IEnumerable<PathConnector> connectors = pathConnectors.PathConnector.Where(
+                    c => c.Type == LinkType.MIXER && c.Output.Any(
+                        o => o.PathName.Equals(path.Name) &&
+                             o.Module.Equals(module.Type) &&
+                             o.Instance == module.Instance));
+
+                IEnumerable<InputOutput> inputs = connectors.SelectMany(c => c.Input);
+                ids = ids.Concat(inputs.Select(
+                    i => GetMixerName(i.PathName, i.Module)));
+            }
+
             if (ids.Any())
                 widget.Mixer = ids.ToArray();
-
             return result;
         }
 
@@ -1106,6 +1116,9 @@ namespace itt
         public IEnumerable<Section> GetPathsSections()
         {
             var result = new List<Section>();
+            if (paths == null)
+                return result;
+
             foreach (var path in paths.Path)
                 result.AddRange(GetPathSections(path));
 
@@ -1116,6 +1129,8 @@ namespace itt
         public IEnumerable<Section> GetPathConnectorsSections()
         {
             var result = new List<Section>();
+            if (pathConnectors == null)
+                return result;
 
             IEnumerable<PathConnector> connectors = pathConnectors.PathConnector
                 .Where(c => c.Type == LinkType.MIXER);
@@ -1262,10 +1277,12 @@ namespace itt
             var graph = new SectionGraph("Pipeline 1 Graph");
             var routes = new List<string>();
 
-            foreach (var path in paths.Path)
-                routes.AddRange(GetPathRoutes(path));
-            foreach (var connector in pathConnectors.PathConnector)
-                routes.AddRange(GetConnectorRoutes(connector));
+            if (paths != null)
+                foreach (var path in paths.Path)
+                    routes.AddRange(GetPathRoutes(path));
+            if (pathConnectors != null)
+                foreach (var connector in pathConnectors.PathConnector)
+                    routes.AddRange(GetConnectorRoutes(connector));
 
             graph.Lines = routes.ToArray();
             return graph;
@@ -1295,11 +1312,11 @@ namespace itt
         public IEnumerable<Section> GetPCMSections()
         {
             var result = new List<Section>();
+            if (paths == null)
+                return result;
+
             IEnumerable<Path> fePaths = paths.Path.Where(
                 p => p.Device != null && p.DaiName != null && p.DaiLinkName != null);
-
-            if (fePaths.Count() == 0)
-                return result;
 
             uint i = 0;
             var groups = fePaths.GroupBy(p => p.DaiLinkName).ToArray();
@@ -1337,6 +1354,9 @@ namespace itt
 
         public IEnumerable<Section> GetManifestSections(IEnumerable<Section> current)
         {
+            if (current == null)
+                throw new ArgumentNullException(nameof(current));
+
             int num = 0;
             if (manifestData != null)
                 num++;
