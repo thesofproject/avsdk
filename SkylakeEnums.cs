@@ -132,8 +132,7 @@ namespace itt
         U32_SCH_SYS_TICK_CFG_LEN,
         U32_SCH_SYS_TICK_CFG,
 
-        U32_FMT_CFG_IDX,
-        MAX = U32_FMT_CFG_IDX,
+        U32_FMT_CFG_IDX
     }
 
     public enum SKL_PIPE_CONN_TYPE
