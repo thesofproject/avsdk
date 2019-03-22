@@ -213,7 +213,7 @@ namespace itt
             result.Add(section.GetPrivateData());
 
             var priv = new SectionData($"dmactrl_data{id}");
-            var dmactrl = new DmactrlCtrl();
+            var dmactrl = new DMACtrlCfg();
             if (control.EnableSclk && control.EnableFsclk)
             {
                 dmactrl.Type = Constants.DMA_TRANSMISSION_START;

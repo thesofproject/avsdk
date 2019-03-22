@@ -54,7 +54,7 @@ namespace itt
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    public struct DmactrlCtrl
+    public struct DMACtrlCfg
     {
         [FieldOffset(0)] public uint Type;
         [FieldOffset(4)] public uint Size;
