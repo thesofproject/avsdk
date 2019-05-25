@@ -647,9 +647,9 @@ namespace NUmcSerializer
         [UmcElement("rate_max")]
         public uint? RateMax { get; set; }
         [UmcElement("channels_min")]
-        public uint ChannelsMin { get; set; }
+        public uint? ChannelsMin { get; set; }
         [UmcElement("channels_max")]
-        public uint ChannelsMax { get; set; }
+        public uint? ChannelsMax { get; set; }
         [UmcElement("periods_min")]
         public uint? PeriodsMin { get; set; }
         [UmcElement("periods_max")]
