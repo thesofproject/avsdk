@@ -763,6 +763,8 @@ namespace NUmcSerializer
         public DAILink Playback { get; set; }
         [UmcSection("pcm")]
         public DAILink Capture { get; set; }
+        [UmcSection("compress")]
+        public bool? Compress { get; set; }
 
         [UmcElement("symmetric_rates")]
         public bool? SymmetricRates { get; set; }
