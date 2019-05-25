@@ -851,6 +851,10 @@ namespace NUmcSerializer
         [UmcElement("id")]
         public uint ID { get; set; }
 
+        [UmcSection("playback")]
+        public uint? SupportsPlayback { get; set; }
+        [UmcSection("capture")]
+        public uint? SupportsCapture { get; set; }
         [UmcSection("pcm")]
         public DAILink Playback { get; set; }
         [UmcSection("pcm")]
