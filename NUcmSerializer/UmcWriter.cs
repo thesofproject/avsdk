@@ -63,9 +63,7 @@ namespace NUmcSerializer
                     attrs = tokenInfo.GetCustomAttributes(false);
 
                 var attr = (UmcNamedTagAttribute)attrs.SingleOrDefault(
-                    a => a.GetType().IsSubclassOf(typeof(UmcNamedTagAttribute))
-                );
-
+                    a => a.GetType().IsSubclassOf(typeof(UmcNamedTagAttribute)));
                 // obtain token name
                 if (attr != null && attr.Name != null)
                     Name = attr.Name;
@@ -85,9 +83,7 @@ namespace NUmcSerializer
                 }
 
                 PropertyInfo propInfo = type.GetProperties().SingleOrDefault(
-                    p => Attribute.IsDefined(p, typeof(UmcIdentifierAttribute))
-                );
-
+                    p => Attribute.IsDefined(p, typeof(UmcIdentifierAttribute)));
                 if (propInfo != null)
                     Identifier = (string)propInfo.GetValue(token);
             }
