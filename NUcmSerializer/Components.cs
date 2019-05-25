@@ -650,6 +650,20 @@ namespace NUmcSerializer
         public uint ChannelsMin { get; set; }
         [UmcElement("channels_max")]
         public uint ChannelsMax { get; set; }
+        [UmcElement("periods_min")]
+        public uint? PeriodsMin { get; set; }
+        [UmcElement("periods_max")]
+        public uint? PeriodsMax { get; set; }
+        [UmcElement("period_size_min")]
+        public uint? PeriodSizeMin { get; set; }
+        [UmcElement("period_size_max")]
+        public uint? PeriodSizeMax { get; set; }
+        [UmcElement("buffer_size_min")]
+        public uint? BufferSizeMin { get; set; }
+        [UmcElement("buffer_size_max")]
+        public uint? BufferSizeMax { get; set; }
+        [UmcElement("sig_bits")]
+        public uint? SigBits { get; set; }
 
         public SectionPCMCapabilities(string identifier)
             : base(identifier)
