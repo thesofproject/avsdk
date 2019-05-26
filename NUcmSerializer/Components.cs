@@ -164,8 +164,6 @@ namespace NUmcSerializer
     {
         [UmcElement("min")]
         public int? Min { get; set; }
-        [UmcElement("max")]
-        public int? Max { get; set; }
         [UmcElement("step")]
         public int Step { get; set; }
         [UmcElement("mute")]
