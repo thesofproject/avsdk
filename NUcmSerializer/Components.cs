@@ -831,12 +831,26 @@ namespace NUmcSerializer
         }
     }
 
+    /// <summary>
+    /// DAI physical PCM data formats.
+    /// </summary>
+    public enum DAI_FORMAT
+    {
+        [UmcEnum(Name = "I2S")] I2S          = 1, // I2S mode
+        [UmcEnum(Name = "RIGHT_J")] RIGHT_J  = 2, // Right Justified mode
+        [UmcEnum(Name = "LEFT_J")] LEFT_J    = 3, // Left Justified mode
+        [UmcEnum(Name = "DSP_A")] DSP_A      = 4, // L data MSB after FRM LRC
+        [UmcEnum(Name = "DSP_B")] DSP_B      = 5, // L data MSB during FRM LRC
+        [UmcEnum(Name = "AC97")] AC97        = 6, // AC97
+        [UmcEnum(Name = "PDM")] PDM          = 7  // Pulse density modulation
+    }
+
     public class SectionHWConfig : Section
     {
         [UmcElement("id")]
         public uint ID { get; set; }
         [UmcElement("format")]
-        public string Format { get; set; }
+        public DAI_FORMAT? Format { get; set; }
 
         [UmcElement("blkc")]
         public string Bclk { get; set; }
