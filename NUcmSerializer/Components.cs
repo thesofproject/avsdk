@@ -803,6 +803,16 @@ namespace NUmcSerializer
         [UmcEnum(Name = "PDM")] PDM          = 7  // Pulse density modulation
     }
 
+    /// <summary>
+    /// DAI topology BCLK parameter.
+    /// For the backwards capability, by default codec is bclk master.
+    /// </summary>
+    public enum TPLG_BCLK
+    {
+        [UmcEnum("codec_master")] CM  = 0, // codec is bclk master
+        [UmcEnum("codec_slave")] CS   = 1  // codec is bclk slave
+    }
+
     public class SectionHWConfig : Section
     {
         [UmcElement("id")]
@@ -811,7 +821,7 @@ namespace NUmcSerializer
         public DAI_FORMAT? Format { get; set; }
 
         [UmcElement("blkc")]
-        public string Bclk { get; set; }
+        public TPLG_BCLK? Bclk { get; set; }
         [UmcElement("invert_bclk")]
         public bool? InvertBclk { get; set; }
         [UmcElement("bclk_rate")]
