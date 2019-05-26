@@ -39,21 +39,13 @@ namespace NUmcSerializer
     public static class TPLG_CTL
     {
         // individual kcontrol info types
-        [UmcEnum(Name = "volsw")]
         public const uint VOLSW = 1;
-        [UmcEnum(Name = "volsw_sx")]
         public const uint VOLSW_SX = 2;
-        [UmcEnum(Name = "volsw_xr_sx")]
         public const uint VOLSW_XR_SX = 3;
-        [UmcEnum(Name = "enum")]
         public const uint ENUM = 4;
-        [UmcEnum(Name = "bytes")]
         public const uint BYTES = 5;
-        [UmcEnum(Name = "enum_value")]
         public const uint ENUM_VALUE = 6;
-        [UmcEnum(Name = "range")]
         public const uint RANGE = 7;
-        [UmcEnum(Name = "strobe")]
         public const uint STROBE = 8;
 
         // individual widget kcontrol info types
