@@ -620,10 +620,91 @@ namespace NUmcSerializer
         }
     }
 
+    public enum PCM_FORMAT
+    {
+        S8 = 0,      // Signed 8 bit
+        U8,          // Unsigned 8 bit
+        S16_LE,      // Signed 16 bit Little Endian
+        S16_BE,      // Signed 16 bit Big Endian
+        U16_LE,      // Unsigned 16 bit Little Endian
+        U16_BE,      // Unsigned 16 bit Big Endian
+        S24_LE,      // Signed 24 bit Little Endian using low three bytes in 32-bit word
+        S24_BE,      // Signed 24 bit Big Endian using low three bytes in 32-bit word
+        U24_LE,      // Unsigned 24 bit Little Endian using low three bytes in 32-bit word
+        U24_BE,      // Unsigned 24 bit Big Endian using low three bytes in 32-bit word
+        S32_LE,      // Signed 32 bit Little Endian
+        S32_BE,      // Signed 32 bit Big Endian
+        U32_LE,      // Unsigned 32 bit Little Endian
+        U32_BE,      // Unsigned 32 bit Big Endian
+        FLOAT_LE,    // Float 32 bit Little Endian, Range -1.0 to 1.0
+        FLOAT_BE,    // Float 32 bit Big Endian, Range -1.0 to 1.0
+        FLOAT64_LE,  // Float 64 bit Little Endian, Range -1.0 to 1.0
+        FLOAT64_BE,  // Float 64 bit Big Endian, Range -1.0 to 1.0
+        IEC958_SUBFRAME_LE,  // IEC-958 Little Endian
+        IEC958_SUBFRAME_BE,  // IEC-958 Big Endian
+        MU_LAW,      // Mu-Law
+        A_LAW,       // A-Law
+        IMA_ADPCM,   // Ima-ADPCM
+        MPEG,        // MPEG
+        GSM,         // GSM
+        S20_LE,      // Signed 20bit Little Endian in 4bytes format, LSB justified
+        S20_BE,      // Signed 20bit Big Endian in 4bytes format, LSB justified
+        U20_LE,      // Unsigned 20bit Little Endian in 4bytes format, LSB justified
+        U20_BE,      // Unsigned 20bit Big Endian in 4bytes format, LSB justified
+        SPECIAL = 31,  // Special
+        S24_3LE = 32,  // Signed 24bit Little Endian in 3bytes format
+        S24_3BE,     // Signed 24bit Big Endian in 3bytes format
+        U24_3LE,     // Unsigned 24bit Little Endian in 3bytes format
+        U24_3BE,     // Unsigned 24bit Big Endian in 3bytes format
+        S20_3LE,     // Signed 20bit Little Endian in 3bytes format
+        S20_3BE,     // Signed 20bit Big Endian in 3bytes format
+        U20_3LE,     // Unsigned 20bit Little Endian in 3bytes format
+        U20_3BE,     // Unsigned 20bit Big Endian in 3bytes format
+        S18_3LE,     // Signed 18bit Little Endian in 3bytes format
+        S18_3BE,     // Signed 18bit Big Endian in 3bytes format
+        U18_3LE,     // Unsigned 18bit Little Endian in 3bytes format
+        U18_3BE,     // Unsigned 18bit Big Endian in 3bytes format
+        G723_24,     // G.723 (ADPCM) 24 kbit/s, 8 samples in 3 bytes
+        G723_24_1B,  // G.723 (ADPCM) 24 kbit/s, 1 sample in 1 byte
+        G723_40,     // G.723 (ADPCM) 40 kbit/s, 8 samples in 3 bytes
+        G723_40_1B,  // G.723 (ADPCM) 40 kbit/s, 1 sample in 1 byte
+        DSD_U8,      // Direct Stream Digital (DSD) in 1-byte samples (x8)
+        DSD_U16_LE,  // Direct Stream Digital (DSD) in 2-byte samples (x16)
+        DSD_U32_LE,  // Direct Stream Digital (DSD) in 4-byte samples (x32)
+        DSD_U16_BE,  // Direct Stream Digital (DSD) in 2-byte samples (x16)
+        DSD_U32_BE   // Direct Stream Digital (DSD) in 4-byte samples (x32)
+    }
+
     public class SectionPCMCapabilities : Section
     {
+        public ulong Formats;  // PCM_FORMAT mask
+
         [UmcElement("formats")]
-        public string Formats { get; set; }
+        public string FormatsString
+        {
+            get
+            {
+                var values = Enum.GetValues(typeof(PCM_FORMAT)).Cast<int>();
+                List<string> names = new List<string>();
+                foreach (var value in values)
+                    if ((Formats & (1uL << value)) != 0)
+                        names.Add(Enum.GetName(typeof(PCM_FORMAT), value));
+                return string.Join(", ", names);
+            }
+
+            set
+            {
+                string formats = value ?? string.Empty;
+                string[] names = formats.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                Formats = 0;
+                foreach (var name in names)
+                {
+                    int format = (int)Enum.Parse(typeof(PCM_FORMAT), name);
+                    Formats += 1uL << format;
+                }
+            }
+        }
+
         [UmcElement("rates")]
         public string Rates { get; set; }
         [UmcElement("rate_min")]
