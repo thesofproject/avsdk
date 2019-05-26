@@ -797,7 +797,7 @@ namespace NUmcSerializer
         [UmcElement("stream_name")]
         public string StreamName { get; set; }
         [UmcArray("hw_configs")]
-        public string[] Configs { get; set; }
+        public string[] HwConfigs { get; set; }
         [UmcElement("default_hw_conf_id")]
         public uint DefaultHwConfId { get; set; }
 
