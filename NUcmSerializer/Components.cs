@@ -820,7 +820,7 @@ namespace NUmcSerializer
         [UmcElement("format")]
         public DAI_FORMAT? Format { get; set; }
 
-        [UmcElement("blkc")]
+        [UmcElement("bclk")]
         public TPLG_BCLK? Bclk { get; set; }
         [UmcElement("invert_bclk")]
         public bool? InvertBclk { get; set; }
