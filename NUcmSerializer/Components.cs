@@ -441,13 +441,8 @@ namespace NUmcSerializer
 
     public class SectionControlMixer : SectionControl
     {
-        [UmcElement("no_pm")]
-        public bool? NoPm { get; set; }
-
         [UmcElement("max")]
         public int? Max { get; set; }
-        [UmcElement("min")]
-        public int? Min { get; set; }
         [UmcElement("invert")]
         public bool Invert { get; set; }
 
@@ -476,8 +471,6 @@ namespace NUmcSerializer
         public int? NumRegs { get; set; }
         [UmcElement("mask")]
         public int? Mask { get; set; }
-        [UmcElement("min")]
-        public int? Min { get; set; }
         [UmcElement("max")]
         public int? Max { get; set; }
 
