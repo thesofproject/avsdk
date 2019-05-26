@@ -669,17 +669,17 @@ namespace NUmcSerializer
         }
     }
 
-    public class DAI : Section
+    public class FE_DAI : Section
     {
         [UmcElement("id")]
         public uint ID { get; set; }
 
-        public DAI(string identifier)
+        public FE_DAI(string identifier)
             : base(identifier)
         {
         }
 
-        public DAI()
+        public FE_DAI()
             : this(null)
         {
         }
@@ -709,7 +709,7 @@ namespace NUmcSerializer
         public uint ID { get; set; }
 
         [UmcSection("dai")]
-        public DAI DAI { get; set; }
+        public FE_DAI DAI { get; set; }
         [UmcSection("pcm")]
         public DAILink Playback { get; set; }
         [UmcSection("pcm")]
