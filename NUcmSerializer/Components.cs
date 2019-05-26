@@ -669,46 +669,6 @@ namespace NUmcSerializer
         }
     }
 
-    public class PCMConfig : Section
-    {
-        [UmcElement("format")]
-        public string Formats { get; set; }
-        [UmcElement("rate")]
-        public uint Rate { get; set; }
-        [UmcElement("channels")]
-        public byte Channels { get; set; }
-        [UmcElement("tdm_slot")]
-        public byte TDMSlot { get; set; }
-
-        public PCMConfig(string identifier)
-            : base(identifier)
-        {
-        }
-
-        public PCMConfig()
-            : this(null)
-        {
-        }
-    }
-
-    public class SectionPCMConfig : Section
-    {
-        [UmcSection("config")]
-        public PCMConfig Playback { get; set; }
-        [UmcSection("config")]
-        public PCMConfig Capture { get; set; }
-
-        public SectionPCMConfig(string identifier)
-            : base(identifier)
-        {
-        }
-
-        public SectionPCMConfig()
-            : this(null)
-        {
-        }
-    }
-
     public class DAI : Section
     {
         [UmcElement("id")]
@@ -729,8 +689,6 @@ namespace NUmcSerializer
     {
         [UmcElement("capabilities")]
         public string Capabilities { get; set; }
-        [UmcArray("configs")]
-        public string[] Configs { get; set; }
 
         public DAILink(string identifier)
             : base(identifier)
