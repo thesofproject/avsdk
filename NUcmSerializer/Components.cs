@@ -822,6 +822,22 @@ namespace NUmcSerializer
         }
     }
 
+    public class SectionCC : Section
+    {
+        [UmcElement("id")]
+        public uint ID { get; set; }
+
+        public SectionCC(string identifier)
+            : base(identifier)
+        {
+        }
+
+        public SectionCC()
+            : this(null)
+        {
+        }
+    }
+
     public class SectionHWConfig : Section
     {
         [UmcElement("id")]
