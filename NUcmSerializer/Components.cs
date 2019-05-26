@@ -823,6 +823,15 @@ namespace NUmcSerializer
         [UmcEnum("codec_slave")] CS   = 1  // codec is fsync slave
     }
 
+    /// <summary>
+    /// DAI mclk_direction.
+    /// </summary>
+    public enum TPLG_MCLK
+    {
+        [UmcEnum("codec_mclk_out")] CO  = 0, // for codec, mclk is output
+        [UmcEnum("codec_mclk_in")] CI   = 1  // for codec, mclk is input
+    }
+
     public class SectionHWConfig : Section
     {
         [UmcElement("id")]
@@ -845,7 +854,7 @@ namespace NUmcSerializer
         public uint? FsyncRate { get; set; }
 
         [UmcElement("mclk")]
-        public string Mclk { get; set; }
+        public TPLG_MCLK? Mclk { get; set; }
         [UmcElement("mclk_rate")]
         public uint? MclkRate { get; set; }
 
