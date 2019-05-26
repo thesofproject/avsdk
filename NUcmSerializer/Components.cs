@@ -685,17 +685,17 @@ namespace NUmcSerializer
         }
     }
 
-    public class DAILink : Section
+    public class PCMStream : Section
     {
         [UmcElement("capabilities")]
         public string Capabilities { get; set; }
 
-        public DAILink(string identifier)
+        public PCMStream(string identifier)
             : base(identifier)
         {
         }
 
-        public DAILink()
+        public PCMStream()
             : this(null)
         {
         }
@@ -711,9 +711,9 @@ namespace NUmcSerializer
         [UmcSection("dai")]
         public FE_DAI DAI { get; set; }
         [UmcSection("pcm")]
-        public DAILink Playback { get; set; }
+        public PCMStream Playback { get; set; }
         [UmcSection("pcm")]
-        public DAILink Capture { get; set; }
+        public PCMStream Capture { get; set; }
         [UmcSection("compress")]
         public bool? Compress { get; set; }
 
@@ -867,9 +867,9 @@ namespace NUmcSerializer
         [UmcSection("capture")]
         public uint? SupportsCapture { get; set; }
         [UmcSection("pcm")]
-        public DAILink Playback { get; set; }
+        public PCMStream Playback { get; set; }
         [UmcSection("pcm")]
-        public DAILink Capture { get; set; }
+        public PCMStream Capture { get; set; }
 
         [UmcElement("symmetric_rates")]
         public bool? SymmetricRates { get; set; }
