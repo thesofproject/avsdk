@@ -675,9 +675,29 @@ namespace NUmcSerializer
         DSD_U32_BE   // Direct Stream Digital (DSD) in 4-byte samples (x32)
     }
 
+    public enum PCM_RATE
+    {
+        e5512 = 0,  // 5512Hz
+        e8000,      // 8000Hz
+        e11025,     // 11025Hz
+        e16000,     // 16000Hz
+        e22050,     // 22050Hz
+        e32000,     // 32000Hz
+        e44100,     // 44100Hz
+        e48000,     // 48000Hz
+        e64000,     // 64000Hz
+        e88200,     // 88200Hz
+        e96000,     // 96000Hz
+        e176400,    // 176400Hz
+        e192000,    // 192000Hz
+        eCONTINUOUS = 30,  // continuous range
+        eKNOT = 31  // supports more non-continuos rates
+    }
+
     public class SectionPCMCapabilities : Section
     {
         public ulong Formats;  // PCM_FORMAT mask
+        public uint Rates;  // PCM_RATE mask
 
         [UmcElement("formats")]
         public string FormatsString
@@ -706,7 +726,31 @@ namespace NUmcSerializer
         }
 
         [UmcElement("rates")]
-        public string Rates { get; set; }
+        public string RatesString
+        {
+            get
+            {
+                var values = Enum.GetValues(typeof(PCM_RATE)).Cast<int>();
+                List<string> names = new List<string>();
+                foreach (var value in values)
+                    if ((Rates & (1u << value)) != 0)
+                        names.Add(Enum.GetName(typeof(PCM_RATE), value).TrimStart('e'));
+                return string.Join(", ", names);
+            }
+
+            set
+            {
+                string rates = value ?? string.Empty;
+                string[] names = rates.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                Rates = 0;
+                foreach (var name in names)
+                {
+                    int rate = (int)Enum.Parse(typeof(PCM_RATE), string.Concat("e", name));
+                    Rates += 1u << rate;
+                }
+            }
+        }
+
         [UmcElement("rate_min")]
         public uint? RateMin { get; set; }
         [UmcElement("rate_max")]
