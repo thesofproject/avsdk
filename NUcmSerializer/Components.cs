@@ -236,6 +236,8 @@ namespace NUmcSerializer
 
         [UmcElement("tuples"), UmcExclusive("value")]
         public string Tuples { get; set; }
+        [UmcElement("type")]
+        public uint? Type { get; set; }
 
         public SectionData(string identifier)
             : base(identifier)
