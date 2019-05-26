@@ -844,10 +844,40 @@ namespace NUmcSerializer
         public uint ID { get; set; }
         [UmcElement("format")]
         public string Format { get; set; }
+
         [UmcElement("blkc")]
         public string Bclk { get; set; }
+        [UmcElement("invert_bclk")]
+        public bool? InvertBclk { get; set; }
+        [UmcElement("bclk_rate")]
+        public uint? BclkRate { get; set; }
+
         [UmcElement("fsync")]
         public string Fsync { get; set; }
+        [UmcElement("invert_fsync")]
+        public bool? InvertFsync { get; set; }
+        [UmcElement("fsync_rate")]
+        public uint? FsyncRate { get; set; }
+
+        [UmcElement("mclk")]
+        public string Mclk { get; set; }
+        [UmcElement("mclk_rate")]
+        public uint? MclkRate { get; set; }
+
+        [UmcElement("clock_gated")]
+        public bool? ClockGated { get; set; }
+        [UmcElement("tdm_slots")]
+        public uint? TdmSlots { get; set; }
+        [UmcElement("tdm_slot_width")]
+        public uint? TdmSlotWidth { get; set; }
+        [UmcElement("tx_slots")]
+        public uint? TxSlots { get; set; }
+        [UmcElement("rx_slots")]
+        public uint? RxSlots { get; set; }
+        [UmcElement("tx_channels")]
+        public uint? TxChannels { get; set; }
+        [UmcElement("rx_channels")]
+        public uint? RxChannels { get; set; }
 
         public SectionHWConfig(string identifier)
             : base(identifier)
