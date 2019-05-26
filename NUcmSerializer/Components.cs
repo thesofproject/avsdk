@@ -813,6 +813,16 @@ namespace NUmcSerializer
         [UmcEnum("codec_slave")] CS   = 1  // codec is bclk slave
     }
 
+    /// <summary>
+    /// DAI topology FSYNC parameter.
+    /// For the backwards capability, by default codec is fsync master.
+    /// </summary>
+    public enum TPLG_FSYNC
+    {
+        [UmcEnum("codec_master")] CM  = 0, // codec is fsync master
+        [UmcEnum("codec_slave")] CS   = 1  // codec is fsync slave
+    }
+
     public class SectionHWConfig : Section
     {
         [UmcElement("id")]
@@ -828,7 +838,7 @@ namespace NUmcSerializer
         public uint? BclkRate { get; set; }
 
         [UmcElement("fsync")]
-        public string Fsync { get; set; }
+        public TPLG_FSYNC? Fsync { get; set; }
         [UmcElement("invert_fsync")]
         public bool? InvertFsync { get; set; }
         [UmcElement("fsync_rate")]
