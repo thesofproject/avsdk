@@ -595,9 +595,9 @@ namespace NUmcSerializer
         [UmcElement("no_pm")]
         public bool? NoPm { get; set; }
         [UmcElement("reg")]
-        public string Reg { get; set; }
+        public int? Reg { get; set; }
         [UmcElement("shift")]
-        public string Shift { get; set; }
+        public int? Shift { get; set; }
         [UmcElement("invert")]
         public bool? Invert { get; set; }
         [UmcElement("subseq")]
