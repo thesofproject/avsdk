@@ -152,7 +152,7 @@ namespace NUcmSerializer
             {
                 var attr = ((Enum)token).GetAttributeOfType<UcmEnumAttribute>();
                 if (attr != null)
-                    value = attr.Name;
+                    value = attr.Name ?? token.ToString();
                 else
                     value = ((Enum)token).ToString("D"); // default not acceptable
             }
