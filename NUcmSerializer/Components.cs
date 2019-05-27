@@ -677,21 +677,21 @@ namespace NUmcSerializer
 
     public enum PCM_RATE
     {
-        e5512 = 0,  // 5512Hz
-        e8000,      // 8000Hz
-        e11025,     // 11025Hz
-        e16000,     // 16000Hz
-        e22050,     // 22050Hz
-        e32000,     // 32000Hz
-        e44100,     // 44100Hz
-        e48000,     // 48000Hz
-        e64000,     // 64000Hz
-        e88200,     // 88200Hz
-        e96000,     // 96000Hz
-        e176400,    // 176400Hz
-        e192000,    // 192000Hz
-        eCONTINUOUS = 30,  // continuous range
-        eKNOT = 31  // supports more non-continuos rates
+        _5512 = 0,  // 5512Hz
+        _8000,      // 8000Hz
+        _11025,     // 11025Hz
+        _16000,     // 16000Hz
+        _22050,     // 22050Hz
+        _32000,     // 32000Hz
+        _44100,     // 44100Hz
+        _48000,     // 48000Hz
+        _64000,     // 64000Hz
+        _88200,     // 88200Hz
+        _96000,     // 96000Hz
+        _176400,    // 176400Hz
+        _192000,    // 192000Hz
+        CONTINUOUS = 30,  // continuous range
+        KNOT = 31   // supports more non-continuos rates
     }
 
     public class SectionPCMCapabilities : Section
@@ -713,7 +713,7 @@ namespace NUmcSerializer
         {
             get
             {
-                var rates = Rates.Select(r => r.ToString().TrimStart('e'));
+                var rates = Rates.Select(r => r.ToString().TrimStart('_'));
                 return string.Join(", ", rates);
             }
         }
