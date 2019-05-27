@@ -696,32 +696,15 @@ namespace NUmcSerializer
 
     public class SectionPCMCapabilities : Section
     {
-        public ulong Formats;  // PCM_FORMAT mask
-        public uint Rates;  // PCM_RATE mask
+        public readonly HashSet<PCM_FORMAT> Formats;
+        public readonly HashSet<PCM_RATE> Rates;
 
         [UmcElement("formats")]
         public string FormatsString
         {
             get
             {
-                var values = Enum.GetValues(typeof(PCM_FORMAT)).Cast<int>();
-                List<string> names = new List<string>();
-                foreach (var value in values)
-                    if ((Formats & (1uL << value)) != 0)
-                        names.Add(Enum.GetName(typeof(PCM_FORMAT), value));
-                return string.Join(", ", names);
-            }
-
-            set
-            {
-                string formats = value ?? string.Empty;
-                string[] names = formats.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                Formats = 0;
-                foreach (var name in names)
-                {
-                    int format = (int)Enum.Parse(typeof(PCM_FORMAT), name);
-                    Formats += 1uL << format;
-                }
+                return string.Join(", ", Formats);
             }
         }
 
@@ -730,24 +713,8 @@ namespace NUmcSerializer
         {
             get
             {
-                var values = Enum.GetValues(typeof(PCM_RATE)).Cast<int>();
-                List<string> names = new List<string>();
-                foreach (var value in values)
-                    if ((Rates & (1u << value)) != 0)
-                        names.Add(Enum.GetName(typeof(PCM_RATE), value).TrimStart('e'));
-                return string.Join(", ", names);
-            }
-
-            set
-            {
-                string rates = value ?? string.Empty;
-                string[] names = rates.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                Rates = 0;
-                foreach (var name in names)
-                {
-                    int rate = (int)Enum.Parse(typeof(PCM_RATE), string.Concat("e", name));
-                    Rates += 1u << rate;
-                }
+                var rates = Rates.Select(r => r.ToString().TrimStart('e'));
+                return string.Join(", ", rates);
             }
         }
 
@@ -777,6 +744,8 @@ namespace NUmcSerializer
         public SectionPCMCapabilities(string identifier)
             : base(identifier)
         {
+            Formats = new HashSet<PCM_FORMAT>();
+            Rates = new HashSet<PCM_RATE>();
         }
 
         public SectionPCMCapabilities()
