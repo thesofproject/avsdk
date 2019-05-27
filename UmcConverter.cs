@@ -951,9 +951,7 @@ namespace itt
                 new ChannelMap(ChannelName.FrontRight) { Reg = reg },
             };
             control.Ops = new Ops("ctl") { Get = get, Put = put, Info = info };
-            control.Min = min;
             control.Max = max;
-            control.NoPm = (reg == Constants.NOPM) ? true : (bool?)null;
             control.Access = access;
 
             return control;
@@ -1325,8 +1323,8 @@ namespace itt
             IEnumerable<PCM_FMTBIT> bps = formats.Select(f => f.Bps.ToFmtbit()).Distinct();
 
             var result = new SectionPCMCapabilities(path.Device);
-            result.Formats = string.Join(", ", bps);
-            result.Rates = string.Join(", ", rates.Select(r => r.GetString()));
+            result.FormatsString = string.Join(", ", bps);
+            result.RatesString = string.Join(", ", rates.Select(r => r.GetString()));
             result.ChannelsMin = channels.Min();
             result.ChannelsMax = channels.Max();
 
@@ -1347,7 +1345,7 @@ namespace itt
             foreach (var group in groups)
             {
                 var section = new SectionPCM(group.Key);
-                section.DAI = new DAI(group.First().DaiName) { ID = i++ };
+                section.DAI = new FE_DAI(group.First().DaiName) { ID = i++ };
 
                 Path path = group.FirstOrDefault(p => p.Direction == Direction.PLAYBACK);
                 // Check playback path connection type for HDMI
@@ -1357,7 +1355,7 @@ namespace itt
                         section.ID = 0xFF;
                     SectionPCMCapabilities caps = GetPCMCapabilities(path);
                     result.Add(caps);
-                    section.Playback = new DAILink("playback");
+                    section.Playback = new PCMStream("playback");
                     section.Playback.Capabilities = caps.Identifier;
                 }
 
@@ -1366,7 +1364,7 @@ namespace itt
                 {
                     SectionPCMCapabilities caps = GetPCMCapabilities(path);
                     result.Add(caps);
-                    section.Capture = new DAILink("capture");
+                    section.Capture = new PCMStream("capture");
                     section.Capture.Capabilities = caps.Identifier;
                 }
 
