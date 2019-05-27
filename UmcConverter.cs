@@ -1327,6 +1327,7 @@ namespace itt
             result.RatesString = string.Join(", ", rates.Select(r => r.GetString()));
             result.ChannelsMin = channels.Min();
             result.ChannelsMax = channels.Max();
+            result.SigBits = formats.Select(f => f.Bps).Max();
 
             return result;
         }
