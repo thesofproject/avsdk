@@ -939,8 +939,8 @@ namespace itt
             return result;
         }
 
-        static SectionControlMixer GetMixerControl(string name, int min, int max,
-            CTL_ELEM_ACCESS[] access, int reg, uint get, uint put, uint info)
+        static SectionControlMixer GetMixerControl(string name,
+            int max, int reg, uint get, uint put)
         {
             var control = new SectionControlMixer(name);
             control.Index = 0;
@@ -950,9 +950,8 @@ namespace itt
                 new ChannelMap(ChannelName.FrontLeft) { Reg = reg },
                 new ChannelMap(ChannelName.FrontRight) { Reg = reg },
             };
-            control.Ops = new Ops("ctl") { Get = get, Put = put, Info = info };
+            control.Ops = new Ops("ctl") { Get = get, Put = put, Info = TPLG_CTL.VOLSW };
             control.Max = max;
-            control.Access = access;
 
             return control;
         }
@@ -964,19 +963,19 @@ namespace itt
             if (module.Type.Equals(ModuleNames.Gain))
             {
                 result.Add(GetMixerControl("Ramp Duration",
-                    Constants.GAIN_TC_MIN, Constants.GAIN_TC_MAX, null,
-                    Constants.NOPM, Constants.SKL_CTL_RAMP_DURATION,
-                    Constants.SKL_CTL_RAMP_DURATION, TPLG_CTL.VOLSW));
+                    Constants.GAIN_TC_MAX, Constants.NOPM,
+                    Constants.SKL_CTL_RAMP_DURATION,
+                    Constants.SKL_CTL_RAMP_DURATION));
 
                 result.Add(GetMixerControl("Ramp Type",
-                    Constants.GAIN_RT_MIN, Constants.GAIN_RT_MAX, null,
-                    Constants.NOPM, Constants.SKL_CTL_RAMP_TYPE,
-                    Constants.SKL_CTL_RAMP_TYPE, TPLG_CTL.VOLSW));
+                    Constants.GAIN_RT_MAX, Constants.NOPM,
+                    Constants.SKL_CTL_RAMP_TYPE,
+                    Constants.SKL_CTL_RAMP_TYPE));
 
                 result.Add(GetMixerControl("Volume",
-                    Constants.GAIN_MIN_INDEX, Constants.GAIN_MAX_INDEX,
-                    null, 0, Constants.SKL_CTL_VOLUME,
-                    Constants.SKL_CTL_VOLUME, TPLG_CTL.VOLSW));
+                    Constants.GAIN_MAX_INDEX, 0,
+                    Constants.SKL_CTL_VOLUME,
+                    Constants.SKL_CTL_VOLUME));
             }
 
             return result;
@@ -1161,8 +1160,7 @@ namespace itt
                 foreach (var input in connector.Input)
                     result.Add(GetMixerControl(
                         GetMixerName(input.PathName, input.Module),
-                        0, 1, null, Constants.NOPM,
-                        TPLG_CTL.DAPM_VOLSW,
+                        1, Constants.NOPM,
                         TPLG_CTL.DAPM_VOLSW,
                         TPLG_CTL.DAPM_VOLSW));
             }
@@ -1172,8 +1170,7 @@ namespace itt
             foreach (var connector in connectors)
             {
                 SectionControlMixer mixer = GetMixerControl("Switch",
-                    0, 1, null, Constants.NOPM,
-                    TPLG_CTL.DAPM_VOLSW,
+                    1, Constants.NOPM,
                     TPLG_CTL.DAPM_VOLSW,
                     TPLG_CTL.DAPM_VOLSW);
 
