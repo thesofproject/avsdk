@@ -180,38 +180,45 @@ namespace itt
             }
         }
 
-        internal static string ToRate(this uint value)
+        internal static PCM_RATE ToRate(this uint value)
         {
-            string rate;
             switch (value)
             {
                 case 5512:
+                    return PCM_RATE._5512;
                 case 8000:
+                    return PCM_RATE._8000;
                 case 11025:
+                    return PCM_RATE._11025;
                 case 16000:
+                    return PCM_RATE._16000;
                 case 22050:
+                    return PCM_RATE._22050;
                 case 32000:
+                    return PCM_RATE._32000;
                 case 44100:
+                    return PCM_RATE._44100;
                 case 48000:
+                    return PCM_RATE._48000;
                 case 64000:
+                    return PCM_RATE._64000;
                 case 88200:
+                    return PCM_RATE._88200;
                 case 96000:
+                    return PCM_RATE._96000;
                 case 176400:
+                    return PCM_RATE._176400;
                 case 192000:
-                    rate = value.ToString();
-                    break;
+                    return PCM_RATE._192000;
 
                 case 0:
                 case 24000:
                 case 37800:
-                    rate = "KNOT";
-                    break;
+                    return PCM_RATE.KNOT;
 
                 default:
                     throw new NotSupportedException(nameof(value));
             }
-
-            return rate;
         }
 
         internal static PCM_FORMAT ToFormat(this uint value)

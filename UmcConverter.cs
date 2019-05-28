@@ -1318,13 +1318,13 @@ namespace itt
             IEnumerable<PcmFormat> formats = configurations.SelectMany(
                 p => p.PcmFormats.Where(f => f.Dir == dir));
 
-            IEnumerable<string> rates = formats.Select(f => f.SampleRate.ToRate()).Distinct();
+            IEnumerable<PCM_RATE> rates = formats.Select(f => f.SampleRate.ToRate());
             IEnumerable<uint> channels = formats.Select(f => f.ChannelCount).Distinct();
-            IEnumerable<PCM_FORMAT> bps = formats.Select(f => f.Bps.ToFormat()).Distinct();
+            IEnumerable<PCM_FORMAT> bps = formats.Select(f => f.Bps.ToFormat());
 
             var result = new SectionPCMCapabilities(path.Device);
-            result.FormatsString = string.Join(", ", bps);
-            result.RatesString = string.Join(", ", rates);
+            result.Formats.UnionWith(bps);
+            result.Rates.UnionWith(rates);
             result.ChannelsMin = channels.Min();
             result.ChannelsMax = channels.Max();
             result.SigBits = formats.Select(f => f.Bps).Max();
