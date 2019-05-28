@@ -1320,14 +1320,14 @@ namespace itt
 
             IEnumerable<PCM_RATE> rates = formats.Select(f => f.SampleRate.ToRate());
             IEnumerable<uint> channels = formats.Select(f => f.ChannelCount).Distinct();
-            IEnumerable<PCM_FORMAT> bps = formats.Select(f => f.Bps.ToFormat());
+            IEnumerable<uint> bps = formats.Select(f => f.Bps);
 
             var result = new SectionPCMCapabilities(path.Device);
-            result.Formats.UnionWith(bps);
+            result.Formats.UnionWith(bps.Select(b => b.ToFormat()));
             result.Rates.UnionWith(rates);
             result.ChannelsMin = channels.Min();
             result.ChannelsMax = channels.Max();
-            result.SigBits = formats.Select(f => f.Bps).Max();
+            result.SigBits = bps.Max();
 
             return result;
         }
