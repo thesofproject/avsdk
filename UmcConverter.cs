@@ -940,7 +940,9 @@ namespace itt
         }
 
         static SectionControlMixer GetMixerControl(string name,
-            int max, int reg, uint get, uint put)
+            int max, uint get, uint put,
+            int reg = Constants.NOPM,
+            int rreg = Constants.NOPM)
         {
             var control = new SectionControlMixer(name);
             control.Index = 0;
@@ -948,7 +950,7 @@ namespace itt
             control.Channel = new ChannelMap[]
             {
                 new ChannelMap(ChannelName.FrontLeft) { Reg = reg },
-                new ChannelMap(ChannelName.FrontRight) { Reg = reg },
+                new ChannelMap(ChannelName.FrontRight) { Reg = rreg }
             };
             control.Ops = new Ops("ctl") { Get = get, Put = put, Info = TPLG_CTL.VOLSW };
             control.Max = max;
@@ -963,19 +965,20 @@ namespace itt
             if (module.Type.Equals(ModuleNames.Gain))
             {
                 result.Add(GetMixerControl("Ramp Duration",
-                    Constants.GAIN_TC_MAX, Constants.NOPM,
+                    Constants.GAIN_TC_MAX,
                     Constants.SKL_CTL_RAMP_DURATION,
                     Constants.SKL_CTL_RAMP_DURATION));
 
                 result.Add(GetMixerControl("Ramp Type",
-                    Constants.GAIN_RT_MAX, Constants.NOPM,
+                    Constants.GAIN_RT_MAX,
                     Constants.SKL_CTL_RAMP_TYPE,
                     Constants.SKL_CTL_RAMP_TYPE));
 
                 result.Add(GetMixerControl("Volume",
-                    Constants.GAIN_MAX_INDEX, 0,
+                    Constants.GAIN_MAX_INDEX,
                     Constants.SKL_CTL_VOLUME,
-                    Constants.SKL_CTL_VOLUME));
+                    Constants.SKL_CTL_VOLUME,
+                    Constants.NOPM + 1, Constants.NOPM + 2));
             }
 
             return result;
@@ -1159,8 +1162,7 @@ namespace itt
             {
                 foreach (var input in connector.Input)
                     result.Add(GetMixerControl(
-                        GetMixerName(input.PathName, input.Module),
-                        1, Constants.NOPM,
+                        GetMixerName(input.PathName, input.Module), 1,
                         TPLG_CTL.DAPM_VOLSW,
                         TPLG_CTL.DAPM_VOLSW));
             }
@@ -1169,8 +1171,8 @@ namespace itt
                 .Where(c => c.Type == LinkType.SWITCH);
             foreach (var connector in connectors)
             {
-                SectionControlMixer mixer = GetMixerControl("Switch",
-                    1, Constants.NOPM,
+                SectionControlMixer mixer = GetMixerControl(
+                    "Switch", 1,
                     TPLG_CTL.DAPM_VOLSW,
                     TPLG_CTL.DAPM_VOLSW);
 
