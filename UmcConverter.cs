@@ -1035,8 +1035,10 @@ namespace itt
             PathConfiguration[] cfgs = path.PathConfigurations.PathConfiguration;
             if (cfgs.Length <= 1)
                 return result;
-            IEnumerable<PcmFormat> outs = cfgs.Select(c => c.PcmFormats.First(f => f.Dir == PinDir.OUT));
-            if (outs.Distinct().Count() <= 1)
+
+            PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.OUT : PinDir.IN;
+            IEnumerable<PcmFormat> fmts = cfgs.Select(c => c.PcmFormats.First(f => f.Dir == dir));
+            if (fmts.Distinct().Count() <= 1)
                 return result;
 
             var control = new SectionControlEnum($"{path.Name} pcm cfg");
