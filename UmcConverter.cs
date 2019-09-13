@@ -1035,11 +1035,13 @@ namespace itt
             PathConfiguration[] cfgs = path.PathConfigurations.PathConfiguration;
             if (cfgs.Length <= 1)
                 return result;
-
-            PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.OUT : PinDir.IN;
-            IEnumerable<PcmFormat> fmts = cfgs.Select(c => c.PcmFormats.First(f => f.Dir == dir));
-            if (fmts.Distinct().Count() <= 1)
-                return result;
+            if (path.ConnType != ConnType.LINK_DMA)
+            {
+                PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.OUT : PinDir.IN;
+                IEnumerable<PcmFormat> fmts = cfgs.Select(c => c.PcmFormats.First(f => f.Dir == dir));
+                if (fmts.Distinct().Count() <= 1)
+                    return result;
+            }
 
             var control = new SectionControlEnum($"{path.Name} pcm cfg");
             var text = new SectionText($"enum_{path.Name} pcm cfg");
