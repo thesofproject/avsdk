@@ -1032,7 +1032,11 @@ namespace itt
         IEnumerable<Section> GetPathConfigurationsSections(Path path)
         {
             var result = new List<Section>();
-            if (path.PathConfigurations.PathConfiguration.Length <= 1)
+            PathConfiguration[] cfgs = path.PathConfigurations.PathConfiguration;
+            if (cfgs.Length <= 1)
+                return result;
+            IEnumerable<PcmFormat> outs = cfgs.Select(c => c.PcmFormats.First(f => f.Dir == PinDir.OUT));
+            if (outs.Distinct().Count() <= 1)
                 return result;
 
             var control = new SectionControlEnum($"{path.Name} pcm cfg");
@@ -1040,7 +1044,7 @@ namespace itt
             var values = new List<string>();
             var value = new StringBuilder();
 
-            foreach (var cfg in path.PathConfigurations.PathConfiguration)
+            foreach (var cfg in cfgs)
             {
                 value.Clear();
                 PcmFormat fmt = cfg.PcmFormats.First(f => f.Dir == PinDir.IN);

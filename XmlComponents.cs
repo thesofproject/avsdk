@@ -638,7 +638,7 @@ namespace itt
         public ushort IntfIdx { get; set; }
     }
 
-    public class PcmFormat
+    public struct PcmFormat
     {
         [XmlAttribute("dir")]
         public PinDir Dir { get; set; }
