@@ -1200,19 +1200,21 @@ namespace itt
         static string GetPathFirstRoute(Path path)
         {
             var route = new StringBuilder();
+            Func<Module, bool> predicate = (m => true);
+
+            if (path.Modules.Module.Length > 1)
+                predicate = (m => m.ModulePosition == ModulePosition.SOURCE);
+            Module source = path.Modules.Module.First(predicate);
 
             if (path.Direction == Direction.PLAYBACK &&
                 path.Device != null)
             {
-                Link first = path.Links.First();
-                route.Append(GetWidgetName(path, first.From));
+                route.Append(GetWidgetName(path, source));
                 route.Append($", , {path.Device}");
             }
             else if (path.Direction == Direction.CAPTURE &&
                 path.Port != null)
             {
-                Module source = path.Modules.Module.First(
-                    m => m.ModulePosition == ModulePosition.SOURCE);
                 route.Append(GetWidgetName(path, source));
                 route.Append($", , {path.Port}");
             }
@@ -1223,21 +1225,23 @@ namespace itt
         static string GetPathLastRoute(Path path)
         {
             var route = new StringBuilder();
+            Func<Module, bool> predicate = (m => true);
+
+            if (path.Modules.Module.Length > 1)
+                predicate = (m => m.ModulePosition == ModulePosition.SINK);
+            Module sink = path.Modules.Module.Last(predicate);
 
             if (path.Direction == Direction.PLAYBACK &&
                 path.Port != null)
             {
-                Module sink = path.Modules.Module.Last(
-                    m => m.ModulePosition == ModulePosition.SINK);
                 route.Append($"{path.Port}, , ");
                 route.Append(GetWidgetName(path, sink));
             }
             else if (path.Direction == Direction.CAPTURE &&
                 path.Device != null)
             {
-                Link last = path.Links.Last();
                 route.Append($"{path.Device}, , ");
-                route.Append(GetWidgetName(path, last.To));
+                route.Append(GetWidgetName(path, sink));
             }
 
             return route.ToString();
