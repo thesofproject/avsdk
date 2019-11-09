@@ -27,7 +27,10 @@ namespace NUcmSerializer
         Array,
         Tuple,
         VendorArray, // array with non-basic elements
-        Section
+        Section,
+        // reader-only
+        SectionEnd,
+        ArrayEnd,
     }
 
     public class UcmWriter : IDisposable
