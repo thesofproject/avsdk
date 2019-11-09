@@ -245,7 +245,7 @@ namespace NUcmSerializer
     {
         public const int CTL_ELEM_ID_NAME_MAXLEN = 44;
 
-        public static readonly Dictionary<Type, string> tupleTypes =
+        public static readonly Dictionary<Type, string> TupleTypes =
             new Dictionary<Type, string>()
             {
                 { typeof(string), "string" },
@@ -307,8 +307,8 @@ namespace NUcmSerializer
         {
             Type type = typeof(T);
 
-            if (tupleTypes.ContainsKey(type))
-                TupleType = tupleTypes[type];
+            if (TupleTypes.ContainsKey(type))
+                TupleType = TupleTypes[type];
             else
                 TupleType = type.Name;
         }
