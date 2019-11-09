@@ -267,12 +267,12 @@ namespace NUcmSerializer
             return sizeof(uint);
         }
 
-        public VendorTuples(string identifier)
+        protected VendorTuples(string identifier)
             : base(identifier)
         {
         }
 
-        public VendorTuples()
+        protected VendorTuples()
             : this(null)
         {
         }
