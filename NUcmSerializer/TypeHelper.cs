@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 
@@ -82,6 +83,34 @@ namespace NUcmSerializer
         internal static T GetObjectGenericPropertyValue<T>(object obj, uint index)
         {
             return (T)GetObjectGenericPropertyValue(obj, index);
+        }
+
+        internal static object ConvertFromString(this Type type, string value)
+        {
+            try
+            {
+                if (type == typeof(Guid))
+                    return new Guid(value.ToBytes());
+
+                if (type.IsSubclassOf(typeof(Enum)))
+                {
+                    foreach (Enum e in Enum.GetValues(type))
+                    {
+                        var attr = e.GetAttributeOfType<UcmEnumAttribute>();
+                        if (attr != null && attr.Name.Equals(value))
+                            return e;
+                    }
+                }
+
+                TypeConverter conv = TypeDescriptor.GetConverter(type);
+                if (conv != null)
+                    return conv.ConvertFromString(value);
+            }
+            catch (NotSupportedException)
+            {
+            }
+
+            return null;
         }
     }
 
