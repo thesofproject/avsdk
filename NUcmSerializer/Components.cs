@@ -299,7 +299,7 @@ namespace NUcmSerializer
 
             set
             {
-                base.Identifier = (value == null) ? TupleType : $"{TupleType}.{value}";
+                base.Identifier = (string.IsNullOrEmpty(value)) ? TupleType : $"{TupleType}.{value}";
             }
         }
 
