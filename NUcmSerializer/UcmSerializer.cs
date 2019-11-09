@@ -27,7 +27,7 @@ namespace NUcmSerializer
         public void Serialize(Stream stream, IEnumerable<Section> topology)
         {
             if (topology == null)
-                throw new ArgumentNullException("topology");
+                throw new ArgumentNullException(nameof(topology));
 
             var writer = new UcmWriter(stream, null);
 
