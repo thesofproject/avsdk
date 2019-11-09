@@ -191,7 +191,7 @@ namespace NUcmSerializer
 
             set
             {
-                Bytes = (value != null) ? value.ToBytes() : null;
+                Bytes = value?.ToBytes();
             }
         }
 
@@ -206,7 +206,7 @@ namespace NUcmSerializer
 
             set
             {
-                Shorts = (value != null) ? value.ToUInts16() : null;
+                Shorts = value?.ToUInts16();
             }
         }
 
@@ -221,7 +221,7 @@ namespace NUcmSerializer
 
             set
             {
-                Words = (value != null) ? value.ToUInts32() : null;
+                Words = value?.ToUInts32();
             }
         }
 
