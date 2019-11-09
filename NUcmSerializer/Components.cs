@@ -245,6 +245,17 @@ namespace NUcmSerializer
     {
         public const int CTL_ELEM_ID_NAME_MAXLEN = 44;
 
+        public static readonly Dictionary<Type, string> tupleTypes =
+            new Dictionary<Type, string>()
+            {
+                { typeof(string), "string" },
+                { typeof(Guid), "uuid" },
+                { typeof(bool), "bool" },
+                { typeof(byte), "byte" },
+                { typeof(ushort), "short" },
+                { typeof(uint), "word" },
+            };
+
         public static int GetElementSize<T>()
         {
             Type type = typeof(T);
@@ -272,17 +283,6 @@ namespace NUcmSerializer
     [UcmSection("tuples")]
     public class VendorTuples<T> : VendorTuples
     {
-        static readonly Dictionary<Type, string> tupleTypes =
-            new Dictionary<Type, string>()
-            {
-                { typeof(string), "string" },
-                { typeof(Guid), "uuid" },
-                { typeof(bool), "bool" },
-                { typeof(byte), "byte" },
-                { typeof(ushort), "short" },
-                { typeof(uint), "word" },
-            };
-
         [UcmIgnore]
         public static string TupleType { get; }
 
