@@ -351,7 +351,7 @@ namespace NUcmSerializer
         [UcmElement("tokens")]
         public string Tokens { get; set; }
 
-        [UcmArray(Inline = true)]
+        [UcmArray("tuples", Inline = true)]
         public VendorTuples[] Tuples { get; set; }
 
         public SectionVendorTuples(string identifier)
