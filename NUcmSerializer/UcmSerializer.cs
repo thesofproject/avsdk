@@ -14,6 +14,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace NUcmSerializer
 {
@@ -37,9 +38,23 @@ namespace NUcmSerializer
             writer.Dispose();
         }
 
+        public IEnumerable<Section> Deserialize(Stream stream, Encoding encoding)
+        {
+            List<Section> result = new List<Section>();
+            Section section;
+
+            using (var reader = new UcmReader(stream, encoding))
+            {
+                while ((section = reader.ReadToken()) != null)
+                    result.Add(section);
+            }
+
+            return result;
+        }
+
         public IEnumerable<Section> Deserialize(Stream stream)
         {
-            throw new NotImplementedException();
+            return Deserialize(stream, null);
         }
     }
 }
