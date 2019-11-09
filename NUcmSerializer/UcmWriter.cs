@@ -106,6 +106,11 @@ namespace NUcmSerializer
             disposed = false;
         }
 
+        public UcmWriter(Stream stream)
+            : this(stream, null)
+        {
+        }
+
         // helper method, retrieves token properties to enumerate over
         static PropertyInfo[] GetTypeTokenProperties(object token)
         {
