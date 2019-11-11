@@ -62,8 +62,8 @@ namespace NUcmSerializer
                 else
                     attrs = tokenInfo.GetCustomAttributes(false);
 
-                var attr = (UmcNamedTagAttribute)attrs.SingleOrDefault(
-                    a => a.GetType().IsSubclassOf(typeof(UmcNamedTagAttribute)));
+                var attr = (UcmNamedTagAttribute)attrs.SingleOrDefault(
+                    a => a.GetType().IsSubclassOf(typeof(UcmNamedTagAttribute)));
                 // obtain token name
                 if (attr != null && attr.Name != null)
                     Name = attr.Name;
@@ -77,13 +77,13 @@ namespace NUcmSerializer
                 // obtain token misc params
                 if (type.IsArray)
                 {
-                    var arrAttr = attr as UmcArrayAttribute;
+                    var arrAttr = attr as UcmArrayAttribute;
                     Inline = (arrAttr != null) ? arrAttr.Inline : false;
                     TagElements = (arrAttr != null) ? arrAttr.TagElements : true;
                 }
 
                 PropertyInfo propInfo = type.GetProperties().SingleOrDefault(
-                    p => Attribute.IsDefined(p, typeof(UmcIdentifierAttribute)));
+                    p => Attribute.IsDefined(p, typeof(UcmIdentifierAttribute)));
                 if (propInfo != null)
                     Identifier = (string)propInfo.GetValue(token);
             }
@@ -111,15 +111,15 @@ namespace NUcmSerializer
 
             List<PropertyInfo> result = props.Where(
                 p => p.GetValue(token) != null &&
-                     !Attribute.IsDefined(p, typeof(UmcIdentifierAttribute)) &&
-                     !Attribute.IsDefined(p, typeof(UmcIgnoreAttribute))
+                     !Attribute.IsDefined(p, typeof(UcmIdentifierAttribute)) &&
+                     !Attribute.IsDefined(p, typeof(UcmIgnoreAttribute))
             ).ToList();
 
             var cache = new List<string>();
             for (int i = 0; i < result.Count; i++)
             {
                 PropertyInfo propInfo = result[i];
-                var attr = propInfo.GetCustomAttribute<UmcExclusiveAttribute>();
+                var attr = propInfo.GetCustomAttribute<UcmExclusiveAttribute>();
                 if (attr == null)
                     continue;
 
@@ -143,7 +143,7 @@ namespace NUcmSerializer
             }
             else if (type.IsSubclassOf(typeof(Enum)))
             {
-                var attr = ((Enum)token).GetAttributeOfType<UmcEnumAttribute>();
+                var attr = ((Enum)token).GetAttributeOfType<UcmEnumAttribute>();
                 if (attr != null)
                     value = attr.Name;
                 else

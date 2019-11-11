@@ -16,54 +16,54 @@ using System;
 namespace NUcmSerializer
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public abstract class UmcNamedTagAttribute : Attribute
+    public abstract class UcmNamedTagAttribute : Attribute
     {
         public string Name { get; }
 
-        public UmcNamedTagAttribute(string name)
+        public UcmNamedTagAttribute(string name)
         {
             Name = name;
         }
     }
 
     // exclusive with all other attributes, default for all properties
-    public class UmcElementAttribute : UmcNamedTagAttribute
+    public class UcmElementAttribute : UcmNamedTagAttribute
     {
-        public UmcElementAttribute(string name)
+        public UcmElementAttribute(string name)
             : base(name)
         {
         }
 
-        public UmcElementAttribute()
+        public UcmElementAttribute()
             : this(null)
         {
         }
     }
 
     // default for all arrays
-    public class UmcArrayAttribute : UmcNamedTagAttribute
+    public class UcmArrayAttribute : UcmNamedTagAttribute
     {
         public bool Inline { get; set; }
         public bool TagElements { get; set; }
 
-        public UmcArrayAttribute(string name, bool inline)
+        public UcmArrayAttribute(string name, bool inline)
             : base(name)
         {
             Inline = inline;
             TagElements = true;
         }
 
-        public UmcArrayAttribute()
+        public UcmArrayAttribute()
             : this(null, false)
         {
         }
 
-        public UmcArrayAttribute(string name)
+        public UcmArrayAttribute(string name)
             : this(name, false)
         {
         }
 
-        public UmcArrayAttribute(bool inline)
+        public UcmArrayAttribute(bool inline)
             : this(null, inline)
         {
         }
@@ -71,14 +71,14 @@ namespace NUcmSerializer
 
     // default for all sections
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Property)]
-    public class UmcSectionAttribute : UmcNamedTagAttribute
+    public class UcmSectionAttribute : UcmNamedTagAttribute
     {
-        public UmcSectionAttribute(string name)
+        public UcmSectionAttribute(string name)
             : base(name)
         {
         }
 
-        public UmcSectionAttribute()
+        public UcmSectionAttribute()
             : this(null)
         {
         }
@@ -86,43 +86,43 @@ namespace NUcmSerializer
 
     // only one per Type (section), exclusive with all other attributes
     [AttributeUsage(AttributeTargets.Property)]
-    public class UmcIdentifierAttribute : Attribute
+    public class UcmIdentifierAttribute : Attribute
     {
     }
 
     // mutually exclusive with identifier
     [AttributeUsage(AttributeTargets.Property)]
-    public class UmcExclusiveAttribute : Attribute
+    public class UcmExclusiveAttribute : Attribute
     {
         public string Namespace { get; set; }
 
-        public UmcExclusiveAttribute(string nameSpace)
+        public UcmExclusiveAttribute(string nameSpace)
         {
             Namespace = nameSpace;
         }
 
-        public UmcExclusiveAttribute()
+        public UcmExclusiveAttribute()
             : this("")
         {
         }
     }
 
     [AttributeUsage(AttributeTargets.Property)]
-    public class UmcIgnoreAttribute : Attribute
+    public class UcmIgnoreAttribute : Attribute
     {
     }
 
     [AttributeUsage(AttributeTargets.Field)]
-    public class UmcEnumAttribute : Attribute
+    public class UcmEnumAttribute : Attribute
     {
         public string Name { get; set; }
 
-        public UmcEnumAttribute(string name)
+        public UcmEnumAttribute(string name)
         {
             Name = name;
         }
 
-        public UmcEnumAttribute()
+        public UcmEnumAttribute()
             : this(null)
         {
         }

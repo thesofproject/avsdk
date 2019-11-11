@@ -19,9 +19,9 @@ namespace NUcmSerializer
 {
     public abstract class Section
     {
-        [UmcIdentifier]
+        [UcmIdentifier]
         public virtual string Identifier { get; set; }
-        [UmcElement("comment")]
+        [UcmElement("comment")]
         public string Comment { get; set; }
 
         public Section(string identifier)
@@ -55,14 +55,14 @@ namespace NUcmSerializer
         public const uint DAPM_PIN = 68;
     }
 
-    [UmcSection("ops")]
+    [UcmSection("ops")]
     public class Ops : Section
     {
-        [UmcElement("get")]
+        [UcmElement("get")]
         public uint? Get { get; set; }
-        [UmcElement("put")]
+        [UcmElement("put")]
         public uint? Put { get; set; }
-        [UmcElement("info")]
+        [UcmElement("info")]
         public uint? Info { get; set; }
 
         public Ops(string identifier)
@@ -115,15 +115,15 @@ namespace NUcmSerializer
         public static readonly string BottomRightCenter = "brc";
     }
 
-    [UmcSection("channel")]
+    [UcmSection("channel")]
     public class ChannelMap : Section
     {
-        [UmcElement("reg")]
+        [UcmElement("reg")]
         public int Reg { get; set; }
-        [UmcElement("shift")]
+        [UcmElement("shift")]
         public int Shift { get; set; }
 
-        [UmcIdentifier]
+        [UcmIdentifier]
         public override string Identifier
         {
             get
@@ -150,14 +150,14 @@ namespace NUcmSerializer
         }
     }
 
-    [UmcSection("scale")]
+    [UcmSection("scale")]
     public class DBScale : Section
     {
-        [UmcElement("min")]
+        [UcmElement("min")]
         public int? Min { get; set; }
-        [UmcElement("step")]
+        [UcmElement("step")]
         public int Step { get; set; }
-        [UmcElement("mute")]
+        [UcmElement("mute")]
         public byte Mute { get; set; }
 
         public DBScale(string identifier)
@@ -177,10 +177,10 @@ namespace NUcmSerializer
         public ushort[] Shorts;
         public uint[] Words;
 
-        [UmcElement("file"), UmcExclusive("value")]
+        [UcmElement("file"), UcmExclusive("value")]
         public string File { get; set; }
 
-        [UmcElement("bytes"), UmcExclusive("value")]
+        [UcmElement("bytes"), UcmExclusive("value")]
         public string BytesString
         {
             get
@@ -195,7 +195,7 @@ namespace NUcmSerializer
             }
         }
 
-        [UmcElement("shorts"), UmcExclusive("value")]
+        [UcmElement("shorts"), UcmExclusive("value")]
         public string ShortsString
         {
             get
@@ -210,7 +210,7 @@ namespace NUcmSerializer
             }
         }
 
-        [UmcElement("words"), UmcExclusive("value")]
+        [UcmElement("words"), UcmExclusive("value")]
         public string WordsString
         {
             get
@@ -225,9 +225,9 @@ namespace NUcmSerializer
             }
         }
 
-        [UmcElement("tuples"), UmcExclusive("value")]
+        [UcmElement("tuples"), UcmExclusive("value")]
         public string Tuples { get; set; }
-        [UmcElement("type")]
+        [UcmElement("type")]
         public uint? Type { get; set; }
 
         public SectionData(string identifier)
@@ -269,7 +269,7 @@ namespace NUcmSerializer
         public abstract int Size();
     }
 
-    [UmcSection("tuples")]
+    [UcmSection("tuples")]
     public class VendorTuples<T> : VendorTuples
     {
         static readonly Dictionary<Type, string> tupleTypes =
@@ -283,13 +283,13 @@ namespace NUcmSerializer
                 { typeof(uint), "word" },
             };
 
-        [UmcIgnore]
+        [UcmIgnore]
         public static string TupleType { get; }
 
-        [UmcArray(Inline = true)]
+        [UcmArray(Inline = true)]
         public Tuple<string, T>[] Tuples { get; set; }
 
-        [UmcIdentifier]
+        [UcmIdentifier]
         public override string Identifier
         {
             get
@@ -332,7 +332,7 @@ namespace NUcmSerializer
 
     public class SectionVendorTokens : Section
     {
-        [UmcArray(Inline = true)]
+        [UcmArray(Inline = true)]
         public Tuple<string, uint>[] Tokens { get; set; }
 
         public SectionVendorTokens(string identifier)
@@ -348,10 +348,10 @@ namespace NUcmSerializer
 
     public class SectionVendorTuples : Section
     {
-        [UmcElement("tokens")]
+        [UcmElement("tokens")]
         public string Tokens { get; set; }
 
-        [UmcArray(Inline = true)]
+        [UcmArray(Inline = true)]
         public VendorTuples[] Tuples { get; set; }
 
         public SectionVendorTuples(string identifier)
@@ -373,50 +373,50 @@ namespace NUcmSerializer
     [Flags]
     public enum CTL_ELEM_ACCESS
     {
-        [UmcEnum(Name = "read")]
+        [UcmEnum(Name = "read")]
         READ          = (1 << 0),
-        [UmcEnum(Name = "write")]
+        [UcmEnum(Name = "write")]
         WRITE         = (1 << 1),
-        [UmcEnum(Name = "read_write")]
+        [UcmEnum(Name = "read_write")]
         READWRITE     = (READ | WRITE),
-        [UmcEnum(Name = "volatile")]
+        [UcmEnum(Name = "volatile")]
         VOLATILE      = (1 << 2),   // control value may be changed without a notification
-        [UmcEnum(Name = "timestamp")]
+        [UcmEnum(Name = "timestamp")]
         TIMESTAMP     = (1 << 3),   // when was control changed
-        [UmcEnum(Name = "tlv_read")]
+        [UcmEnum(Name = "tlv_read")]
         TLV_READ      = (1 << 4),   // TLV read is possible
-        [UmcEnum(Name = "tlv_write")]
+        [UcmEnum(Name = "tlv_write")]
         TLV_WRITE     = (1 << 5),   // TLV write is possible
-        [UmcEnum(Name = "tlv_read_write")]
+        [UcmEnum(Name = "tlv_read_write")]
         TLV_READWRITE = (TLV_READ | TLV_WRITE),
-        [UmcEnum(Name = "tlv_command")]
+        [UcmEnum(Name = "tlv_command")]
         TLV_COMMAND   = (1 << 6),   // TLV command is possible
-        [UmcEnum(Name = "inactive")]
+        [UcmEnum(Name = "inactive")]
         INACTIVE      = (1 << 8),   // control does actually nothing, but may be updated
-        [UmcEnum(Name = "lock")]
+        [UcmEnum(Name = "lock")]
         LOCK          = (1 << 9),   // write lock
-        [UmcEnum(Name = "owner")]
+        [UcmEnum(Name = "owner")]
         OWNER         = (1 << 10),  // write lock owner
-        [UmcEnum(Name = "tlv_callback")]
+        [UcmEnum(Name = "tlv_callback")]
         TLV_CALLBACK  = (1 << 28),  // kernel use a TLV callback
-        [UmcEnum(Name = "user")]
+        [UcmEnum(Name = "user")]
         USER          = (1 << 29)   // user space element
     }
 
     public abstract class SectionControl : Section
     {
-        [UmcElement("index")]
+        [UcmElement("index")]
         public uint Index { get; set; }
 
-        [UmcArray("channel", Inline = true)]
+        [UcmArray("channel", Inline = true)]
         public ChannelMap[] Channel { get; set; }
-        [UmcSection("ops")]
+        [UcmSection("ops")]
         public Ops Ops { get; set; }
 
-        [UmcArray("access")]
+        [UcmArray("access")]
         public CTL_ELEM_ACCESS[] Access { get; set; }
 
-        [UmcElement("data")]
+        [UcmElement("data")]
         public string Data { get; set; }
 
         public SectionControl(string identifier)
@@ -432,12 +432,12 @@ namespace NUcmSerializer
 
     public class SectionControlMixer : SectionControl
     {
-        [UmcElement("max")]
+        [UcmElement("max")]
         public int? Max { get; set; }
-        [UmcElement("invert")]
+        [UcmElement("invert")]
         public bool Invert { get; set; }
 
-        [UmcElement("tlv")]
+        [UcmElement("tlv")]
         public string TLV { get; set; }
 
         public SectionControlMixer(string identifier)
@@ -453,19 +453,19 @@ namespace NUcmSerializer
 
     public class SectionControlBytes : SectionControl
     {
-        [UmcSection("extops")]
+        [UcmSection("extops")]
         public Ops ExtOps { get; set; }
 
-        [UmcElement("base")]
+        [UcmElement("base")]
         public int? Base { get; set; }
-        [UmcElement("num_regs")]
+        [UcmElement("num_regs")]
         public int? NumRegs { get; set; }
-        [UmcElement("mask")]
+        [UcmElement("mask")]
         public int? Mask { get; set; }
-        [UmcElement("max")]
+        [UcmElement("max")]
         public int? Max { get; set; }
 
-        [UmcElement("tlv")]
+        [UcmElement("tlv")]
         public string TLV { get; set; }
 
         public SectionControlBytes(string identifier)
@@ -481,7 +481,7 @@ namespace NUcmSerializer
 
     public class SectionControlEnum : SectionControl
     {
-        [UmcElement("texts")]
+        [UcmElement("texts")]
         public string Texts { get; set; }
 
         public SectionControlEnum(string identifier)
@@ -497,7 +497,7 @@ namespace NUcmSerializer
 
     public class SectionText : Section
     {
-        [UmcArray("values")]
+        [UcmArray("values")]
         public string[] Values { get; set; }
 
         public SectionText(string identifier)
@@ -513,9 +513,9 @@ namespace NUcmSerializer
 
     public class SectionGraph : Section
     {
-        [UmcElement("index")]
+        [UcmElement("index")]
         public uint Index { get; set; }
-        [UmcArray("lines")]
+        [UcmArray("lines")]
         public string[] Lines { get; set; }
 
         public SectionGraph(string identifier)
@@ -532,30 +532,30 @@ namespace NUcmSerializer
     public enum TPLG_DAPM
     {
         // DAPM widget types - add new items to the end
-        [UmcEnum(Name = "input")] INPUT,
-        [UmcEnum(Name = "output")] OUTPUT,
-        [UmcEnum(Name = "mux")] MUX,
-        [UmcEnum(Name = "mixer")] MIXER,
-        [UmcEnum(Name = "pga")] PGA,
-        [UmcEnum(Name = "out_drv")] OUT_DRV,
-        [UmcEnum(Name = "adc")] ADC,
-        [UmcEnum(Name = "dac")] DAC,
-        [UmcEnum(Name = "switch")] SWITCH,
-        [UmcEnum(Name = "pre")] PRE,
-        [UmcEnum(Name = "post")] POST,
-        [UmcEnum(Name = "aif_in")] AIF_IN,
-        [UmcEnum(Name = "aif_out")] AIF_OUT,
-        [UmcEnum(Name = "dai_in")] DAI_IN,
-        [UmcEnum(Name = "dai_out")] DAI_OUT,
-        [UmcEnum(Name = "dai_link")] DAI_LINK,
-        [UmcEnum(Name = "buffer")] BUFFER,
-        [UmcEnum(Name = "scheduler")] SCHEDULER,
-        [UmcEnum(Name = "effect")] EFFECT,
-        [UmcEnum(Name = "siggen")] SIGGEN,
-        [UmcEnum(Name = "src")] SRC,
-        [UmcEnum(Name = "asrc")] ASRC,
-        [UmcEnum(Name = "encoder")] ENCODER,
-        [UmcEnum(Name = "decoder")] DECODER
+        [UcmEnum(Name = "input")] INPUT,
+        [UcmEnum(Name = "output")] OUTPUT,
+        [UcmEnum(Name = "mux")] MUX,
+        [UcmEnum(Name = "mixer")] MIXER,
+        [UcmEnum(Name = "pga")] PGA,
+        [UcmEnum(Name = "out_drv")] OUT_DRV,
+        [UcmEnum(Name = "adc")] ADC,
+        [UcmEnum(Name = "dac")] DAC,
+        [UcmEnum(Name = "switch")] SWITCH,
+        [UcmEnum(Name = "pre")] PRE,
+        [UcmEnum(Name = "post")] POST,
+        [UcmEnum(Name = "aif_in")] AIF_IN,
+        [UcmEnum(Name = "aif_out")] AIF_OUT,
+        [UcmEnum(Name = "dai_in")] DAI_IN,
+        [UcmEnum(Name = "dai_out")] DAI_OUT,
+        [UcmEnum(Name = "dai_link")] DAI_LINK,
+        [UcmEnum(Name = "buffer")] BUFFER,
+        [UcmEnum(Name = "scheduler")] SCHEDULER,
+        [UcmEnum(Name = "effect")] EFFECT,
+        [UcmEnum(Name = "siggen")] SIGGEN,
+        [UcmEnum(Name = "src")] SRC,
+        [UcmEnum(Name = "asrc")] ASRC,
+        [UcmEnum(Name = "encoder")] ENCODER,
+        [UcmEnum(Name = "decoder")] DECODER
     }
 
     [Flags]
@@ -575,38 +575,38 @@ namespace NUcmSerializer
 
     public class SectionWidget : Section
     {
-        [UmcElement("index")]
+        [UcmElement("index")]
         public uint Index { get; set; }
 
-        [UmcElement("type")]
+        [UcmElement("type")]
         public TPLG_DAPM Type { get; set; }
-        [UmcElement("stream_name")]
+        [UcmElement("stream_name")]
         public string StreamName { get; set; }
 
-        [UmcElement("no_pm")]
+        [UcmElement("no_pm")]
         public bool? NoPm { get; set; }
-        [UmcElement("reg")]
+        [UcmElement("reg")]
         public int? Reg { get; set; }
-        [UmcElement("shift")]
+        [UcmElement("shift")]
         public int? Shift { get; set; }
-        [UmcElement("invert")]
+        [UcmElement("invert")]
         public bool? Invert { get; set; }
-        [UmcElement("subseq")]
+        [UcmElement("subseq")]
         public uint? Subseq { get; set; }
 
-        [UmcElement("event_type")]
+        [UcmElement("event_type")]
         public uint? EventType { get; set; }
-        [UmcElement("event_flags")]
+        [UcmElement("event_flags")]
         public DAPM_EVENT? EventFlags { get; set; }
 
-        [UmcElement("mixer"), UmcExclusive("control")]
+        [UcmElement("mixer"), UcmExclusive("control")]
         public string[] Mixer { get; set; }
-        [UmcElement("enum"), UmcExclusive("control")]
+        [UcmElement("enum"), UcmExclusive("control")]
         public string[] Enum { get; set; }
-        [UmcElement("bytes"), UmcExclusive("control")]
+        [UcmElement("bytes"), UcmExclusive("control")]
         public string[] Bytes { get; set; }
 
-        [UmcElement("data")]
+        [UcmElement("data")]
         public string[] Data { get; set; }
 
         public SectionWidget(string identifier)
@@ -699,7 +699,7 @@ namespace NUcmSerializer
         public readonly HashSet<PCM_FORMAT> Formats;
         public readonly HashSet<PCM_RATE> Rates;
 
-        [UmcElement("formats")]
+        [UcmElement("formats")]
         public string FormatsString
         {
             get
@@ -708,7 +708,7 @@ namespace NUcmSerializer
             }
         }
 
-        [UmcElement("rates")]
+        [UcmElement("rates")]
         public string RatesString
         {
             get
@@ -718,27 +718,27 @@ namespace NUcmSerializer
             }
         }
 
-        [UmcElement("rate_min")]
+        [UcmElement("rate_min")]
         public uint? RateMin { get; set; }
-        [UmcElement("rate_max")]
+        [UcmElement("rate_max")]
         public uint? RateMax { get; set; }
-        [UmcElement("channels_min")]
+        [UcmElement("channels_min")]
         public uint? ChannelsMin { get; set; }
-        [UmcElement("channels_max")]
+        [UcmElement("channels_max")]
         public uint? ChannelsMax { get; set; }
-        [UmcElement("periods_min")]
+        [UcmElement("periods_min")]
         public uint? PeriodsMin { get; set; }
-        [UmcElement("periods_max")]
+        [UcmElement("periods_max")]
         public uint? PeriodsMax { get; set; }
-        [UmcElement("period_size_min")]
+        [UcmElement("period_size_min")]
         public uint? PeriodSizeMin { get; set; }
-        [UmcElement("period_size_max")]
+        [UcmElement("period_size_max")]
         public uint? PeriodSizeMax { get; set; }
-        [UmcElement("buffer_size_min")]
+        [UcmElement("buffer_size_min")]
         public uint? BufferSizeMin { get; set; }
-        [UmcElement("buffer_size_max")]
+        [UcmElement("buffer_size_max")]
         public uint? BufferSizeMax { get; set; }
-        [UmcElement("sig_bits")]
+        [UcmElement("sig_bits")]
         public uint? SigBits { get; set; }
 
         public SectionPCMCapabilities(string identifier)
@@ -756,7 +756,7 @@ namespace NUcmSerializer
 
     public class FE_DAI : Section
     {
-        [UmcElement("id")]
+        [UcmElement("id")]
         public uint ID { get; set; }
 
         public FE_DAI(string identifier)
@@ -772,7 +772,7 @@ namespace NUcmSerializer
 
     public class PCMStream : Section
     {
-        [UmcElement("capabilities")]
+        [UcmElement("capabilities")]
         public string Capabilities { get; set; }
 
         public PCMStream(string identifier)
@@ -788,28 +788,28 @@ namespace NUcmSerializer
 
     public class SectionPCM : Section
     {
-        [UmcElement("index")]
+        [UcmElement("index")]
         public uint Index { get; set; }
-        [UmcElement("id")]
+        [UcmElement("id")]
         public uint ID { get; set; }
 
-        [UmcSection("dai")]
+        [UcmSection("dai")]
         public FE_DAI DAI { get; set; }
-        [UmcSection("pcm")]
+        [UcmSection("pcm")]
         public PCMStream Playback { get; set; }
-        [UmcSection("pcm")]
+        [UcmSection("pcm")]
         public PCMStream Capture { get; set; }
-        [UmcSection("compress")]
+        [UcmSection("compress")]
         public bool? Compress { get; set; }
 
-        [UmcElement("symmetric_rates")]
+        [UcmElement("symmetric_rates")]
         public bool? SymmetricRates { get; set; }
-        [UmcElement("symmetric_channels")]
+        [UcmElement("symmetric_channels")]
         public bool? SymmetricChannels { get; set; }
-        [UmcElement("symmetric_sample_bits")]
+        [UcmElement("symmetric_sample_bits")]
         public bool? SymmetricSampleBits { get; set; }
 
-        [UmcElement("data")]
+        [UcmElement("data")]
         public string Data { get; set; }
 
         public SectionPCM(string identifier)
@@ -825,26 +825,26 @@ namespace NUcmSerializer
 
     public class SectionLink : Section
     {
-        [UmcElement("index")]
+        [UcmElement("index")]
         public uint Index { get; set; }
-        [UmcElement("id")]
+        [UcmElement("id")]
         public uint ID { get; set; }
 
-        [UmcElement("stream_name")]
+        [UcmElement("stream_name")]
         public string StreamName { get; set; }
-        [UmcArray("hw_configs")]
+        [UcmArray("hw_configs")]
         public string[] HwConfigs { get; set; }
-        [UmcElement("default_hw_conf_id")]
+        [UcmElement("default_hw_conf_id")]
         public uint DefaultHwConfId { get; set; }
 
-        [UmcElement("symmetric_rates")]
+        [UcmElement("symmetric_rates")]
         public bool? SymmetricRates { get; set; }
-        [UmcElement("symmetric_channels")]
+        [UcmElement("symmetric_channels")]
         public bool? SymmetricChannels { get; set; }
-        [UmcElement("symmetric_sample_bits")]
+        [UcmElement("symmetric_sample_bits")]
         public bool? SymmetricSampleBits { get; set; }
 
-        [UmcElement("data")]
+        [UcmElement("data")]
         public string Data { get; set; }
 
         public SectionLink(string identifier)
@@ -860,7 +860,7 @@ namespace NUcmSerializer
 
     public class SectionCC : Section
     {
-        [UmcElement("id")]
+        [UcmElement("id")]
         public uint ID { get; set; }
 
         public SectionCC(string identifier)
@@ -879,13 +879,13 @@ namespace NUcmSerializer
     /// </summary>
     public enum DAI_FORMAT
     {
-        [UmcEnum(Name = "I2S")] I2S          = 1, // I2S mode
-        [UmcEnum(Name = "RIGHT_J")] RIGHT_J  = 2, // Right Justified mode
-        [UmcEnum(Name = "LEFT_J")] LEFT_J    = 3, // Left Justified mode
-        [UmcEnum(Name = "DSP_A")] DSP_A      = 4, // L data MSB after FRM LRC
-        [UmcEnum(Name = "DSP_B")] DSP_B      = 5, // L data MSB during FRM LRC
-        [UmcEnum(Name = "AC97")] AC97        = 6, // AC97
-        [UmcEnum(Name = "PDM")] PDM          = 7  // Pulse density modulation
+        [UcmEnum(Name = "I2S")] I2S          = 1, // I2S mode
+        [UcmEnum(Name = "RIGHT_J")] RIGHT_J  = 2, // Right Justified mode
+        [UcmEnum(Name = "LEFT_J")] LEFT_J    = 3, // Left Justified mode
+        [UcmEnum(Name = "DSP_A")] DSP_A      = 4, // L data MSB after FRM LRC
+        [UcmEnum(Name = "DSP_B")] DSP_B      = 5, // L data MSB during FRM LRC
+        [UcmEnum(Name = "AC97")] AC97        = 6, // AC97
+        [UcmEnum(Name = "PDM")] PDM          = 7  // Pulse density modulation
     }
 
     /// <summary>
@@ -894,8 +894,8 @@ namespace NUcmSerializer
     /// </summary>
     public enum TPLG_BCLK
     {
-        [UmcEnum("codec_master")] CM  = 0, // codec is bclk master
-        [UmcEnum("codec_slave")] CS   = 1  // codec is bclk slave
+        [UcmEnum("codec_master")] CM  = 0, // codec is bclk master
+        [UcmEnum("codec_slave")] CS   = 1  // codec is bclk slave
     }
 
     /// <summary>
@@ -904,8 +904,8 @@ namespace NUcmSerializer
     /// </summary>
     public enum TPLG_FSYNC
     {
-        [UmcEnum("codec_master")] CM  = 0, // codec is fsync master
-        [UmcEnum("codec_slave")] CS   = 1  // codec is fsync slave
+        [UcmEnum("codec_master")] CM  = 0, // codec is fsync master
+        [UcmEnum("codec_slave")] CS   = 1  // codec is fsync slave
     }
 
     /// <summary>
@@ -913,49 +913,49 @@ namespace NUcmSerializer
     /// </summary>
     public enum TPLG_MCLK
     {
-        [UmcEnum("codec_mclk_out")] CO  = 0, // for codec, mclk is output
-        [UmcEnum("codec_mclk_in")] CI   = 1  // for codec, mclk is input
+        [UcmEnum("codec_mclk_out")] CO  = 0, // for codec, mclk is output
+        [UcmEnum("codec_mclk_in")] CI   = 1  // for codec, mclk is input
     }
 
     public class SectionHWConfig : Section
     {
-        [UmcElement("id")]
+        [UcmElement("id")]
         public uint ID { get; set; }
-        [UmcElement("format")]
+        [UcmElement("format")]
         public DAI_FORMAT? Format { get; set; }
 
-        [UmcElement("bclk")]
+        [UcmElement("bclk")]
         public TPLG_BCLK? Bclk { get; set; }
-        [UmcElement("invert_bclk")]
+        [UcmElement("invert_bclk")]
         public bool? InvertBclk { get; set; }
-        [UmcElement("bclk_rate")]
+        [UcmElement("bclk_rate")]
         public uint? BclkRate { get; set; }
 
-        [UmcElement("fsync")]
+        [UcmElement("fsync")]
         public TPLG_FSYNC? Fsync { get; set; }
-        [UmcElement("invert_fsync")]
+        [UcmElement("invert_fsync")]
         public bool? InvertFsync { get; set; }
-        [UmcElement("fsync_rate")]
+        [UcmElement("fsync_rate")]
         public uint? FsyncRate { get; set; }
 
-        [UmcElement("mclk")]
+        [UcmElement("mclk")]
         public TPLG_MCLK? Mclk { get; set; }
-        [UmcElement("mclk_rate")]
+        [UcmElement("mclk_rate")]
         public uint? MclkRate { get; set; }
 
-        [UmcElement("clock_gated")]
+        [UcmElement("clock_gated")]
         public bool? ClockGated { get; set; }
-        [UmcElement("tdm_slots")]
+        [UcmElement("tdm_slots")]
         public uint? TdmSlots { get; set; }
-        [UmcElement("tdm_slot_width")]
+        [UcmElement("tdm_slot_width")]
         public uint? TdmSlotWidth { get; set; }
-        [UmcElement("tx_slots")]
+        [UcmElement("tx_slots")]
         public uint? TxSlots { get; set; }
-        [UmcElement("rx_slots")]
+        [UcmElement("rx_slots")]
         public uint? RxSlots { get; set; }
-        [UmcElement("tx_channels")]
+        [UcmElement("tx_channels")]
         public uint? TxChannels { get; set; }
-        [UmcElement("rx_channels")]
+        [UcmElement("rx_channels")]
         public uint? RxChannels { get; set; }
 
         public SectionHWConfig(string identifier)
@@ -971,28 +971,28 @@ namespace NUcmSerializer
 
     public class SectionDAI : Section
     {
-        [UmcElement("index")]
+        [UcmElement("index")]
         public uint Index { get; set; }
-        [UmcElement("id")]
+        [UcmElement("id")]
         public uint ID { get; set; }
 
-        [UmcSection("playback")]
+        [UcmSection("playback")]
         public uint? SupportsPlayback { get; set; }
-        [UmcSection("capture")]
+        [UcmSection("capture")]
         public uint? SupportsCapture { get; set; }
-        [UmcSection("pcm")]
+        [UcmSection("pcm")]
         public PCMStream Playback { get; set; }
-        [UmcSection("pcm")]
+        [UcmSection("pcm")]
         public PCMStream Capture { get; set; }
 
-        [UmcElement("symmetric_rates")]
+        [UcmElement("symmetric_rates")]
         public bool? SymmetricRates { get; set; }
-        [UmcElement("symmetric_channels")]
+        [UcmElement("symmetric_channels")]
         public bool? SymmetricChannels { get; set; }
-        [UmcElement("symmetric_sample_bits")]
+        [UcmElement("symmetric_sample_bits")]
         public bool? SymmetricSampleBits { get; set; }
 
-        [UmcElement("data")]
+        [UcmElement("data")]
         public string Data { get; set; }
 
         public SectionDAI(string identifier)
@@ -1008,7 +1008,7 @@ namespace NUcmSerializer
 
     public class SectionManifest : Section
     {
-        [UmcArray("data")]
+        [UcmArray("data")]
         public string[] Data { get; set; }
 
         public SectionManifest(string identifier)
