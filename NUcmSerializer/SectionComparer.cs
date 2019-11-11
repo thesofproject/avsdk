@@ -13,7 +13,7 @@
 
 using System.Collections.Generic;
 
-namespace NUmcSerializer
+namespace NUcmSerializer
 {
     public class SectionComparer : EqualityComparer<Section>
     {

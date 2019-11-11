@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace NUmcSerializer
+namespace NUcmSerializer
 {
     internal static class TypeHelper
     {

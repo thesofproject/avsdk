@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace NUmcSerializer
+namespace NUcmSerializer
 {
     public class UmcSerializer
     {

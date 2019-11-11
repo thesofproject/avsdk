@@ -7,8 +7,8 @@
     <ProjectGuid>{3149996B-8671-4E26-8A24-710BD4DC7EBB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NUmcSerializer</RootNamespace>
-    <AssemblyName>NUmcSerializer</AssemblyName>
+    <RootNamespace>NUcmSerializer</RootNamespace>
+    <AssemblyName>NUcmSerializer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

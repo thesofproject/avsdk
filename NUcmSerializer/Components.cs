@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NUmcSerializer
+namespace NUcmSerializer
 {
     public abstract class Section
     {

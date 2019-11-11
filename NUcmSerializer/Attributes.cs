@@ -13,7 +13,7 @@
 
 using System;
 
-namespace NUmcSerializer
+namespace NUcmSerializer
 {
     [AttributeUsage(AttributeTargets.Property)]
     public abstract class UmcNamedTagAttribute : Attribute
