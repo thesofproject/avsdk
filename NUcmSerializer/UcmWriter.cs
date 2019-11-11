@@ -30,7 +30,7 @@ namespace NUcmSerializer
         Section
     }
 
-    public class UmcWriter : IDisposable
+    public class UcmWriter : IDisposable
     {
         TextWriter writer;
         Encoding encoding;
@@ -89,7 +89,7 @@ namespace NUcmSerializer
             }
         }
 
-        public UmcWriter(Stream stream, Encoding encoding)
+        public UcmWriter(Stream stream, Encoding encoding)
         {
             this.encoding = encoding;
             if (encoding != null)
