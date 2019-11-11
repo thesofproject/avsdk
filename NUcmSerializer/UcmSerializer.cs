@@ -17,9 +17,9 @@ using System.IO;
 
 namespace NUcmSerializer
 {
-    public class UmcSerializer
+    public class UcmSerializer
     {
-        public UmcSerializer()
+        public UcmSerializer()
         {
             // TODO: check semantics of type to be serialized/ deserialized
         }
