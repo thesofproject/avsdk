@@ -22,14 +22,14 @@
 // rights must be express and approved by Intel in writing.
 //
 
-using NUmcSerializer;
+using NUcmSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace itt
 {
-    [UmcSection("SectionVendorTokens")]
+    [UcmSection("SectionVendorTokens")]
     public class SectionSkylakeTokens : SectionVendorTokens
     {
         public const string IDENTIFIER = "skl_tokens";
@@ -43,7 +43,7 @@ namespace itt
         }
     }
 
-    [UmcSection("SectionVendorTuples")]
+    [UcmSection("SectionVendorTuples")]
     public class SectionSkylakeTuples : SectionVendorTuples
     {
         public SectionSkylakeTuples(string identifier)

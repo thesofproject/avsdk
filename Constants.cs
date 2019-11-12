@@ -22,7 +22,7 @@
 // rights must be express and approved by Intel in writing.
 //
 
-using NUmcSerializer;
+using NUcmSerializer;
 
 namespace itt
 {

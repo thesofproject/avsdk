@@ -22,7 +22,7 @@
 // rights must be express and approved by Intel in writing.
 //
 
-using NUmcSerializer;
+using NUcmSerializer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -101,7 +101,7 @@ namespace itt
                     system = (System)deserializer.Deserialize(stream);
                 }
 
-                var serializer = new UmcSerializer();
+                var serializer = new UcmSerializer();
                 var sections = new UmcConverter(system).GetAllSections();
                 using (var stream = new FileStream(dictionary["output"], FileMode.Create))
                 {
