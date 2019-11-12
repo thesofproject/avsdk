@@ -1,4 +1,4 @@
-﻿// UmcConverter.cs - an XML to UMC converter
+﻿// UcmConverter.cs - a XML to UCM converter
 //
 // Copyright (c) 2018-2019 Intel Corporation
 //
@@ -31,7 +31,7 @@ using System.Text;
 
 namespace itt
 {
-    public sealed class UmcConverter
+    public sealed class UcmConverter
     {
         readonly FirmwareInfo[] manifestData;
         readonly FirmwareConfig firmwareConfig;
@@ -41,7 +41,7 @@ namespace itt
         readonly Paths paths;
         readonly PathConnectors pathConnectors;
 
-        public UmcConverter(System system)
+        public UcmConverter(System system)
         {
             if (system == null)
                 throw new ArgumentNullException(nameof(system));
