@@ -338,15 +338,8 @@ namespace itt
                 };
 
                 tuples.Add(words);
-                for (int i = 0; i < Constants.DMA_BUFFER_COUNT; i++)
-                {
-                    DMABufferConfig buf;
-                    if (i < length)
-                        buf = config.DMABufferConfigs[i];
-                    else
-                        buf = new DMABufferConfig();
-                    tuples.AddRange(GetTuples(buf, i));
-                }
+                for (int i = 0; i < Math.Min(Constants.DMA_BUFFER_COUNT, length); i++)
+                    tuples.AddRange(GetTuples(config.DMABufferConfigs[i], i));
             }
 
             if (config.AstateTableConfigs != null)
