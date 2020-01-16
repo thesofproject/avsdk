@@ -935,7 +935,8 @@ namespace itt
         static SectionControlMixer GetMixerControl(string name,
             int max, uint get, uint put,
             int reg = Constants.NOPM,
-            int rreg = Constants.NOPM)
+            int rreg = Constants.NOPM,
+            uint info = TPLG_CTL.VOLSW)
         {
             var control = new SectionControlMixer(name);
             control.Index = 0;
@@ -945,7 +946,7 @@ namespace itt
                 new ChannelMap(ChannelName.FrontLeft) { Reg = reg },
                 new ChannelMap(ChannelName.FrontRight) { Reg = rreg }
             };
-            control.Ops = new Ops("ctl") { Get = get, Put = put, Info = TPLG_CTL.VOLSW };
+            control.Ops = new Ops("ctl") { Get = get, Put = put, Info = info };
             control.Max = max;
 
             return control;
@@ -971,7 +972,8 @@ namespace itt
                     Constants.GAIN_MAX_INDEX,
                     Constants.SKL_CTL_VOLUME,
                     Constants.SKL_CTL_VOLUME,
-                    Constants.NOPM + 1, Constants.NOPM + 2));
+                    Constants.NOPM + 1, Constants.NOPM + 2,
+                    Constants.SKL_CTL_VOLUME));
             }
 
             return result;
