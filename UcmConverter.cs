@@ -1198,7 +1198,7 @@ namespace itt
             Func<Module, bool> predicate = (m => true);
 
             if (path.Modules.Module.Length > 1)
-                predicate = (m => m.ModulePosition == ModulePosition.SOURCE);
+                predicate = (m => m.ModulePosition != ModulePosition.SINK);
             Module source = path.Modules.Module.First(predicate);
 
             if (path.Direction == Direction.PLAYBACK &&
