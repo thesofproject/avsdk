@@ -648,6 +648,8 @@ namespace itt
         public uint ChannelCount { get; set; }
         [XmlAttribute("bps")]
         public uint Bps { get; set; }
+        [XmlAttribute("sample_container")]
+        public uint SampleContainer { get; set; }
     }
 
     public class PathConfiguration
