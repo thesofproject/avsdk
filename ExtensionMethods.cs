@@ -221,19 +221,22 @@ namespace itt
             }
         }
 
-        internal static PCM_FORMAT ToFormat(this uint value)
+        internal static PCM_FORMAT ToFormat(this PcmFormat format)
         {
-            switch (value)
-            {
-                case 16:
-                    return PCM_FORMAT.S16_LE;
-                case 24:
-                    return PCM_FORMAT.S24_LE;
-                case 32:
-                    return PCM_FORMAT.S32_LE;
-                default:
-                    throw new NotSupportedException(nameof(value));
-            }
+            uint containerSize = format.SampleContainer;
+            if (containerSize == 0)
+                containerSize = (uint)Math.Ceiling(format.Bps / 16m) * 16;
+
+            if (format.Bps == 16 && containerSize == 16)
+                return PCM_FORMAT.S16_LE;
+            if (format.Bps == 24 && containerSize == 24)
+                return PCM_FORMAT.S24_3LE;
+            if (format.Bps == 24 && containerSize == 32)
+                return PCM_FORMAT.S24_LE;
+            if (format.Bps == 32 && containerSize == 32)
+                return PCM_FORMAT.S32_LE;
+
+            throw new NotSupportedException(nameof(format));
         }
 
         internal static uint ToIndex(this InterfaceName iface)

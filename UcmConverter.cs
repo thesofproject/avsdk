@@ -1329,7 +1329,7 @@ namespace itt
             IEnumerable<uint> bps = formats.Select(f => f.Bps);
 
             var result = new SectionPCMCapabilities(path.Device);
-            result.Formats.UnionWith(bps.Select(b => b.ToFormat()));
+            result.Formats.UnionWith(formats.Select(f => f.ToFormat()));
             result.Rates.UnionWith(rates);
             result.ChannelsMin = channels.Min();
             result.ChannelsMax = channels.Max();
