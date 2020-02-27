@@ -763,12 +763,18 @@ namespace itt
 
             tuples.Add(uuids);
             var bytes = new VendorTuples<byte>("u8_data");
+            // Pin configuration is considered dynamic if no explicit connections (Guids) are set
+            Func<IEnumerable<VendorTuples>, bool> isDynamic = (vts) =>
+            {
+                return vts.All(t => t.GetType() != typeof(VendorTuples<Guid>));
+            };
+
             bytes.Tuples = new[]
             {
                 GetTuple(SKL_TKN.U8_IN_PIN_TYPE, (byte)template.InputPinType),
                 GetTuple(SKL_TKN.U8_OUT_PIN_TYPE, (byte)template.OutputPinType),
-                GetTuple(SKL_TKN.U8_DYN_IN_PIN, Convert.ToByte(IsDynamic(inTuples))),
-                GetTuple(SKL_TKN.U8_DYN_OUT_PIN, Convert.ToByte(IsDynamic(outTuples))),
+                GetTuple(SKL_TKN.U8_DYN_IN_PIN, Convert.ToByte(isDynamic(inTuples))),
+                GetTuple(SKL_TKN.U8_DYN_OUT_PIN, Convert.ToByte(isDynamic(outTuples))),
                 GetTuple(SKL_TKN.U8_TIME_SLOT, (byte)module.TdmSlot),
                 GetTuple(SKL_TKN.U8_CORE_ID, (byte)module.Affinity),
                 GetTuple(SKL_TKN.U8_MODULE_TYPE, (byte)module.Type.GetModuleType()),
@@ -830,11 +836,6 @@ namespace itt
             result.Insert(0, desc);
             result.Insert(1, desc.GetPrivateData());
             return result;
-
-            bool IsDynamic(IEnumerable<VendorTuples> vts)
-            {
-                return vts.All(t => t.GetType() != typeof(VendorTuples<Guid>));
-            }
         }
 
         static uint? GetEventType(Path path, Module module)

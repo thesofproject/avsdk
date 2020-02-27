@@ -146,7 +146,9 @@ namespace itt
 
         internal static uint ToUInt32(this string value)
         {
-            TryUInt32(value, out uint result);
+            uint result;
+
+            TryUInt32(value, out result);
             return result;
         }
 
@@ -156,8 +158,9 @@ namespace itt
             var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim());
 
+            uint val;
             foreach (var substr in substrs)
-                if (value.TryUInt32(out uint val))
+                if (value.TryUInt32(out val))
                     result.Add(val);
 
             return result.ToArray();
