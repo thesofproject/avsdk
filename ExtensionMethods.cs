@@ -160,7 +160,7 @@ namespace itt
 
             uint val;
             foreach (var substr in substrs)
-                if (value.TryUInt32(out val))
+                if (substr.TryUInt32(out val))
                     result.Add(val);
 
             return result.ToArray();
