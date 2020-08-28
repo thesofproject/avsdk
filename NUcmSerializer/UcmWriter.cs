@@ -142,8 +142,12 @@ namespace NUcmSerializer
 
         internal static string GetTokenStringValue(object token)
         {
-            string value = null;
+            // non-null tuples may still have Item2 (value) set to null
+            if (token == null)
+                return string.Empty;
+
             Type type = token.GetType();
+            string value;
 
             if (type == typeof(Guid))
             {
@@ -161,9 +165,11 @@ namespace NUcmSerializer
             {
                 value = token.ToString();
             }
-
-            if (value == null)
+            else
+            {
                 value = token.ToString().ToLower();
+            }
+
             return value;
         }
 
