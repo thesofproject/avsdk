@@ -49,6 +49,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SectionProvider.cs" />
     <Compile Include="UcmTokens.cs" />
     <Compile Include="XmlComponents.cs" />
   </ItemGroup>
