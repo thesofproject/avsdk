@@ -226,7 +226,7 @@ namespace NUcmSerializer
         }
 
         [UcmElement("tuples"), UcmExclusive("value")]
-        public string Tuples { get; set; }
+        public string[] Tuples { get; set; }
         [UcmElement("type")]
         public uint? Type { get; set; }
 
