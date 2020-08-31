@@ -430,7 +430,6 @@ namespace avstplg
             section.Rates.UnionWith(rates.Select(s => s.ToRate()));
             section.ChannelsMax = channels.Max();
             section.ChannelsMin = channels.Min();
-            section.BufferSizeMax = caps.BufferSizeMax;
 
             return section;
         }
@@ -441,8 +440,6 @@ namespace avstplg
             string identifier;
 
             var section = new SectionPCM(fedai.Name);
-            section.ID = fedai.Id;
-
             if (fedai.CaptureCapabilities != null)
             {
                 identifier = $"{fedai.Name}-capture";
@@ -459,7 +456,7 @@ namespace avstplg
                 result.Add(GetPCMCapabilitiesSection(fedai.PlaybackCapabilities, identifier));
             }
 
-            section.DAI = new FE_DAI(fedai.DAI);
+            section.DAI = new FE_DAI($"{fedai.Name}-dai");
             result.Add(section);
 
             return result;
@@ -468,7 +465,6 @@ namespace avstplg
         public static Section GetDAPMGraphSection(DAPMGraph graph)
         {
             var section = new SectionGraph(graph.Name);
-            section.Index = graph.Index;
             section.Lines = graph.Routes.Select(
                 r => $"{r.Sink}, {r.Control}, {r.Source}").ToArray();
 

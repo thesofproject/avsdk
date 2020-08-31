@@ -182,18 +182,14 @@ namespace avstplg
         public string Formats { get; set; }
         public string Rates { get; set; }
         public string Channels { get; set; }
-        public uint BufferSizeMax { get; set; }
     }
 
     public class FEDAI
     {
         [XmlAttribute("name")]
         public string Name { get; set; }
-        [XmlAttribute("id")]
-        public uint Id { get; set; }
         public PCMCapabilities CaptureCapabilities;
         public PCMCapabilities PlaybackCapabilities;
-        public string DAI { get; set; }
     }
 
     public class DAPMRoute
@@ -211,7 +207,6 @@ namespace avstplg
     {
         [XmlAttribute("name")]
         public string Name { get; set; }
-        public uint Index { get; set; }
         [XmlArrayItem("Route")]
         public DAPMRoute[] Routes;
     }
