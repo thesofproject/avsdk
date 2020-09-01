@@ -49,7 +49,7 @@ namespace avstplg
     public class Module
     {
         internal Guid uuid;
-        public string Uuid
+        public string UUID
         {
             get
             {
