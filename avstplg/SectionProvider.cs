@@ -196,11 +196,19 @@ namespace avstplg
                 GetTuple(AVS_TKN_MODCFG.BASE_ID_U32, module.ModuleConfigBaseId),
             };
 
+            var byteTuples = new List<Tuple<string, byte>>
+            {
+                GetTuple(AVS_TKN_MODCFG.CORE_ID_U8, module.CoreId),
+                GetTuple(AVS_TKN_MODCFG.PROC_DOMAIN_U8, module.ProcessingDomain),
+            };
+
             // module-type specific tuples
             if (module.CprOutAudioFormatId.HasValue)
             wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
             if (module.CprFeatureMask.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_FEATURE_MASK_U32, module.CprFeatureMask.Value));
+            if (module.CprVirtualIndex != null)
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_VINDEX_U8, module.CprVirtualIndex.Value));
             if (module.CprDMAType != null)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMA_TYPE_U32, module.cprDMAType));
             if (module.CprDMABufferSize != null)
@@ -216,11 +224,7 @@ namespace avstplg
             words.Tuples = wordTuples.ToArray();
 
             var bytes = new VendorTuples<byte>();
-            bytes.Tuples = new []
-            {
-                GetTuple(AVS_TKN_MODCFG.CORE_ID_U8, module.CoreId),
-                GetTuple(AVS_TKN_MODCFG.PROC_DOMAIN_U8, module.ProcessingDomain),
-            };
+            bytes.Tuples = byteTuples.ToArray();
 
             var section = new SectionVendorTuples($"{namePrefix}_mod{id}_tuples");
             section.Tokens = "avs_mod_cfg_tokens";

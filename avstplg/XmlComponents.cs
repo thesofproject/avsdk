@@ -78,6 +78,7 @@ namespace avstplg
 
         public uint? CprOutAudioFormatId { get; set; }
         public uint? CprFeatureMask { get; set; }
+        public byte? CprVirtualIndex { get; set; }
         public string CprDMAType
         {
             get
