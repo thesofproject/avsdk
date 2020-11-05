@@ -6,6 +6,7 @@
         REQ_SIZE_U16,
         PRIORITY_U8,
         LOW_POWER_BOOL,
+        TRIGGER_U32,
     }
 
     public enum AVS_TKN_PIPE

@@ -245,6 +245,7 @@ namespace avstplg
             words.Tuples = new[]
             {
                 GetTuple(AVS_TKN_PIPELINE.ID_U32, (uint)pipeline.Id),
+                GetTuple(AVS_TKN_PIPELINE.TRIGGER_U32, (uint)pipeline.Trigger),
             };
 
             var shorts = new VendorTuples<ushort>();
