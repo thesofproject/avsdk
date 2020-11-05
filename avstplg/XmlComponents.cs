@@ -73,34 +73,11 @@ namespace avstplg
         public byte ProcessingDomain { get; set; }
 
         // module-type specific fields
-        internal uint cprDMAType;
-        internal uint cprDMABufferSize;
-
         public uint? CprOutAudioFormatId { get; set; }
         public uint? CprFeatureMask { get; set; }
         public byte? CprVirtualIndex { get; set; }
-        public string CprDMAType
-        {
-            get
-            {
-                return string.Format("0x{0:X8}", cprDMAType);
-            }
-            set
-            {
-                cprDMAType = (value != null) ? value.ToUInt32() : 0;
-            }
-        }
-        public string CprDMABufferSize
-        {
-            get
-            {
-                return string.Format("0x{0:X8}", cprDMABufferSize);
-            }
-            set
-            {
-                cprDMABufferSize = (value != null) ? value.ToUInt32() : 0;
-            }
-        }
+        public uint? CprDMAType { get; set; }
+        public uint? CprDMABufferSize { get; set; }
         public uint? MicselOutAudioFormatId { get; set; }
         public uint? IntelWOVCpcLowPowerMode { get; set; }
         public uint? SrcOutFrequency { get; set; }
