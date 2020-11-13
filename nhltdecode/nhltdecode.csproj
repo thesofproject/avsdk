@@ -37,12 +37,16 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MarshalHelper.cs" />
     <Compile Include="NativeComponents.cs" />
+    <Compile Include="NativeSpecificConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlComponents.cs" />
+    <Compile Include="XmlSpecificConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
+using System.Xml.Serialization;
 
 namespace nhltdecode
 {
@@ -31,6 +32,7 @@ namespace nhltdecode
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct WaveFormatExtensible
     {
+        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public byte[] FormatTag;
         public ushort Channels;
@@ -40,8 +42,10 @@ namespace nhltdecode
         public ushort BitsPerSample;
         public ushort Size;
         public ushort ValidBitsPerSample;
+        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public byte[] ChannelMask;
+        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] Subformat;
     }
@@ -140,6 +144,7 @@ namespace nhltdecode
     [StructLayout(LayoutKind.Sequential)]
     public struct DeviceInfo
     {
+        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] DeviceId;
         public byte DeviceInstanceId;
