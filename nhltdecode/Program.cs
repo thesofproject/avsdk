@@ -67,7 +67,18 @@ namespace nhltdecode
             }
             else
             {
-                throw new NotImplementedException();
+                var xtable = new NhltXml();
+                var xs = new XmlSerializer(typeof(NhltXml));
+                TextReader reader = new StreamReader(input);
+
+                xtable = (NhltXml)xs.Deserialize(reader);
+                reader.Close();
+
+                var writer = new BinaryWriter(new FileStream(output, FileMode.Create));
+                NHLT table = xtable.ToNative();
+
+                table.WriteToBinary(writer);
+                writer.Close();
             }
         }
 

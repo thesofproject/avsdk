@@ -13,6 +13,27 @@ namespace nhltdecode
         {
             return MicSnrSensitivityExtension.HasValue;
         }
+
+        public byte[] ToBytes()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write(ArrayTypeEx);
+            if (VendorMicConfig != null)
+            {
+                writer.Write((byte)VendorMicConfig.Length);
+                foreach (var vendorMic in VendorMicConfig)
+                    writer.Write(MarshalHelper.StructureToBytes(vendorMic));
+            }
+
+            if (MicSnrSensitivityExtension.HasValue)
+                writer.Write(MarshalHelper.StructureToBytes(MicSnrSensitivityExtension.Value));
+
+            var bytes = stream.ToArray();
+            writer.Close();
+            return bytes;
+        }
     }
 
     public class EndpointSpecificConfigXml
@@ -78,6 +99,30 @@ namespace nhltdecode
         exit:
             reader.Close();
             return xcfg;
+        }
+
+        public SpecificConfig ToNative()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            if (VirtualSlot.HasValue)
+                writer.Write(VirtualSlot.Value);
+            if (ConfigType.HasValue)
+                writer.Write(ConfigType.Value);
+            if (MicArrayConfig.HasValue)
+                writer.Write(MicArrayConfig.Value.ToBytes());
+            if (RenderFeedbackConfig.HasValue)
+                writer.Write(MarshalHelper.StructureToBytes(RenderFeedbackConfig.Value));
+            if (Blob != null)
+                writer.Write(Blob);
+
+            var cfg = new SpecificConfig();
+            cfg.Capabilities = stream.ToArray();
+            cfg.CapabilitiesSize = (uint)cfg.Capabilities.Length;
+
+            writer.Close();
+            return cfg;
         }
 
         public bool ShouldSerializeVirtualSlot()

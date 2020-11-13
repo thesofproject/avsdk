@@ -29,6 +29,22 @@ namespace nhltdecode
 
             return xhdr;
         }
+
+        public AcpiDescriptionHeader ToNative()
+        {
+            var hdr = new AcpiDescriptionHeader();
+            Encoding srcEncoding = Encoding.Unicode;
+
+            hdr.Signature = Encoding.Convert(srcEncoding, Encoding.ASCII, srcEncoding.GetBytes(Signature));
+            hdr.Revision = Revision;
+            hdr.OemId = Encoding.Convert(srcEncoding, Encoding.ASCII, srcEncoding.GetBytes(OemId));
+            hdr.OemIdTableId = Encoding.Convert(srcEncoding, Encoding.ASCII, srcEncoding.GetBytes(OemIdTableId));
+            hdr.OemRevision = OemRevision;
+            hdr.CreatorId = CreatorId;
+            hdr.CreatorRevision = CreatorRevision;
+
+            return hdr;
+        }
     }
 
     [XmlType("FormatConfig")]
@@ -47,6 +63,16 @@ namespace nhltdecode
             xcfg.FormatConfiguration = cfg.Config.Capabilities;
 
             return xcfg;
+        }
+
+        public FormatConfig ToNative()
+        {
+            var cfg = new FormatConfig();
+            cfg.Format = Format;
+            cfg.Config.Capabilities = FormatConfiguration;
+            cfg.Config.CapabilitiesSize = (uint)FormatConfiguration.Length;
+
+            return cfg;
         }
     }
 
@@ -102,6 +128,36 @@ namespace nhltdecode
 
             return xdesc;
         }
+
+        public EndpointDescriptor ToNative()
+        {
+            var desc = new EndpointDescriptor();
+
+            desc.LinkType = (LINK_TYPE)LinkType;
+            desc.InstanceId = InstanceId;
+            desc.VendorId = VendorId;
+            desc.DeviceId = DeviceId;
+            desc.RevisionId = RevisionId;
+            desc.SubsystemId = SubsystemId;
+            desc.DeviceType = DeviceType;
+            desc.Direction = Direction;
+            desc.VirtualBusId = VirtualBusId;
+            desc.EndpointConfig = SpecificConfig.ToNative();
+
+            desc.FormatsConfig = new FormatsConfig();
+            desc.FormatsConfig.FormatsCount = (byte)FormatsConfiguration.Length;
+            desc.FormatsConfig.FormatsConfiguration = new FormatConfig[FormatsConfiguration.Length];
+            for (byte i = 0; i < desc.FormatsConfig.FormatsCount; i++)
+                desc.FormatsConfig.FormatsConfiguration[i] = FormatsConfiguration[i].ToNative();
+
+            desc.DevicesInfo = new DevicesInfo();
+            desc.DevicesInfo.Count = (byte)Devices.Length;
+            desc.DevicesInfo.Devices = Devices;
+
+            desc.EndpointDescriptorLength = (uint)desc.SizeOf();
+
+            return desc;
+        }
     }
 
     [XmlType("Nhlt")]
@@ -127,6 +183,24 @@ namespace nhltdecode
             xtable.OedSpecificConfig = table.OEDConfig.Capabilities;
 
             return xtable;
+        }
+
+        public NHLT ToNative()
+        {
+            var table = new NHLT();
+
+            table.Header = EfiAcpiDescriptionHeader.ToNative();
+            table.DescriptorCount = (byte)EndpointDescriptors.Length;
+            table.Descriptors = new EndpointDescriptor[table.DescriptorCount];
+            for (byte i = 0; i < table.DescriptorCount; i++)
+                table.Descriptors[i] = EndpointDescriptors[i].ToNative();
+
+            table.OEDConfig.Capabilities = OedSpecificConfig;
+            table.OEDConfig.CapabilitiesSize = (uint)OedSpecificConfig.Length;
+            table.Header.Length = (uint)table.SizeOf();
+            table.Header.Checksum = table.CalculateChecksum();
+
+            return table;
         }
     }
 }
