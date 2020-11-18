@@ -47,5 +47,8 @@
     <ClInclude Include="include\log_entry_spt.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\elf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
