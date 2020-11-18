@@ -24,6 +24,9 @@
     <ClCompile Include="src\fileupdate_listener_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\log_entry_spt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ifileupdate_listener.hpp">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ilog_entry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\log_entry_spt.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
