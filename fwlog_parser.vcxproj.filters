@@ -38,5 +38,8 @@
     <ClInclude Include="include\fileupdate_listener.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\ilog_entry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
