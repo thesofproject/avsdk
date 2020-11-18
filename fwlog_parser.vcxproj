@@ -164,6 +164,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\fileupdate_listener.hpp" />
     <ClInclude Include="include\fileupdate_listener_linux.hpp" />
     <ClInclude Include="include\fileupdate_listener_win.hpp" />
     <ClInclude Include="include\ifileupdate_listener.hpp" />

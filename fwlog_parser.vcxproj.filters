@@ -35,5 +35,8 @@
     <ClInclude Include="include\fileupdate_listener_win.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\fileupdate_listener.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
