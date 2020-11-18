@@ -21,12 +21,18 @@
     <ClCompile Include="src\fileupdate_listener_linux.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\fileupdate_listener_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ifileupdate_listener.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\fileupdate_listener_linux.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fileupdate_listener_win.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

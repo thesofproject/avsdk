@@ -160,10 +160,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\fileupdate_listener_linux.cpp" />
+    <ClCompile Include="src\fileupdate_listener_win.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\fileupdate_listener_linux.hpp" />
+    <ClInclude Include="include\fileupdate_listener_win.hpp" />
     <ClInclude Include="include\ifileupdate_listener.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
