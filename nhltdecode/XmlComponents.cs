@@ -53,14 +53,16 @@ namespace nhltdecode
         [XmlAttribute("idx")]
         public int Idx;
         public WaveFormatExtensible Format;
-        [XmlElement(DataType = "hexBinary")]
-        public byte[] FormatConfiguration;
+        public FormatConfigurationXml FormatConfiguration;
 
         public static FormatConfigXml FromNative(FormatConfig cfg)
         {
             var xcfg = new FormatConfigXml();
             xcfg.Format = cfg.Format;
-            xcfg.FormatConfiguration = cfg.Config.Capabilities;
+            xcfg.FormatConfiguration = new FormatConfigurationXml
+            {
+                Blob = cfg.Config.Capabilities
+            };
 
             return xcfg;
         }
@@ -69,8 +71,7 @@ namespace nhltdecode
         {
             var cfg = new FormatConfig();
             cfg.Format = Format;
-            cfg.Config.Capabilities = FormatConfiguration;
-            cfg.Config.CapabilitiesSize = (uint)FormatConfiguration.Length;
+            cfg.Config = FormatConfiguration.ToNative();
 
             return cfg;
         }

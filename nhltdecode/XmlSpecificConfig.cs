@@ -142,4 +142,106 @@ namespace nhltdecode
             return RenderFeedbackConfig.HasValue;
         }
     }
+
+    public class FormatConfigurationXml
+    {
+        [XmlElement(DataType = "hexBinary")]
+        public byte[] Blob;
+        public uint? GatewayAttributes;
+        public I2sConfigurationBlob? I2sBlob;
+        public I2sConfigurationBlobLegacy? I2sBlobLegacy;
+        public DmicConfigurationBlob? DmicBlob;
+
+        public void ParseBlob(LINK_TYPE type)
+        {
+            if (Blob == null || Blob.Length == 0)
+                return;
+
+            switch (type)
+            {
+                case LINK_TYPE.SSP:
+                case LINK_TYPE.PDM:
+                    break;
+                default:
+                    return; // nothing to do for others
+            }
+
+            var reader = new BinaryReader(new MemoryStream(Blob));
+
+            if (type == LINK_TYPE.SSP)
+            {
+                GatewayAttributes = reader.ReadUInt32();
+
+                long pos = reader.BaseStream.Position;
+                byte header = reader.ReadByte();
+                reader.BaseStream.Position = pos; // mimics 'peek'
+
+                if (header == 0xEE)
+                {
+                    var i2sBlob = new I2sConfigurationBlob();
+                    i2sBlob.ReadFromBinary(reader);
+                    I2sBlob = i2sBlob;
+                }
+                else
+                {
+                    I2sBlobLegacy = MarshalHelper.FromBinaryReader<I2sConfigurationBlobLegacy>(reader);
+                }
+            }
+            else // LINK_TYPE.PDM
+            {
+                GatewayAttributes = reader.ReadUInt32();
+
+                var dmicBlob = new DmicConfigurationBlob();
+                dmicBlob.ReadFromBinary(reader);
+                DmicBlob = dmicBlob;
+            }
+
+            reader.Close();
+        }
+
+        public SpecificConfig ToNative()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            if (Blob != null)
+                writer.Write(Blob);
+            if (GatewayAttributes.HasValue)
+                writer.Write(GatewayAttributes.Value);
+            if (I2sBlob.HasValue)
+                I2sBlob.Value.WriteToBinary(writer);
+            if (I2sBlobLegacy.HasValue)
+                writer.Write(MarshalHelper.StructureToBytes(I2sBlobLegacy.Value));
+            if (DmicBlob.HasValue)
+                DmicBlob.Value.WriteToBinary(writer);
+
+            var cfg = new SpecificConfig();
+            cfg.Capabilities = stream.ToArray();
+            cfg.CapabilitiesSize = (uint)cfg.Capabilities.Length;
+
+            writer.Close();
+            return cfg;
+        }
+
+        public bool ShouldSerializeBlob()
+        {
+            return !GatewayAttributes.HasValue;
+        }
+        public bool ShouldSerializeGatewayAttributes()
+        {
+            return GatewayAttributes.HasValue;
+        }
+        public bool ShouldSerializeI2sBlob()
+        {
+            return I2sBlob.HasValue;
+        }
+        public bool ShouldSerializeI2sBlobLegacy()
+        {
+            return I2sBlobLegacy.HasValue;
+        }
+        public bool ShouldSerializeDmicBlob()
+        {
+            return DmicBlob.HasValue;
+        }
+    }
 }

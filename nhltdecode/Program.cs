@@ -15,7 +15,7 @@ namespace nhltdecode
             }
 
             string input = "", output = "";
-            bool decode = false;
+            bool decode = false, parseBlob = false;
             for (int i = 0; i < args.Length; i++)
             {
                 if (args[i].Equals("-h") || args[i].Equals("--help"))
@@ -39,6 +39,10 @@ namespace nhltdecode
                     output = args[i + 1];
                     i++;
                 }
+                else if (args[i].Equals("-b") || args[i].Equals("--blob"))
+                {
+                    parseBlob = true;
+                }
             }
 
             if (input.Length == 0 || output.Length == 0)
@@ -57,6 +61,11 @@ namespace nhltdecode
                 reader.Close();
 
                 var xtable = NhltXml.FromNative(table);
+
+                if (parseBlob)
+                    foreach (var endpoint in xtable.EndpointDescriptors)
+                        foreach (var format in endpoint.FormatsConfiguration)
+                            format.FormatConfiguration.ParseBlob((LINK_TYPE)endpoint.LinkType);
 
                 var xs = new XmlSerializer(typeof(NhltXml));
                 TextWriter writer = new StreamWriter(output);
@@ -89,6 +98,7 @@ namespace nhltdecode
             Console.WriteLine("-c, --compile=FILE      compile XML file");
             Console.WriteLine("-d, --decode=FILE       decode NHLT binary file");
             Console.WriteLine("-o, --output=FILE       set output file");
+            Console.WriteLine("-b, --blob              parse blob while decoding binary");
         }
     }
 }
