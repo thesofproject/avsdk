@@ -1,0 +1,60 @@
+﻿using System.IO;
+using System.Runtime.InteropServices;
+
+namespace nhltdecode
+{
+    internal static class MarshalHelper
+    {
+        internal static byte[] StructureToBytes<T>(T str, int size)
+            where T : struct
+        {
+            byte[] arr = new byte[size];
+            GCHandle h = default(GCHandle);
+
+            try
+            {
+                h = GCHandle.Alloc(arr, GCHandleType.Pinned);
+                Marshal.StructureToPtr(str, h.AddrOfPinnedObject(), false);
+            }
+            finally
+            {
+                if (h.IsAllocated)
+                    h.Free();
+            }
+
+            return arr;
+        }
+
+        internal static byte[] StructureToBytes<T>(T str)
+            where T : struct
+        {
+            return StructureToBytes<T>(str, Marshal.SizeOf(typeof(T)));
+        }
+
+        internal static T FromBinaryReader<T>(BinaryReader reader, int size)
+        {
+            byte[] bytes = reader.ReadBytes(size);
+            GCHandle h = default(GCHandle);
+            T result;
+
+            try
+            {
+                h = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                result = (T)Marshal.PtrToStructure(h.AddrOfPinnedObject(), typeof(T));
+            }
+            finally
+            {
+                if (h.IsAllocated)
+                    h.Free();
+            }
+
+            return result;
+        }
+
+        internal static T FromBinaryReader<T>(BinaryReader reader)
+            where T : struct
+        {
+            return FromBinaryReader<T>(reader, Marshal.SizeOf(typeof(T)));
+        }
+    }
+}
