@@ -59,10 +59,7 @@ namespace nhltdecode
         {
             var xcfg = new FormatConfigXml();
             xcfg.Format = cfg.Format;
-            xcfg.FormatConfiguration = new FormatConfigurationXml
-            {
-                Blob = cfg.Config.Capabilities
-            };
+            xcfg.FormatConfiguration = FormatConfigurationXml.FromNative(cfg.Config);
 
             return xcfg;
         }

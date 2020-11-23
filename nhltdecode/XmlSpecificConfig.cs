@@ -199,6 +199,11 @@ namespace nhltdecode
             reader.Close();
         }
 
+        public static FormatConfigurationXml FromNative(SpecificConfig cfg)
+        {
+            return new FormatConfigurationXml() { Blob = cfg.Capabilities };
+        }
+
         public SpecificConfig ToNative()
         {
             var stream = new MemoryStream();
