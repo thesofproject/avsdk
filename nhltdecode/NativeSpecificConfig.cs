@@ -104,12 +104,17 @@ namespace nhltdecode
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] // fake size
         public uint[] Mdivr;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static I2sConfigurationBlob ReadFromBinary(BinaryReader reader)
         {
-            this = MarshalHelper.FromBinaryReader<I2sConfigurationBlob>(reader, SizeOf());
-            Mdivr = new uint[MdivrCount];
-            for (int i = 0; i < MdivrCount; i++)
-                Mdivr[i] = reader.ReadUInt32();
+            I2sConfigurationBlob blob, sizer = new I2sConfigurationBlob();
+
+            blob = MarshalHelper.FromBinaryReader<I2sConfigurationBlob>(reader, sizer.SizeOf());
+
+            blob.Mdivr = new uint[blob.MdivrCount];
+            for (int i = 0; i < blob.MdivrCount; i++)
+                blob.Mdivr[i] = reader.ReadUInt32();
+
+            return blob;
         }
 
         public int SizeOf()
@@ -166,23 +171,27 @@ namespace nhltdecode
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] // fake size
         public byte[] FirCoeffs;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static PdmCtrlCfg ReadFromBinary(BinaryReader reader)
         {
-            this = MarshalHelper.FromBinaryReader<PdmCtrlCfg>(reader, SizeOf());
+            PdmCtrlCfg cfg, sizer = new PdmCtrlCfg();
+
+            cfg = MarshalHelper.FromBinaryReader<PdmCtrlCfg>(reader, sizer.SizeOf());
 
             long pos = reader.BaseStream.Position;
             bool packed = (reader.ReadUInt32() == 0xFFFFFFFF);
             reader.BaseStream.Position = pos; // mimics 'peek'
 
             int count = 0;
-            foreach (var fir in FirConfig)
+            foreach (var fir in cfg.FirConfig)
                 count += fir.GetChannelCount();
 
             if (!packed)
                 count *= Marshal.SizeOf(typeof(uint));
             else
                 count = count * 3 + Marshal.SizeOf(typeof(uint)); // the initial packed dword
-            FirCoeffs = reader.ReadBytes(count);
+            cfg.FirCoeffs = reader.ReadBytes(count);
+
+            return cfg;
         }
 
         public int SizeOf()
@@ -227,24 +236,28 @@ namespace nhltdecode
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] // fake size
         public PdmCtrlCfg[] PdmCtrls;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static DmicConfigurationBlob ReadFromBinary(BinaryReader reader)
         {
-            TsGroup = new uint[4];
+            var blob = new DmicConfigurationBlob();
+
+            blob.TsGroup = new uint[4];
             for (int i = 0; i < 4; i++)
-                TsGroup[i] = reader.ReadUInt32();
-            GlobalCfgClockOnDelay = reader.ReadUInt32();
+                blob.TsGroup[i] = reader.ReadUInt32();
+            blob.GlobalCfgClockOnDelay = reader.ReadUInt32();
 
-            ChannelCtrlMask = reader.ReadUInt32();
-            uint count = ExtensionMethods.PopCount(ChannelCtrlMask);
-            ChannelCfg = new uint[count];
+            blob.ChannelCtrlMask = reader.ReadUInt32();
+            uint count = ExtensionMethods.PopCount(blob.ChannelCtrlMask);
+            blob.ChannelCfg = new uint[count];
             for (int i = 0; i < count; i++)
-                ChannelCfg[i] = reader.ReadUInt32();
+                blob.ChannelCfg[i] = reader.ReadUInt32();
 
-            PdmCtrlMask = reader.ReadUInt32();
-            count = ExtensionMethods.PopCount(PdmCtrlMask);
-            PdmCtrls = new PdmCtrlCfg[count];
+            blob.PdmCtrlMask = reader.ReadUInt32();
+            count = ExtensionMethods.PopCount(blob.PdmCtrlMask);
+            blob.PdmCtrls = new PdmCtrlCfg[count];
             for (int i = 0; i < count; i++)
-                PdmCtrls[i].ReadFromBinary(reader);
+                blob.PdmCtrls[i] = PdmCtrlCfg.ReadFromBinary(reader);
+
+            return blob;
         }
 
         public int SizeOf()

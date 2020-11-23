@@ -7,7 +7,6 @@ namespace nhltdecode
     public interface IBinaryConvertible<T>
     {
         int SizeOf();
-        void ReadFromBinary(BinaryReader reader);
         void WriteToBinary(BinaryWriter writer);
     }
 
@@ -56,10 +55,14 @@ namespace nhltdecode
         public WaveFormatExtensible Format;
         public SpecificConfig Config;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static FormatConfig ReadFromBinary(BinaryReader reader)
         {
-            Format = MarshalHelper.FromBinaryReader<WaveFormatExtensible>(reader);
-            Config.ReadFromBinary(reader);
+            var cfg = new FormatConfig();
+
+            cfg.Format = MarshalHelper.FromBinaryReader<WaveFormatExtensible>(reader);
+            cfg.Config = SpecificConfig.ReadFromBinary(reader);
+
+            return cfg;
         }
 
         public int SizeOf()
@@ -81,12 +84,16 @@ namespace nhltdecode
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] // fake size
         public FormatConfig[] FormatsConfiguration;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static FormatsConfig ReadFromBinary(BinaryReader reader)
         {
-            FormatsCount = reader.ReadByte();
-            FormatsConfiguration = new FormatConfig[FormatsCount];
-            for (int i = 0; i < FormatsCount; i++)
-                FormatsConfiguration[i].ReadFromBinary(reader);
+            var cfg = new FormatsConfig();
+
+            cfg.FormatsCount = reader.ReadByte();
+            cfg.FormatsConfiguration = new FormatConfig[cfg.FormatsCount];
+            for (int i = 0; i < cfg.FormatsCount; i++)
+                cfg.FormatsConfiguration[i] = FormatConfig.ReadFromBinary(reader);
+
+            return cfg;
         }
 
         public int SizeOf()
@@ -117,10 +124,14 @@ namespace nhltdecode
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] // fake size
         public byte[] Capabilities;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static SpecificConfig ReadFromBinary(BinaryReader reader)
         {
-            CapabilitiesSize = reader.ReadUInt32();
-            Capabilities = reader.ReadBytes((int)CapabilitiesSize);
+            var cfg = new SpecificConfig();
+
+            cfg.CapabilitiesSize = reader.ReadUInt32();
+            cfg.Capabilities = reader.ReadBytes((int)cfg.CapabilitiesSize);
+
+            return cfg;
         }
 
         public int SizeOf()
@@ -158,12 +169,16 @@ namespace nhltdecode
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)] // fake size
         public DeviceInfo[] Devices;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static DevicesInfo ReadFromBinary(BinaryReader reader)
         {
-            Count = reader.ReadByte();
-            Devices = new DeviceInfo[Count];
-            for (int i = 0; i < Count; i++)
-                Devices[i] = MarshalHelper.FromBinaryReader<DeviceInfo>(reader);
+            var info = new DevicesInfo();
+
+            info.Count = reader.ReadByte();
+            info.Devices = new DeviceInfo[info.Count];
+            for (int i = 0; i < info.Count; i++)
+                info.Devices[i] = MarshalHelper.FromBinaryReader<DeviceInfo>(reader);
+
+            return info;
         }
 
         public int SizeOf()
@@ -219,29 +234,32 @@ namespace nhltdecode
         public FormatsConfig FormatsConfig;
         public DevicesInfo DevicesInfo;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static EndpointDescriptor ReadFromBinary(BinaryReader reader)
         {
-            long startPos = reader.BaseStream.Position;
+            long pos = reader.BaseStream.Position;
+            var desc = new EndpointDescriptor();
 
-            EndpointDescriptorLength = reader.ReadUInt32();
-            LinkType = (LINK_TYPE)reader.ReadByte();
-            InstanceId = reader.ReadBytes(1);
-            VendorId = reader.ReadBytes(2);
-            DeviceId = reader.ReadBytes(2);
-            RevisionId = reader.ReadBytes(2);
-            SubsystemId = reader.ReadBytes(4);
-            DeviceType = reader.ReadByte();
-            Direction = reader.ReadByte();
-            VirtualBusId = reader.ReadByte();
-            EndpointConfig.ReadFromBinary(reader);
-            FormatsConfig.ReadFromBinary(reader);
+            desc.EndpointDescriptorLength = reader.ReadUInt32();
+            desc.LinkType = (LINK_TYPE)reader.ReadByte();
+            desc.InstanceId = reader.ReadBytes(1);
+            desc.VendorId = reader.ReadBytes(2);
+            desc.DeviceId = reader.ReadBytes(2);
+            desc.RevisionId = reader.ReadBytes(2);
+            desc.SubsystemId = reader.ReadBytes(4);
+            desc.DeviceType = reader.ReadByte();
+            desc.Direction = reader.ReadByte();
+            desc.VirtualBusId = reader.ReadByte();
+            desc.EndpointConfig = SpecificConfig.ReadFromBinary(reader);
+            desc.FormatsConfig = FormatsConfig.ReadFromBinary(reader);
 
             // Check if there is DevicesInfo in EndpointDescriptor
-            if (EndpointDescriptorLength > (reader.BaseStream.Position - startPos))
-                DevicesInfo.ReadFromBinary(reader);
+            if (desc.EndpointDescriptorLength > (reader.BaseStream.Position - pos))
+                desc.DevicesInfo = DevicesInfo.ReadFromBinary(reader);
             // Some NHLTs have redundant bytes at the end of EndpointDescriptor,
             // they should be ommited
-            reader.ReadBytes((int)(EndpointDescriptorLength - (reader.BaseStream.Position - startPos)));
+            reader.ReadBytes((int)(desc.EndpointDescriptorLength - (reader.BaseStream.Position - pos)));
+
+            return desc;
         }
 
         public int SizeOf()
@@ -289,14 +307,18 @@ namespace nhltdecode
         public EndpointDescriptor[] Descriptors;
         public SpecificConfig OEDConfig;
 
-        public void ReadFromBinary(BinaryReader reader)
+        public static NHLT ReadFromBinary(BinaryReader reader)
         {
-            Header = MarshalHelper.FromBinaryReader<AcpiDescriptionHeader>(reader);
-            DescriptorCount = reader.ReadByte();
-            Descriptors = new EndpointDescriptor[DescriptorCount];
-            for (int i = 0; i < DescriptorCount; i++)
-                Descriptors[i].ReadFromBinary(reader);
-            OEDConfig.ReadFromBinary(reader);
+            var table = new NHLT();
+
+            table.Header = MarshalHelper.FromBinaryReader<AcpiDescriptionHeader>(reader);
+            table.DescriptorCount = reader.ReadByte();
+            table.Descriptors = new EndpointDescriptor[table.DescriptorCount];
+            for (int i = 0; i < table.DescriptorCount; i++)
+                table.Descriptors[i] = EndpointDescriptor.ReadFromBinary(reader);
+            table.OEDConfig = SpecificConfig.ReadFromBinary(reader);
+
+            return table;
         }
 
         public int SizeOf()

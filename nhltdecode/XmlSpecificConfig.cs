@@ -177,23 +177,14 @@ namespace nhltdecode
                 reader.BaseStream.Position = pos; // mimics 'peek'
 
                 if (header == 0xEE)
-                {
-                    var i2sBlob = new I2sConfigurationBlob();
-                    i2sBlob.ReadFromBinary(reader);
-                    I2sBlob = i2sBlob;
-                }
+                    I2sBlob = I2sConfigurationBlob.ReadFromBinary(reader);
                 else
-                {
                     I2sBlobLegacy = MarshalHelper.FromBinaryReader<I2sConfigurationBlobLegacy>(reader);
-                }
             }
             else // LINK_TYPE.PDM
             {
                 GatewayAttributes = reader.ReadUInt32();
-
-                var dmicBlob = new DmicConfigurationBlob();
-                dmicBlob.ReadFromBinary(reader);
-                DmicBlob = dmicBlob;
+                DmicBlob = DmicConfigurationBlob.ReadFromBinary(reader);
             }
 
             reader.Close();

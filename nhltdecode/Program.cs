@@ -56,10 +56,9 @@ namespace nhltdecode
             {
                 var reader = new BinaryReader(new FileStream(input, FileMode.Open, FileAccess.Read),
                                               System.Text.Encoding.ASCII);
-                var table = new NHLT();
-                table.ReadFromBinary(reader);
-                reader.Close();
 
+                var table = NHLT.ReadFromBinary(reader);
+                reader.Close();
                 var xtable = NhltXml.FromNative(table);
 
                 if (parseBlob)
