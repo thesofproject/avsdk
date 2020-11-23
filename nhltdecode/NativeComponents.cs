@@ -255,9 +255,6 @@ namespace nhltdecode
             // Check if there is DevicesInfo in EndpointDescriptor
             if (desc.EndpointDescriptorLength > (reader.BaseStream.Position - pos))
                 desc.DevicesInfo = DevicesInfo.ReadFromBinary(reader);
-            // Some NHLTs have redundant bytes at the end of EndpointDescriptor,
-            // they should be ommited
-            reader.ReadBytes((int)(desc.EndpointDescriptorLength - (reader.BaseStream.Position - pos)));
 
             return desc;
         }
@@ -315,7 +312,14 @@ namespace nhltdecode
             table.DescriptorCount = reader.ReadByte();
             table.Descriptors = new EndpointDescriptor[table.DescriptorCount];
             for (int i = 0; i < table.DescriptorCount; i++)
+            {
+                long pos = reader.BaseStream.Position;
+
                 table.Descriptors[i] = EndpointDescriptor.ReadFromBinary(reader);
+                // sometimes there are redundant bytes at the end of descriptor, account for them
+                reader.BaseStream.Position = pos + table.Descriptors[i].EndpointDescriptorLength;
+            }
+
             table.OEDConfig = SpecificConfig.ReadFromBinary(reader);
 
             return table;
