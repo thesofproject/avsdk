@@ -23,5 +23,10 @@ namespace nhltdecode
             writer.Close();
             return (byte)(256 - checksum + table.Header.Checksum);
         }
+
+        internal static uint PopCount(uint i)
+        {
+            return (i & 0x01) + ((i >> 1) & 0x01);
+        }
     }
 }

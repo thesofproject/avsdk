@@ -235,13 +235,13 @@ namespace nhltdecode
             GlobalCfgClockOnDelay = reader.ReadUInt32();
 
             ChannelCtrlMask = reader.ReadUInt32();
-            uint count = PopCount(ChannelCtrlMask);
+            uint count = ExtensionMethods.PopCount(ChannelCtrlMask);
             ChannelCfg = new uint[count];
             for (int i = 0; i < count; i++)
                 ChannelCfg[i] = reader.ReadUInt32();
 
             PdmCtrlMask = reader.ReadUInt32();
-            count = PopCount(PdmCtrlMask);
+            count = ExtensionMethods.PopCount(PdmCtrlMask);
             PdmCtrls = new PdmCtrlCfg[count];
             for (int i = 0; i < count; i++)
                 PdmCtrls[i].ReadFromBinary(reader);
@@ -277,11 +277,6 @@ namespace nhltdecode
             writer.Write(PdmCtrlMask);
             foreach (var ctrl in PdmCtrls)
                 ctrl.WriteToBinary(writer);
-        }
-
-        private static uint PopCount(uint i)
-        {
-            return (i & 0x01) + ((i >> 1) & 0x01);
         }
     }
 }
