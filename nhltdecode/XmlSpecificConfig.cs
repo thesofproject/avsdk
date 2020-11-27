@@ -9,11 +9,6 @@ namespace nhltdecode
         public VendorMicConfig[] VendorMicConfig;
         public MicSnrSensitivityExtension? MicSnrSensitivityExtension;
 
-        public bool ShouldSerializeMicSnrSensitivityExtension()
-        {
-            return MicSnrSensitivityExtension.HasValue;
-        }
-
         public byte[] ToBytes()
         {
             var stream = new MemoryStream();
@@ -33,6 +28,11 @@ namespace nhltdecode
             var bytes = stream.ToArray();
             writer.Close();
             return bytes;
+        }
+
+        public bool ShouldSerializeMicSnrSensitivityExtension()
+        {
+            return MicSnrSensitivityExtension.HasValue;
         }
     }
 
