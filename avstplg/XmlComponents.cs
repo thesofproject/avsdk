@@ -7,6 +7,7 @@ namespace avstplg
     public class Library
     {
         public string FileName { get; set; }
+        public string FwName { get; set; }
     }
 
     public class AudioFormat

@@ -40,7 +40,7 @@ namespace avstplg
             result.Add(GetSectionTokens<AVS_TKN_ROUTE>("avs_route_tokens"));
             result.Add(GetSectionTokens<AVS_TKN_PATH>("avs_path_tokens"));
             result.Add(GetSectionTokens<AVS_TKN_PATH_TMPL>("avs_path_template_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_LIBRARY>("avs_tplg_core_tokens"));
+            result.Add(GetSectionTokens<AVS_TKN_LIBRARY>("avs_library_tokens"));
             result.Add(GetSectionTokens<AVS_TKN_TPLG>("avs_tplg_core_tokens"));
 
             return result;
@@ -52,6 +52,7 @@ namespace avstplg
             strings.Tuples = new[]
             {
                 GetTuple(AVS_TKN_LIBRARY.FILE_STRING, library.FileName),
+                GetTuple(AVS_TKN_LIBRARY.FW_NAME_STRING, library.FwName),
             };
 
             var section = new SectionVendorTuples($"library{id}_tuples");

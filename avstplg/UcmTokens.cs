@@ -87,7 +87,8 @@
 
     public enum AVS_TKN_LIBRARY
     {
-        FILE_STRING = 111000,
+        FILE_STRING = 11100,
+        FW_NAME_STRING = 11101,
     }
 
     public enum AVS_TKN_TPLG
