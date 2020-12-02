@@ -17,4 +17,10 @@ public:
 	virtual uint32_t lib_id() const = 0;
 };
 
+template<typename KeyT, class EntryT>
+KeyT entry_key(const EntryT &entry)
+{
+	return KeyT();
+}
+
 #endif

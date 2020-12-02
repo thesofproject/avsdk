@@ -75,6 +75,12 @@ public:
 
 void build_provider(std::vector<struct log_literal2_0> &provider, const std::string inpath);
 
+template<>
+uint64_t inline entry_key<uint64_t, log_entry_icl>(const log_entry_icl &entry)
+{
+	return entry.data->entry_id;
+}
+
 bool inline is_entry_matching(const log_entry_icl &entry, struct log_literal2_0 *literal)
 {
 	return entry.data->entry_id == literal->entry_id;

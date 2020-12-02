@@ -81,7 +81,16 @@ public:
 	struct log_entry1_5 *data;
 };
 
+// cache key: file_id, line_num
+typedef std::pair<int, int> sptkey_t;
+
 void build_provider(std::vector<struct log_literal1_5> &provider, const std::string inpath);
+
+template<>
+sptkey_t inline entry_key<sptkey_t, log_entry_spt>(const log_entry_spt &entry)
+{
+	return std::make_pair<int, int>(entry.data->file_id, entry.data->line_num);
+}
 
 bool inline is_entry_matching(const log_entry_spt &entry, struct log_literal1_5 *literal)
 {
