@@ -2,6 +2,7 @@
 #define AVS_LOG_ENTRY_ICL_HPP
 
 #include <boost/cstdint.hpp>
+#include <map>
 #include <string>
 #include <vector>
 #include "ilog_entry.hpp"
@@ -73,7 +74,8 @@ public:
 	struct log_entry2_0 *data;
 };
 
-void build_provider(std::vector<struct log_literal2_0> &provider, const std::string inpath);
+void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
+		    const std::string inpath);
 
 template<>
 uint64_t inline entry_key<uint64_t, log_entry_icl>(const log_entry_icl &entry)

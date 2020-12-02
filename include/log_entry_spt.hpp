@@ -2,6 +2,7 @@
 #define AVS_LOG_ENTRY_SPT_HPP
 
 #include <boost/cstdint.hpp>
+#include <map>
 #include <string>
 #include <vector>
 #include "ilog_entry.hpp"
@@ -84,7 +85,8 @@ public:
 // cache key: file_id, line_num
 typedef std::pair<int, int> sptkey_t;
 
-void build_provider(std::vector<struct log_literal1_5> &provider, const std::string inpath);
+void build_provider(std::map<sptkey_t, struct log_literal1_5> &provider,
+		    const std::string inpath);
 
 template<>
 sptkey_t inline entry_key<sptkey_t, log_entry_spt>(const log_entry_spt &entry)

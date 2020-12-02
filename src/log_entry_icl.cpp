@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <fstream>
+#include <map>
 #include <string>
 #include <vector>
 #include "log_entry_icl.hpp"
@@ -76,7 +77,8 @@ static void elf_init_literal(std::istream &elf, struct log_literal2_0 &literal,
 	literal.entry_id = sym->value >> 7;
 }
 
-void build_provider(std::vector<struct log_literal2_0> &provider, const std::string inpath)
+void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
+		    const std::string inpath)
 {
 	std::ifstream elf(inpath, std::fstream::binary);
 
@@ -115,7 +117,7 @@ void build_provider(std::vector<struct log_literal2_0> &provider, const std::str
 			continue;
 
 		elf_init_literal(elf, literal, &*it, shdr, &funcstrs);
-		provider.push_back(literal);
+		provider.insert({literal.entry_id, literal});
 	}
 
 	elf.close();

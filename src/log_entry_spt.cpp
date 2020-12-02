@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
+#include <map>
 #include <string>
 #include <vector>
 #include "log_entry_spt.hpp"
@@ -37,7 +38,8 @@ static void init_literal(struct log_literal1_5 &literal, const std::string &reco
 	literal.param4 = tokens[9];
 }
 
-void build_provider(std::vector<struct log_literal1_5> &provider, const std::string inpath)
+void build_provider(std::map<sptkey_t, struct log_literal1_5> &provider,
+		    const std::string inpath)
 {
 	std::ifstream csv(inpath);
 	std::string line;
@@ -46,7 +48,7 @@ void build_provider(std::vector<struct log_literal1_5> &provider, const std::str
 		struct log_literal1_5 literal = {0};
 
 		init_literal(literal, line);
-		provider.push_back(literal);
+		provider.emplace(std::make_pair(literal.file_id, literal.line_num), literal);
 	}
 
 	csv.close();
