@@ -83,11 +83,6 @@ uint64_t inline entry_key<uint64_t, log_entry_icl>(const log_entry_icl &entry)
 	return entry.data->entry_id;
 }
 
-bool inline is_entry_matching(const log_entry_icl &entry, struct log_literal2_0 *literal)
-{
-	return entry.data->entry_id == literal->entry_id;
-}
-
 int write_entry(std::ostream &out, struct log_literal2_0 *literal,
 		const log_entry_icl &entry, uint32_t *data);
 

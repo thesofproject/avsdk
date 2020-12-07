@@ -94,12 +94,6 @@ sptkey_t inline entry_key<sptkey_t, log_entry_spt>(const log_entry_spt &entry)
 	return std::make_pair<int, int>(entry.data->file_id, entry.data->line_num);
 }
 
-bool inline is_entry_matching(const log_entry_spt &entry, struct log_literal1_5 *literal)
-{
-	return entry.data->file_id == literal->file_id &&
-	       entry.data->line_num == literal->line_num;
-}
-
 int write_entry(std::ostream &out, struct log_literal1_5 *literal,
 		const log_entry_spt &entry, uint32_t *data);
 
