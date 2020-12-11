@@ -15,6 +15,7 @@ public:
 	virtual size_t max_size() const = 0;
 	virtual bool is_valid() const = 0;
 	virtual uint32_t lib_id() const = 0;
+	virtual uint64_t key() const = 0;
 };
 
 template<typename KeyT, class EntryT>
@@ -22,5 +23,13 @@ KeyT entry_key(const EntryT &entry)
 {
 	return KeyT();
 }
+
+union entry_key {
+	uint64_t entry_id;
+	struct {
+		uint32_t file_id;
+		uint32_t line_num;
+	};
+};
 
 #endif

@@ -79,6 +79,15 @@ public:
 		return data->module.lib;
 	}
 
+	virtual uint64_t key() const override
+	{
+		union entry_key key;
+
+		key.file_id = data->file_id;
+		key.line_num = data->line_num;
+		return key.entry_id;
+	}
+
 	struct log_entry1_5 *data;
 };
 

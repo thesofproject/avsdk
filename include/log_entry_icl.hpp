@@ -71,6 +71,11 @@ public:
 		return data->provider_id;
 	}
 
+	virtual uint64_t key() const override
+	{
+		return data->entry_id;
+	}
+
 	struct log_entry2_0 *data;
 };
 
