@@ -26,8 +26,8 @@ static void init_literal(struct log_literal1_5 &literal, const std::string &reco
 		s.pop_back();
 	}
 
-	literal.file_id = atoi(tokens[0].c_str());
-	literal.line_num = atoi(tokens[1].c_str());
+	literal.key.file_id = atoi(tokens[0].c_str());
+	literal.key.line_num = atoi(tokens[1].c_str());
 	literal.filename = tokens[2];
 	literal.provider = tokens[3];
 	literal.loglevel = tokens[4];
@@ -38,7 +38,7 @@ static void init_literal(struct log_literal1_5 &literal, const std::string &reco
 	literal.param4 = tokens[9];
 }
 
-void build_provider(std::map<sptkey_t, struct log_literal1_5> &provider,
+void build_provider(std::map<uint64_t, struct log_literal1_5> &provider,
 		    const std::string inpath)
 {
 	std::ifstream csv(inpath);
@@ -48,7 +48,7 @@ void build_provider(std::map<sptkey_t, struct log_literal1_5> &provider,
 		struct log_literal1_5 literal = {0};
 
 		init_literal(literal, line);
-		provider.emplace(std::make_pair(literal.file_id, literal.line_num), literal);
+		provider.emplace(literal.key.entry_id, literal);
 	}
 
 	csv.close();
@@ -87,7 +87,7 @@ int write_entry(std::ostream &out, struct log_literal1_5 *literal,
 
 	ret = snprintf(buf, sizeof(buf), "%lld: %s(%d): res[%x,%d] %s %s\n",
 		       (unsigned long long)entry.data->timestamp,
-		       literal->filename.c_str(), literal->line_num,
+		       literal->filename.c_str(), literal->key.line_num,
 		       entry.data->module.id, entry.data->instance_id,
 		       literal->loglevel.c_str(), literal->message.c_str());
 	if (ret < 0)

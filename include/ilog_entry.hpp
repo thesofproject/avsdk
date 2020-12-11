@@ -18,12 +18,6 @@ public:
 	virtual uint64_t key() const = 0;
 };
 
-template<typename KeyT, class EntryT>
-KeyT entry_key(const EntryT &entry)
-{
-	return KeyT();
-}
-
 union entry_key {
 	uint64_t entry_id;
 	struct {

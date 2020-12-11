@@ -74,7 +74,7 @@ static void elf_init_literal(std::istream &elf, struct log_literal2_0 &literal,
 		literal.filename.assign("invalid_filename");
 	}
 
-	literal.entry_id = sym->value >> 7;
+	literal.key.entry_id = sym->value >> 7;
 }
 
 void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
@@ -117,7 +117,7 @@ void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
 			continue;
 
 		elf_init_literal(elf, literal, &*it, shdr, &funcstrs);
-		provider.insert({literal.entry_id, literal});
+		provider.insert({literal.key.entry_id, literal});
 	}
 
 	elf.close();

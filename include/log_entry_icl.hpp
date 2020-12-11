@@ -20,7 +20,7 @@ struct log_literal2_0 {
 #pragma pack(pop)
 	std::string text;
 	std::string filename;
-	uint64_t entry_id;
+	union entry_key key;
 };
 
 #pragma pack(push, 4)
@@ -81,12 +81,6 @@ public:
 
 void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
 		    const std::string inpath);
-
-template<>
-uint64_t inline entry_key<uint64_t, log_entry_icl>(const log_entry_icl &entry)
-{
-	return entry.data->entry_id;
-}
 
 int write_entry(std::ostream &out, struct log_literal2_0 *literal,
 		const log_entry_icl &entry, uint32_t *data);

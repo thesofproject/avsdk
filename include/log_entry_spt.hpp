@@ -8,8 +8,7 @@
 #include "ilog_entry.hpp"
 
 struct log_literal1_5 {
-	unsigned short file_id;
-	unsigned short line_num;
+	union entry_key key;
 	std::string filename;
 	std::string provider;
 	std::string loglevel;
@@ -91,17 +90,8 @@ public:
 	struct log_entry1_5 *data;
 };
 
-// cache key: file_id, line_num
-typedef std::pair<int, int> sptkey_t;
-
-void build_provider(std::map<sptkey_t, struct log_literal1_5> &provider,
+void build_provider(std::map<uint64_t, struct log_literal1_5> &provider,
 		    const std::string inpath);
-
-template<>
-sptkey_t inline entry_key<sptkey_t, log_entry_spt>(const log_entry_spt &entry)
-{
-	return std::make_pair<int, int>(entry.data->file_id, entry.data->line_num);
-}
 
 int write_entry(std::ostream &out, struct log_literal1_5 *literal,
 		const log_entry_spt &entry, uint32_t *data);

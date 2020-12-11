@@ -55,9 +55,9 @@ static void conflicting_options(const variables_map& vm,
 			               opt1 + "' and '" + opt2 + "'.");
 }
 
-template <typename KeyT, typename LiteralT, class EntryT>
+template <typename LiteralT, class EntryT>
 void process_logdump(std::istream &in, std::ostream &out,
-		     std::map<int, std::map<KeyT, LiteralT>> &dict)
+		     std::map<int, std::map<uint64_t, LiteralT>> &dict)
 {
 	static_assert(std::is_convertible<EntryT *, ilog_entry *>::value,
 		      "EntryT must be a derivate of ilog_entry");
@@ -72,8 +72,8 @@ void process_logdump(std::istream &in, std::ostream &out,
 	uint32_t *data = (uint32_t *)(buf + entry.hdr_size());
 
 	while (in.good()) {
-		typename std::map<KeyT, LiteralT>::iterator found;
-		std::map<KeyT, LiteralT> *cache;
+		typename std::map<uint64_t, LiteralT>::iterator found;
+		std::map<uint64_t, LiteralT> *cache;
 		size_t size = entry.size(in.peek());
 
 		prevpos = in.tellg();
@@ -92,7 +92,7 @@ void process_logdump(std::istream &in, std::ostream &out,
 			goto skipover;
 
 		cache = &mit->second;
-		found = cache->find(entry_key<KeyT, EntryT>(entry));
+		found = cache->find(entry.key());
 		if (found != cache->end()) {
 			if (write_entry(out, &found->second, entry, data) < 0)
 				return;
@@ -106,13 +106,13 @@ void process_logdump(std::istream &in, std::ostream &out,
 	}
 }
 
-template <typename KeyT, typename LiteralT, class EntryT>
+template <typename LiteralT, class EntryT>
 static void do_work(std::vector<detailed_path> &paths,
 		    const std::string &inpath, std::ostream &out,
 		    bool follow)
 {
-	std::map<int, std::map<KeyT, LiteralT>> dict;
-	std::map<KeyT, LiteralT> provider;
+	std::map<int, std::map<uint64_t, LiteralT>> dict;
+	std::map<uint64_t, LiteralT> provider;
 
 	for (auto it = paths.begin(); it != paths.end(); it++) {
 		build_provider(provider, it->path);
@@ -122,7 +122,7 @@ static void do_work(std::vector<detailed_path> &paths,
 	std::ifstream infile(inpath, std::fstream::binary);
 
 	if (!follow) {
-		process_logdump<KeyT, LiteralT, EntryT>(infile, out, dict);
+		process_logdump<LiteralT, EntryT>(infile, out, dict);
 		infile.close();
 		return;
 	}
@@ -133,7 +133,7 @@ static void do_work(std::vector<detailed_path> &paths,
 	listener.subscribe(inpath);
 
 	while (1) {
-		process_logdump<KeyT, LiteralT, EntryT>(infile, out, dict);
+		process_logdump<LiteralT, EntryT>(infile, out, dict);
 		prevpos = infile.tellg();
 		out.flush();
 
@@ -208,12 +208,12 @@ int main(int argc, char* argv[])
 		std::vector<detailed_path> symbols;
 		if (vm.count("csv")) {
 			symbols = vm["csv"].as<std::vector<detailed_path>>();
-			do_work<sptkey_t, struct log_literal1_5, log_entry_spt>(symbols, inpath,
-										*out, follow);
+			do_work<struct log_literal1_5, log_entry_spt>(symbols, inpath, *out,
+								      follow);
 		} else {
 			symbols = vm["elf"].as<std::vector<detailed_path>>();
-			do_work<uint64_t, struct log_literal2_0, log_entry_icl>(symbols, inpath,
-										*out, follow);
+			do_work<struct log_literal2_0, log_entry_icl>(symbols, inpath, *out,
+								      follow);
 		}
 
 		if (outfile.is_open())
