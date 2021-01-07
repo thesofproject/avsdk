@@ -254,7 +254,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetClockControlSections()
+        IEnumerable<Section> GetClockControlsSections()
         {
             ClockControls controls = firmwareConfig.ClockControls;
             var result = new List<Section>();
@@ -371,7 +371,7 @@ namespace itt
             }
 
             if (config.ClockControls != null)
-                result.AddRange(GetClockControlSections());
+                result.AddRange(GetClockControlsSections());
             return result;
         }
 
