@@ -270,7 +270,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(DMABufferConfig buffer, int id)
+        IEnumerable<VendorTuples> GetDMABufferConfigTuples(DMABufferConfig buffer, int id)
         {
             var words = new VendorTuples<uint>($"u32_dma_buf_index_{id}");
             words.Tuples = new[]
@@ -283,7 +283,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetTuples(AstateTableConfig astate, int id)
+        IEnumerable<VendorTuples> GetAstateTableConfigTuples(AstateTableConfig astate, int id)
         {
             var words = new VendorTuples<uint>($"u32_astate_table_index_{id}");
             words.Tuples = new[]
@@ -296,7 +296,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetTuples(SchedulerConfiguration scheduler)
+        IEnumerable<VendorTuples> GetSchedulerConfigurationTuples(SchedulerConfiguration scheduler)
         {
             LowLatencySourceConfig[] configs = scheduler.LowLatencySourceConfigs;
             uint config = configs[0].DmaType << 8 | configs[0].VIndex;
@@ -339,7 +339,7 @@ namespace itt
 
                 tuples.Add(words);
                 for (int i = 0; i < Math.Min(Constants.DMA_BUFFER_COUNT, length); i++)
-                    tuples.AddRange(GetTuples(config.DMABufferConfigs[i], i));
+                    tuples.AddRange(GetDMABufferConfigTuples(config.DMABufferConfigs[i], i));
             }
 
             if (config.AstateTableConfigs != null)
@@ -353,11 +353,11 @@ namespace itt
 
                 tuples.Add(words);
                 for (int i = 0; i < astates.Length; i++)
-                    tuples.AddRange(GetTuples(astates[i], i));
+                    tuples.AddRange(GetAstateTableConfigTuples(astates[i], i));
             }
 
             if (config.SchedulerConfiguration != null)
-                tuples.AddRange(GetTuples(config.SchedulerConfiguration));
+                tuples.AddRange(GetSchedulerConfigurationTuples(config.SchedulerConfiguration));
 
             if (tuples.Any())
             {
@@ -375,7 +375,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(Interface iface, int mod, int intf, int id)
+        IEnumerable<VendorTuples> GetInterfaceTuples(Interface iface, int mod, int intf, int id)
         {
             string dir = (iface.Dir == PinDir.IN) ? "input" : "output";
             AudioFormat fmt = iface.AudioFormat;
@@ -398,7 +398,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetTuples(Interfaces ifaces, int mod, int id)
+        IEnumerable<VendorTuples> GetInterfacesTuples(Interfaces ifaces, int mod, int id)
         {
             var result = new List<VendorTuples>();
             var inputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.IN).ToArray();
@@ -415,13 +415,13 @@ namespace itt
             result.Add(words);
 
             for (int i = 0; i < inputIfaces.Length; i++)
-                result.AddRange(GetTuples(inputIfaces[i], mod, id, i));
+                result.AddRange(GetInterfaceTuples(inputIfaces[i], mod, id, i));
             for (int i = 0; i < outputIfaces.Length; i++)
-                result.AddRange(GetTuples(outputIfaces[i], mod, id, i));
+                result.AddRange(GetInterfaceTuples(outputIfaces[i], mod, id, i));
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(OutputPinFormat format, int mod, int res, int id)
+        IEnumerable<VendorTuples> GetOutputPinFormatTuples(OutputPinFormat format, int mod, int res, int id)
         {
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{res}_output_{id}");
             words.Tuples = new[]
@@ -434,7 +434,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetTuples(InputPinFormat format, int mod, int res, int id)
+        IEnumerable<VendorTuples> GetInputPinFormatTuples(InputPinFormat format, int mod, int res, int id)
         {
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{res}_input_{id}");
             words.Tuples = new[]
@@ -447,7 +447,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetTuples(ModuleResources resources, int mod, int id)
+        IEnumerable<VendorTuples> GetModuleResourcesTuples(ModuleResources resources, int mod, int id)
         {
             var result = new List<VendorTuples>();
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{id}");
@@ -465,13 +465,13 @@ namespace itt
             result.Add(words);
 
             for (int i = 0; i < resources.InputPins.Length; i++)
-                result.AddRange(GetTuples(resources.InputPins[i], mod, id, i));
+                result.AddRange(GetInputPinFormatTuples(resources.InputPins[i], mod, id, i));
             for (int i = 0; i < resources.OutputPins.Length; i++)
-                result.AddRange(GetTuples(resources.OutputPins[i], mod, id, i));
+                result.AddRange(GetOutputPinFormatTuples(resources.OutputPins[i], mod, id, i));
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(ModuleType template, int id)
+        IEnumerable<VendorTuples> GetModuleTypeTuples(ModuleType template, int id)
         {
             var result = new List<VendorTuples>();
 
@@ -494,9 +494,9 @@ namespace itt
             result.Add(bytes);
 
             for (int i = 0; i < template.ModuleResourceList.Length; i++)
-                result.AddRange(GetTuples(template.ModuleResourceList[i], id, i));
+                result.AddRange(GetModuleResourcesTuples(template.ModuleResourceList[i], id, i));
             for (int i = 0; i < template.ModuleInterfaceList.Length; i++)
-                result.AddRange(GetTuples(template.ModuleInterfaceList[i], id, i));
+                result.AddRange(GetInterfacesTuples(template.ModuleInterfaceList[i], id, i));
             return result;
         }
 
@@ -513,7 +513,7 @@ namespace itt
             tuples.Add(bytes);
 
             for (int i = 0; i < moduleType.Length; i++)
-                tuples.AddRange(GetTuples(moduleType[i], i));
+                tuples.AddRange(GetModuleTypeTuples(moduleType[i], i));
 
             section.Tuples = tuples.ToArray();
             SectionVendorTuples desc = section.GetSizeDescriptor();
@@ -559,7 +559,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(ModuleParams param, int id)
+        IEnumerable<VendorTuples> GetModuleParamsTuples(ModuleParams param, int id)
         {
             var shorts = new VendorTuples<ushort>($"u16_pipe_mod_cfg_{id}");
             shorts.Tuples = new[]
@@ -571,7 +571,7 @@ namespace itt
             return new[] { shorts };
         }
 
-        IEnumerable<VendorTuples> GetTuples(PcmFormat format, int id)
+        IEnumerable<VendorTuples> GetPcmFormatTuples(PcmFormat format, int id)
         {
             var result = new List<VendorTuples>();
             string dir = (format.Dir == PinDir.IN) ? "in" : "out";
@@ -595,7 +595,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(PathConfiguration config, Module module, int id)
+        IEnumerable<VendorTuples> GetPathConfigurationTuples(PathConfiguration config, Module module, int id)
         {
             var result = new List<VendorTuples>();
             var words = new VendorTuples<uint>($"_pipe_{id}");
@@ -608,25 +608,25 @@ namespace itt
             result.Add(words);
             var formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
             for (int i = 0; i < formats.Length; i++)
-                result.AddRange(GetTuples(formats[i], id));
+                result.AddRange(GetPcmFormatTuples(formats[i], id));
             formats = config.PcmFormats.Except(formats).ToArray();
             for (int i = 0; i < formats.Length; i++)
-                result.AddRange(GetTuples(formats[i], id));
+                result.AddRange(GetPcmFormatTuples(formats[i], id));
 
             ModuleParams param = config.ModuleParams.FirstOrDefault(
                 p => p.Module.Equals(module.Type) && p.Instance == module.Instance);
             if (param != null)
-                result.AddRange(GetTuples(param, id));
+                result.AddRange(GetModuleParamsTuples(param, id));
 
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(PathConfigurations configs, Module module)
+        IEnumerable<VendorTuples> GetPathConfigurationsTuples(PathConfigurations configs, Module module)
         {
             var result = new List<VendorTuples>();
 
             for (int i = 0; i < configs.PathConfiguration.Length; i++)
-                result.AddRange(GetTuples(configs.PathConfiguration[i], module, i));
+                result.AddRange(GetPathConfigurationTuples(configs.PathConfiguration[i], module, i));
 
             return result;
         }
@@ -659,7 +659,7 @@ namespace itt
             return path.ConnType.GetValue();
         }
 
-        IEnumerable<VendorTuples> GetTuples(PinDir dir, uint pinCount, uint maxQueue,
+        IEnumerable<VendorTuples> GetPinDirTuples(PinDir dir, uint pinCount, uint maxQueue,
             IEnumerable<Tuple<FromTo, FromTo>> pairs)
         {
             int anyCount = pairs.Count(p => p.Item1.Interface == InterfaceName.ANY);
@@ -708,7 +708,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetTuples(Module module, Path path, PinDir dir)
+        IEnumerable<VendorTuples> GetModuleTuples(Module module, Path path, PinDir dir)
         {
             ModuleType template = GetTemplate(module.Type);
             IEnumerable<Tuple<FromTo, FromTo>> pairs;
@@ -748,14 +748,14 @@ namespace itt
             pairs = pairs.Where(
                 p => p.Item1.Module.Equals(module.Type) &&
                      p.Item1.Instance == module.Instance);
-            return GetTuples(dir, pinCount, maxQueue, pairs);
+            return GetPinDirTuples(dir, pinCount, maxQueue, pairs);
         }
 
         IEnumerable<Section> GetModuleSections(Module module, Path path)
         {
             ModuleType template = GetTemplate(module.Type);
-            var inTuples = GetTuples(module, path, PinDir.IN);
-            var outTuples = GetTuples(module, path, PinDir.OUT);
+            var inTuples = GetModuleTuples(module, path, PinDir.IN);
+            var outTuples = GetModuleTuples(module, path, PinDir.OUT);
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
@@ -809,7 +809,7 @@ namespace itt
             };
 
             tuples.Add(words);
-            var configs = GetTuples(path.PathConfigurations, module);
+            var configs = GetPathConfigurationsTuples(path.PathConfigurations, module);
             tuples.AddRange(configs);
             tuples.AddRange(inTuples);
             tuples.AddRange(outTuples);
