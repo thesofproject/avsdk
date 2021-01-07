@@ -134,6 +134,14 @@ namespace itt
             return $"{param.Name} params";
         }
 
+        public uint GetDirPinCount(PinDir dir, int index)
+        {
+                // The same token is used for both direction of pin and
+                // pin count value. First 4 bits denote direction with the
+                // rest storing the count (index).
+                return ((uint)dir & 0xF) | ((uint)index << 4);
+        }
+
         public ModuleType GetTemplate(string type)
         {
             return moduleType.SingleOrDefault(t => t.Name.Equals(type));
@@ -383,7 +391,7 @@ namespace itt
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_intf_{intf}_{dir}_{id}");
             words.Tuples = new[]
             {
-                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)iface.Dir),
+                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, GetDirPinCount(iface.Dir, id)),
                 GetTuple(SKL_TKN.MM_U32_INTF_PIN_ID, iface.PinId),
                 GetTuple(SKL_TKN.U32_FMT_CH, fmt.ChannelCount),
                 GetTuple(SKL_TKN.U32_FMT_FREQ, fmt.SampleRate),
@@ -426,7 +434,7 @@ namespace itt
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{res}_output_{id}");
             words.Tuples = new[]
             {
-                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)PinDir.OUT),
+                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, GetDirPinCount(PinDir.OUT, id)),
                 GetTuple(SKL_TKN.MM_U32_RES_PIN_ID, format.PinIndex),
                 GetTuple(SKL_TKN.MM_U32_PIN_BUF, format.Obs),
             };
@@ -439,7 +447,7 @@ namespace itt
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{res}_input_{id}");
             words.Tuples = new[]
             {
-                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)PinDir.IN),
+                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, GetDirPinCount(PinDir.IN, id)),
                 GetTuple(SKL_TKN.MM_U32_RES_PIN_ID, format.PinIndex),
                 GetTuple(SKL_TKN.MM_U32_PIN_BUF, format.Ibs),
             };
@@ -579,7 +587,7 @@ namespace itt
             var words = new VendorTuples<uint>($"_pipe_u32_cfg_{dir}_fmt_{id}");
             words.Tuples = new[]
             {
-                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, (uint)id << 4 | (uint)format.Dir),
+                GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, GetDirPinCount(format.Dir, id)),
                 GetTuple(SKL_TKN.U32_CFG_FREQ, format.SampleRate)
             };
 
@@ -670,7 +678,7 @@ namespace itt
             string str = dir.ToString().ToLower();
             var result = new List<VendorTuples>();
 
-            for (uint i = 0; i < pinCount; i++)
+            for (int i = 0; i < pinCount; i++)
             {
                 uint moduleId = 0, instanceId = 0;
                 Guid uuid = Guid.Empty;
@@ -687,11 +695,10 @@ namespace itt
                     }
                 }
 
-                uint dirPinCount = (uint)dir | (((uint)dir & 0xf0 | i) << 4);
                 var words = new VendorTuples<uint>($"{str}_pin_{i}");
                 words.Tuples = new[]
                 {
-                    GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, dirPinCount),
+                    GetTuple(SKL_TKN.U32_DIR_PIN_COUNT, GetDirPinCount(dir, i)),
                     GetTuple(SKL_TKN.U32_PIN_MOD_ID, moduleId),
                     GetTuple(SKL_TKN.U32_PIN_INST_ID, instanceId)
                 };
