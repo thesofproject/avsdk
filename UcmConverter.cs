@@ -186,7 +186,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetSections(ClockControl control, int id)
+        IEnumerable<Section> GetClockControlSections(ClockControl control, int id)
         {
             var result = new List<Section>();
             AudioFormat fmt = control.AudioFormat;
@@ -266,7 +266,7 @@ namespace itt
                 ctrls.AddRange(controls.MClockControls);
 
             for (int i = 0; i < ctrls.Count; i++)
-                result.AddRange(GetSections(ctrls[i], i));
+                result.AddRange(GetClockControlSections(ctrls[i], i));
             return result;
         }
 
@@ -525,7 +525,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetSections(InitParam param, string moduleId)
+        IEnumerable<Section> GetInitParamSections(InitParam param, string moduleId)
         {
             var result = new List<Section>();
 
@@ -751,7 +751,7 @@ namespace itt
             return GetTuples(dir, pinCount, maxQueue, pairs);
         }
 
-        IEnumerable<Section> GetSections(Module module, Path path)
+        IEnumerable<Section> GetModuleSections(Module module, Path path)
         {
             ModuleType template = GetTemplate(module.Type);
             var inTuples = GetTuples(module, path, PinDir.IN);
@@ -830,7 +830,7 @@ namespace itt
                 initParams = template.InitParams;
             if (initParams != null)
                 for (int i = 0; i < initParams.Length; i++, num += 2)
-                    result.AddRange(GetSections(initParams[i], moduleId));
+                    result.AddRange(GetInitParamSections(initParams[i], moduleId));
 
             desc = section.GetNumDescriptor(num);
             result.Insert(0, desc);
@@ -927,7 +927,7 @@ namespace itt
             {
                 Ops ops = GetControlBytesExtOps(module.Type);
                 foreach (var param in prms)
-                    result.AddRange(GetSections(param, ops));
+                    result.AddRange(GetParamSections(param, ops));
             }
 
             return result;
@@ -984,7 +984,7 @@ namespace itt
         {
             var result = new List<Section>();
 
-            IEnumerable<Section> sections = GetSections(module, path);
+            IEnumerable<Section> sections = GetModuleSections(module, path);
             var widget = new SectionWidget(GetWidgetName(path, module));
             widget.Type = module.ModulePosition.ToDapm();
             widget.NoPm = true;
@@ -1099,7 +1099,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetSections(Param param, Ops extOps)
+        IEnumerable<Section> GetParamSections(Param param, Ops extOps)
         {
             var section = new SectionData(GetParamName(param));
             byte[] defVal = param.DefaultValue.ToBytes();
