@@ -89,27 +89,23 @@ namespace itt
     }
 
     //
-    // This is for sorting which widgets will be triggered first
-    // according to DAPM rules.
+    // Constants below help select the next widget to trigger.
     //
-    // Following are the DAPM Rules.
-    // Mixer power up than PGA Power up in case of DAPM power up sequence.
+    // Following are the DAPM rules:
+    // - mixer power up than PGA power up in case of DAPM power up sequence
+    // - PGA power down than Mixer power down in case of DAPM down sequence
+    // - within widgets of the same type, lower numbered get powered up first
+    // - within widgets of the same type, higher numbered get powered down first
     //
-    // PGA power down than Mixer power down in case of DAPM down sequence.
-    // Within same type of widgets, lower number widgets get powered up first.
+    // Following are the rules required by the firmware:
+    // - pipes should be created from source to sink pipe, provided all of them
+    //   have the same priorities
+    // - pipes should be started from sink to source pipe irrespective of
+    //   priority of pipe
     //
-    // Withing same type of widgets, higher numbered gets powered down first.
-    //
-    // Following are the rules required by the firmware
-    // Pipe should be created from src pipe to sink pipe, provided all the pipe
-    // has same priorities.
-    // Pipes should be started from sink pipe to source pipe irrespective of
-    // priority of pipe.
-    //
-    // Based on DAPM rules and the firmware required priority we have come
-    // up with below priorities for the different mixer and PGA modules, based
-    // on whether they belong to FE pipe or BE pipe, and whether they are
-    // SRC or Sink pipes.
+    // Given the DAPM and firmware rules, following priorities have been defined
+    // for the different mixer and PGA modules, based on whether they belong to
+    // FE pipe or BE pipe, and whether they are source or sink pipe.
     //
     public static class HDA_DAPM_SUBSEQ
     {
