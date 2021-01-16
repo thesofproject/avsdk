@@ -200,7 +200,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetClockControlSections(ClockControl control, int id)
+        static IEnumerable<Section> GetClockControlSections(ClockControl control, int id)
         {
             var result = new List<Section>();
             AudioFormat fmt = control.AudioFormat;
@@ -268,9 +268,8 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetClockControlsSections()
+        static IEnumerable<Section> GetClockControlsSections(ClockControls controls)
         {
-            ClockControls controls = firmwareConfig.ClockControls;
             var result = new List<Section>();
 
             var ctrls = new List<ClockControl>();
@@ -386,7 +385,7 @@ namespace itt
             }
 
             if (config.ClockControls != null)
-                result.AddRange(GetClockControlsSections());
+                result.AddRange(GetClockControlsSections(firmwareConfig.ClockControls));
             return result;
         }
 
