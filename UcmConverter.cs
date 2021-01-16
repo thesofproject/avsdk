@@ -152,7 +152,7 @@ namespace itt
             var result = new List<Section>();
             result.Add(new SectionSkylakeTokens());
 
-            result.AddRange(GetFirmwareInfoSections());
+            result.AddRange(GetFirmwareInfosSections(manifestData));
             result.AddRange(GetFirmwareConfigSections());
             result.AddRange(GetModuleTypeSections());
 
@@ -175,24 +175,20 @@ namespace itt
             return strings;
         }
 
-        public IEnumerable<Section> GetFirmwareInfoSections()
+        public static IEnumerable<Section> GetFirmwareInfosSections(FirmwareInfo[] infos)
         {
             var result = new List<Section>();
-            if (manifestData == null)
+            if (infos == null)
                 return result;
             var section = new SectionSkylakeTuples("lib_data");
             var tuples = new List<VendorTuples>();
 
             var words = new VendorTuples<uint>("lib_count");
-            words.Tuples = new[] { GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)manifestData.Length) };
+            words.Tuples = new[] { GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)infos.Length) };
             tuples.Add(words);
 
-            for (int i = 0; i < manifestData.Length; i++)
-            {
-                var strings = new VendorTuples<string>($"lib_name_{i}");
-                strings.Tuples = new[] { GetTuple(SKL_TKN.STR_LIB_NAME, manifestData[i].BinaryName) };
-                tuples.Add(strings);
-            }
+            for (int i = 0; i < infos.Length; i++)
+                tuples.Add(GetFirmwareInfoTuples(infos[i], i));
 
             section.Tuples = tuples.ToArray();
             SectionVendorTuples desc = section.GetSizeDescriptor();
