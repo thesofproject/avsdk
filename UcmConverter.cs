@@ -134,7 +134,7 @@ namespace itt
             return $"{param.Name} params";
         }
 
-        public uint GetDirPinCount(PinDir dir, int index)
+        public static uint GetDirPinCount(PinDir dir, int index)
         {
                 // The same token is used for both direction of pin and
                 // pin count value. First 4 bits denote direction with the
@@ -154,7 +154,7 @@ namespace itt
 
             result.AddRange(GetFirmwareInfosSections(manifestData));
             result.AddRange(GetFirmwareConfigSections(firmwareConfig));
-            result.AddRange(GetModuleTypeSections());
+            result.AddRange(GetModuleTypesSections(moduleType));
 
             result.AddRange(GetPathsSections());
             result.AddRange(GetPathConnectorsSections());
@@ -388,7 +388,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetInterfaceTuples(Interface iface, int mod, int intf, int id)
+        static IEnumerable<VendorTuples> GetInterfaceTuples(Interface iface, int mod, int intf, int id)
         {
             string dir = (iface.Dir == PinDir.IN) ? "input" : "output";
             AudioFormat fmt = iface.AudioFormat;
@@ -411,7 +411,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetInterfacesTuples(Interfaces ifaces, int mod, int id)
+        static IEnumerable<VendorTuples> GetInterfacesTuples(Interfaces ifaces, int mod, int id)
         {
             var result = new List<VendorTuples>();
             var inputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.IN).ToArray();
@@ -434,7 +434,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetOutputPinFormatTuples(OutputPinFormat format, int mod, int res, int id)
+        static IEnumerable<VendorTuples> GetOutputPinFormatTuples(OutputPinFormat format, int mod, int res, int id)
         {
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{res}_output_{id}");
             words.Tuples = new[]
@@ -447,7 +447,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetInputPinFormatTuples(InputPinFormat format, int mod, int res, int id)
+        static IEnumerable<VendorTuples> GetInputPinFormatTuples(InputPinFormat format, int mod, int res, int id)
         {
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{res}_input_{id}");
             words.Tuples = new[]
@@ -460,7 +460,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetModuleResourcesTuples(ModuleResources resources, int mod, int id)
+        static IEnumerable<VendorTuples> GetModuleResourcesTuples(ModuleResources resources, int mod, int id)
         {
             var result = new List<VendorTuples>();
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_res_{id}");
@@ -484,7 +484,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetModuleTypeTuples(ModuleType template, int id)
+        static IEnumerable<VendorTuples> GetModuleTypeTuples(ModuleType template, int id)
         {
             var result = new List<VendorTuples>();
 
@@ -513,20 +513,20 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<Section> GetModuleTypeSections()
+        public static IEnumerable<Section> GetModuleTypesSections(ModuleType[] templates)
         {
             var result = new List<Section>();
-            if (moduleType == null)
+            if (templates == null)
                 return result;
             var section = new SectionSkylakeTuples("mod_type_data");
             var tuples = new List<VendorTuples>();
 
             var bytes = new VendorTuples<byte>("u8_num_mod");
-            bytes.Tuples = new[] { GetTuple(SKL_TKN.U8_NUM_MOD, (byte)moduleType.Length) };
+            bytes.Tuples = new[] { GetTuple(SKL_TKN.U8_NUM_MOD, (byte)templates.Length) };
             tuples.Add(bytes);
 
-            for (int i = 0; i < moduleType.Length; i++)
-                tuples.AddRange(GetModuleTypeTuples(moduleType[i], i));
+            for (int i = 0; i < templates.Length; i++)
+                tuples.AddRange(GetModuleTypeTuples(templates[i], i));
 
             section.Tuples = tuples.ToArray();
             SectionVendorTuples desc = section.GetSizeDescriptor();
