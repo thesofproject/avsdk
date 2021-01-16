@@ -165,6 +165,16 @@ namespace itt
             return result;
         }
 
+        static VendorTuples GetFirmwareInfoTuples(FirmwareInfo info, int id)
+        {
+            var strings = new VendorTuples<string>($"lib_name_{id}");
+            strings.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.STR_LIB_NAME, info.BinaryName)
+            };
+            return strings;
+        }
+
         public IEnumerable<Section> GetFirmwareInfoSections()
         {
             var result = new List<Section>();
