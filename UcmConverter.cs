@@ -153,7 +153,7 @@ namespace itt
             result.Add(new SectionSkylakeTokens());
 
             result.AddRange(GetFirmwareInfosSections(manifestData));
-            result.AddRange(GetFirmwareConfigSections());
+            result.AddRange(GetFirmwareConfigSections(firmwareConfig));
             result.AddRange(GetModuleTypeSections());
 
             result.AddRange(GetPathsSections());
@@ -283,7 +283,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetDMABufferConfigTuples(DMABufferConfig buffer, int id)
+        static IEnumerable<VendorTuples> GetDMABufferConfigTuples(DMABufferConfig buffer, int id)
         {
             var words = new VendorTuples<uint>($"u32_dma_buf_index_{id}");
             words.Tuples = new[]
@@ -296,7 +296,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetAstateTableConfigTuples(AstateTableConfig astate, int id)
+        static IEnumerable<VendorTuples> GetAstateTableConfigTuples(AstateTableConfig astate, int id)
         {
             var words = new VendorTuples<uint>($"u32_astate_table_index_{id}");
             words.Tuples = new[]
@@ -309,7 +309,7 @@ namespace itt
             return new[] { words };
         }
 
-        IEnumerable<VendorTuples> GetSchedulerConfigurationTuples(SchedulerConfiguration scheduler)
+        static IEnumerable<VendorTuples> GetSchedulerConfigurationTuples(SchedulerConfiguration scheduler)
         {
             LowLatencySourceConfig[] configs = scheduler.LowLatencySourceConfigs;
             uint config = configs[0].DmaType << 8 | configs[0].VIndex;
@@ -330,10 +330,9 @@ namespace itt
             return new[] { words };
         }
 
-        public IEnumerable<Section> GetFirmwareConfigSections()
+        public static IEnumerable<Section> GetFirmwareConfigSections(FirmwareConfig config)
         {
             var result = new List<Section>();
-            FirmwareConfig config = firmwareConfig;
             if (config == null)
                 return result;
 
@@ -385,7 +384,7 @@ namespace itt
             }
 
             if (config.ClockControls != null)
-                result.AddRange(GetClockControlsSections(firmwareConfig.ClockControls));
+                result.AddRange(GetClockControlsSections(config.ClockControls));
             return result;
         }
 
