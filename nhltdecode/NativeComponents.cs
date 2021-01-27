@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 
@@ -201,8 +201,9 @@ namespace nhltdecode
         public void WriteToBinary(BinaryWriter writer)
         {
             writer.Write(Count);
-            foreach (var dev in Devices)
-                writer.Write(MarshalHelper.StructureToBytes(dev));
+            if (Devices != null)
+                foreach (var dev in Devices)
+                    writer.Write(MarshalHelper.StructureToBytes(dev));
         }
     }
 

@@ -106,8 +106,11 @@ namespace nhltdecode
                 desc.FormatsConfig.FormatsConfiguration[i] = FormatsConfiguration[i].ToNative();
 
             desc.DevicesInfo = new DevicesInfo();
-            desc.DevicesInfo.Count = (byte)Devices.Length;
-            desc.DevicesInfo.Devices = Devices;
+            if (Devices != null)
+            {
+                desc.DevicesInfo.Count = (byte)Devices.Length;
+                desc.DevicesInfo.Devices = Devices;
+            }
 
             desc.EndpointDescriptorLength = (uint)desc.SizeOf();
 
