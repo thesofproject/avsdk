@@ -1,52 +1,9 @@
-﻿using System.Text;
+using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace nhltdecode
 {
-    public class AcpiDescriptionHeaderXml
-    {
-        public string Signature;
-        public byte Revision;
-        public string OemId;
-        public string OemIdTableId;
-        public uint OemRevision;
-        [XmlElement(DataType = "hexBinary")]
-        public byte[] CreatorId;
-        public uint CreatorRevision;
-
-        public static AcpiDescriptionHeaderXml FromNative(AcpiDescriptionHeader hdr)
-        {
-            var xhdr = new AcpiDescriptionHeaderXml();
-
-            xhdr.Signature = Encoding.ASCII.GetString(hdr.Signature);
-            xhdr.Revision = hdr.Revision;
-            xhdr.OemId = Encoding.ASCII.GetString(hdr.OemId);
-            xhdr.OemIdTableId = Encoding.ASCII.GetString(hdr.OemIdTableId);
-            xhdr.OemRevision = hdr.OemRevision;
-            xhdr.CreatorId = hdr.CreatorId;
-            xhdr.CreatorRevision = hdr.CreatorRevision;
-
-            return xhdr;
-        }
-
-        public AcpiDescriptionHeader ToNative()
-        {
-            var hdr = new AcpiDescriptionHeader();
-            Encoding srcEncoding = Encoding.Unicode;
-
-            hdr.Signature = Encoding.Convert(srcEncoding, Encoding.ASCII, srcEncoding.GetBytes(Signature));
-            hdr.Revision = Revision;
-            hdr.OemId = Encoding.Convert(srcEncoding, Encoding.ASCII, srcEncoding.GetBytes(OemId));
-            hdr.OemIdTableId = Encoding.Convert(srcEncoding, Encoding.ASCII, srcEncoding.GetBytes(OemIdTableId));
-            hdr.OemRevision = OemRevision;
-            hdr.CreatorId = CreatorId;
-            hdr.CreatorRevision = CreatorRevision;
-
-            return hdr;
-        }
-    }
-
     [XmlType("FormatConfig")]
     public class FormatConfigXml
     {
@@ -161,7 +118,7 @@ namespace nhltdecode
     [XmlType("Nhlt")]
     public class NhltXml
     {
-        public AcpiDescriptionHeaderXml EfiAcpiDescriptionHeader;
+        public AcpiDescriptionHeader EfiAcpiDescriptionHeader;
         public EndpointDescriptorXml[] EndpointDescriptors;
         [XmlElement(DataType = "hexBinary")]
         public byte[] OedSpecificConfig;
@@ -176,7 +133,7 @@ namespace nhltdecode
             }
 
             var xtable = new NhltXml();
-            xtable.EfiAcpiDescriptionHeader = AcpiDescriptionHeaderXml.FromNative(table.Header);
+            xtable.EfiAcpiDescriptionHeader = table.Header;
             xtable.EndpointDescriptors = xdescs;
             xtable.OedSpecificConfig = table.OEDConfig.Capabilities;
 
@@ -187,7 +144,7 @@ namespace nhltdecode
         {
             var table = new NHLT();
 
-            table.Header = EfiAcpiDescriptionHeader.ToNative();
+            table.Header = EfiAcpiDescriptionHeader;
             table.DescriptorCount = (byte)EndpointDescriptors.Length;
             table.Descriptors = new EndpointDescriptor[table.DescriptorCount];
             for (byte i = 0; i < table.DescriptorCount; i++)
