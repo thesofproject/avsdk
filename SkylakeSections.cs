@@ -89,7 +89,7 @@ namespace itt
 
         public static SectionData GetPrivateData(this Section section)
         {
-            return new SectionData() { Identifier = section.Identifier, Tuples = section.Identifier };
+            return new SectionData() { Identifier = section.Identifier, Tuples = new[] { section.Identifier }};
         }
     }
 }
