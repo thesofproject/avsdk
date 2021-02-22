@@ -156,7 +156,7 @@ namespace itt
             result.AddRange(GetFirmwareConfigSections(firmwareConfig));
             result.AddRange(GetModuleTypesSections(moduleType));
 
-            result.AddRange(GetPathsSections());
+            result.AddRange(GetPathsSections(moduleType, pathConnectors, paths));
             result.AddRange(GetPathConnectorsSections(pathConnectors));
             result.Add(GetGraphSection(paths, pathConnectors));
             result.AddRange(GetPCMSections(paths));
@@ -672,7 +672,7 @@ namespace itt
             return path.ConnType.GetValue();
         }
 
-        IEnumerable<VendorTuples> GetPinDirTuples(ModuleType[] templates, PinDir dir, uint pinCount, uint maxQueue,
+        static IEnumerable<VendorTuples> GetPinDirTuples(ModuleType[] templates, PinDir dir, uint pinCount, uint maxQueue,
             IEnumerable<Tuple<FromTo, FromTo>> pairs)
         {
             int anyCount = pairs.Count(p => p.Item1.Interface == InterfaceName.ANY);
@@ -720,7 +720,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, Module module, Path path, PinDir dir)
+        static IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, PathConnectors pathConnectors, Module module, Path path, PinDir dir)
         {
             ModuleType template = GetTemplate(templates, module.Type);
             IEnumerable<Tuple<FromTo, FromTo>> pairs;
@@ -763,11 +763,11 @@ namespace itt
             return GetPinDirTuples(templates, dir, pinCount, maxQueue, pairs);
         }
 
-        IEnumerable<Section> GetModuleSections(ModuleType[] templates, Module module, Path path)
+        static IEnumerable<Section> GetModuleSections(ModuleType[] templates, PathConnectors connectors, Module module, Path path)
         {
             ModuleType template = GetTemplate(templates, module.Type);
-            var inTuples = GetModuleTuples(templates, module, path, PinDir.IN);
-            var outTuples = GetModuleTuples(templates, module, path, PinDir.OUT);
+            var inTuples = GetModuleTuples(templates, connectors, module, path, PinDir.IN);
+            var outTuples = GetModuleTuples(templates, connectors, module, path, PinDir.OUT);
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
@@ -927,7 +927,7 @@ namespace itt
             return new Ops("ctl") { Get = call, Put = call };
         }
 
-        IEnumerable<Section> GetBytesControls(ModuleType[] templates, Module module)
+        static IEnumerable<Section> GetBytesControls(ModuleType[] templates, Module module)
         {
             var result = new List<Section>();
             Param[] prms = module.Params;
@@ -965,7 +965,7 @@ namespace itt
             return control;
         }
 
-        IEnumerable<Section> GetModuleControls(Module module)
+        static IEnumerable<Section> GetModuleControls(Module module)
         {
             var result = new List<Section>();
 
@@ -992,11 +992,11 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, Path path, Module module)
+        static IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, PathConnectors pathConnectors, Path path, Module module)
         {
             var result = new List<Section>();
 
-            IEnumerable<Section> sections = GetModuleSections(templates, module, path);
+            IEnumerable<Section> sections = GetModuleSections(templates, pathConnectors, module, path);
             var widget = new SectionWidget(GetWidgetName(path, module));
             widget.Type = module.ModulePosition.ToDapm();
             widget.NoPm = true;
@@ -1037,7 +1037,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetPathConfigurationsSections(Path path)
+        static IEnumerable<Section> GetPathConfigurationsSections(Path path)
         {
             var result = new List<Section>();
             PathConfiguration[] cfgs = path.PathConfigurations.PathConfiguration;
@@ -1091,12 +1091,12 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetPathSections(Path path)
+        static IEnumerable<Section> GetPathSections(ModuleType[] templates, PathConnectors connectors, Path path)
         {
             var result = new List<Section>();
 
             foreach (var module in path.Modules.Module)
-                result.AddRange(GetPathModuleSections(moduleType, path, module));
+                result.AddRange(GetPathModuleSections(templates, connectors, path, module));
             result.AddRange(GetPathConfigurationsSections(path));
 
             if (path.Port != null)
@@ -1153,14 +1153,14 @@ namespace itt
             return new Section[] { control, section };
         }
 
-        public IEnumerable<Section> GetPathsSections()
+        public static IEnumerable<Section> GetPathsSections(ModuleType[] templates, PathConnectors connectors, Paths paths)
         {
             var result = new List<Section>();
             if (paths == null)
                 return result;
 
             foreach (var path in paths.Path)
-                result.AddRange(GetPathSections(path));
+                result.AddRange(GetPathSections(templates, connectors, path));
 
             result = result.Distinct(new SectionComparer()).ToList();
             return result;
