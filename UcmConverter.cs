@@ -572,7 +572,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetModuleParamsTuples(ModuleParams param, int id)
+        static IEnumerable<VendorTuples> GetModuleParamsTuples(ModuleParams param, int id)
         {
             var shorts = new VendorTuples<ushort>($"u16_pipe_mod_cfg_{id}");
             shorts.Tuples = new[]
@@ -584,7 +584,7 @@ namespace itt
             return new[] { shorts };
         }
 
-        IEnumerable<VendorTuples> GetPcmFormatTuples(PcmFormat format, int id)
+        static IEnumerable<VendorTuples> GetPcmFormatTuples(PcmFormat format, int id)
         {
             var result = new List<VendorTuples>();
             string dir = (format.Dir == PinDir.IN) ? "in" : "out";
@@ -608,7 +608,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetPathConfigurationTuples(PathConfiguration config, Module module, int id)
+        static IEnumerable<VendorTuples> GetPathConfigurationTuples(PathConfiguration config, Module module, int id)
         {
             var result = new List<VendorTuples>();
             var words = new VendorTuples<uint>($"_pipe_{id}");
@@ -634,7 +634,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetPathConfigurationsTuples(PathConfigurations configs, Module module)
+        static IEnumerable<VendorTuples> GetPathConfigurationsTuples(PathConfigurations configs, Module module)
         {
             var result = new List<VendorTuples>();
 
