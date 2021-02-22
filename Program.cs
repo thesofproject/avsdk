@@ -102,7 +102,7 @@ namespace itt
                 }
 
                 var serializer = new UcmSerializer();
-                var sections = new UcmConverter(system).GetAllSections();
+                var sections = UcmConverter.GetAllSections(system);
                 using (var stream = new FileStream(dictionary["output"], FileMode.Create))
                 {
                     serializer.Serialize(stream, sections);

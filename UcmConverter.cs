@@ -147,21 +147,25 @@ namespace itt
             return templates.SingleOrDefault(t => t.Name.Equals(type));
         }
 
-        public IEnumerable<Section> GetAllSections()
+        public static IEnumerable<Section> GetAllSections(System topology)
         {
             var result = new List<Section>();
             result.Add(new SectionSkylakeTokens());
 
-            result.AddRange(GetFirmwareInfosSections(manifestData));
-            result.AddRange(GetFirmwareConfigSections(firmwareConfig));
-            result.AddRange(GetModuleTypesSections(moduleType));
+            result.AddRange(GetFirmwareInfosSections(topology.GetManifestData()));
+            result.AddRange(GetFirmwareConfigSections(topology.GetFirmwareConfig()));
 
+            ModuleType[] moduleType = topology.GetModuleTypes();
+            Paths paths = topology.GetPaths();
+            PathConnectors pathConnectors = topology.GetPathConnectors();
+
+            result.AddRange(GetModuleTypesSections(moduleType));
             result.AddRange(GetPathsSections(moduleType, pathConnectors, paths));
             result.AddRange(GetPathConnectorsSections(pathConnectors));
             result.Add(GetGraphSection(paths, pathConnectors));
             result.AddRange(GetPCMSections(paths));
 
-            result.AddRange(GetManifestSections(result));
+            result.AddRange(GetManifestSections(topology, result));
             return result;
         }
 
@@ -1394,17 +1398,17 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<Section> GetManifestSections(IEnumerable<Section> current)
+        public static IEnumerable<Section> GetManifestSections(System topology, IEnumerable<Section> current)
         {
             if (current == null)
                 throw new ArgumentNullException(nameof(current));
 
             int num = 0;
-            if (manifestData != null)
+            if (topology.GetManifestData() != null)
                 num++;
-            if (moduleType != null)
+            if (topology.GetModuleTypes() != null)
                 num++;
-            FirmwareConfig config = firmwareConfig;
+            FirmwareConfig config = topology.GetFirmwareConfig();
             if (config != null)
             {
                 if (config.DMABufferConfigs?.Length > 0 ||
