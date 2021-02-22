@@ -691,7 +691,7 @@ namespace itt
             return result;
         }
 
-        static IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, PathConnector[] pathConnectors, Module module, Path path, PinDir dir)
+        static IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, PathConnector[] connectors, Module module, Path path, PinDir dir)
         {
             ModuleType template = GetTemplate(templates, module.Type);
             IEnumerable<Tuple<FromTo, FromTo>> pairs;
@@ -702,9 +702,9 @@ namespace itt
                 pinCount = template.InputPins;
 
                 pairs = path.Links.Select(l => Tuple.Create(l.To, l.From));
-                if (pathConnectors != null)
+                if (connectors != null)
                 {
-                    var query = pathConnectors
+                    var query = connectors
                         .Where(c => c.Output[0].PathName.Equals(path.Name))
                         .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
 
@@ -716,9 +716,9 @@ namespace itt
                 pinCount = template.OutputPins;
 
                 pairs = path.Links.Select(l => Tuple.Create(l.From, l.To));
-                if (pathConnectors != null)
+                if (connectors != null)
                 {
-                    var query = pathConnectors
+                    var query = connectors
                         .Where(c => c.Input[0].PathName.Equals(path.Name))
                         .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
 
@@ -961,11 +961,11 @@ namespace itt
             return result;
         }
 
-        static IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, PathConnector[] pathConnectors, Path path, Module module)
+        static IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, PathConnector[] connectors, Path path, Module module)
         {
             var result = new List<Section>();
 
-            IEnumerable<Section> sections = GetModuleSections(templates, pathConnectors, module, path);
+            IEnumerable<Section> sections = GetModuleSections(templates, connectors, module, path);
             var widget = new SectionWidget(GetWidgetName(path, module));
             widget.Type = module.ModulePosition.ToDapm();
             widget.NoPm = true;
@@ -988,9 +988,9 @@ namespace itt
             ids = result.OfType<SectionControlMixer>()
                 .Select(c => c.Identifier);
             // Append mixers from path connectors
-            if (pathConnectors != null)
+            if (connectors != null)
             {
-                IEnumerable<PathConnector> query = pathConnectors.Where(
+                IEnumerable<PathConnector> query = connectors.Where(
                     c => c.Type == LinkType.MIXER && c.Output.Any(
                         o => o.PathName.Equals(path.Name) &&
                              o.Module.Equals(module.Type) &&
@@ -1135,13 +1135,13 @@ namespace itt
             return result;
         }
 
-        public static IEnumerable<Section> GetPathConnectorsSections(PathConnector[] pathConnectors)
+        public static IEnumerable<Section> GetPathConnectorsSections(PathConnector[] connectors)
         {
             var result = new List<Section>();
-            if (pathConnectors == null)
+            if (connectors == null)
                 return result;
 
-            IEnumerable<PathConnector> query = pathConnectors
+            IEnumerable<PathConnector> query = connectors
                 .Where(c => c.Type == LinkType.MIXER);
             foreach (var entry in query)
             {
@@ -1152,7 +1152,7 @@ namespace itt
                         TPLG_CTL.DAPM_VOLSW));
             }
 
-            query = pathConnectors
+            query = connectors
                 .Where(c => c.Type == LinkType.SWITCH);
             foreach (var entry in query)
             {
