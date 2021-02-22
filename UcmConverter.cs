@@ -147,6 +147,39 @@ namespace itt
             return templates.SingleOrDefault(t => t.Name.Equals(type));
         }
 
+        public static IEnumerable<Section> GetTopologySections(System topology)
+        {
+            if (topology == null)
+                throw new ArgumentNullException(nameof(topology));
+
+            var result = new List<Section>();
+            result.Add(new SectionSkylakeTokens());
+
+            FirmwareInfo[] manifestData = topology.GetManifestData();
+            FirmwareConfig firmwareConfig = topology.GetFirmwareConfig();
+
+            result.AddRange(GetFirmwareInfosSections(manifestData));
+            result.AddRange(GetFirmwareConfigSections(firmwareConfig));
+
+            ModuleType[] templates = topology.GetModuleTypes();
+            /* Nothing else to do if module types aren't there */
+            if (templates == null)
+                goto exit;
+
+            result.AddRange(GetModuleTypesSections(templates));
+
+            Paths paths = topology.GetPaths();
+            PathConnectors connectors = topology.GetPathConnectors();
+
+            result.AddRange(GetPathsSections(templates, connectors, paths));
+            result.AddRange(GetPathConnectorsSections(connectors));
+            result.Add(GetGraphSection(paths, connectors));
+            result.AddRange(GetPCMSections(paths));
+        exit:
+            result.AddRange(GetManifestSections(topology, result));
+            return result;
+        }
+
         public static IEnumerable<Section> GetAllSections(System topology)
         {
             var result = new List<Section>();
