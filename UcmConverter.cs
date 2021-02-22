@@ -256,7 +256,7 @@ namespace itt
                 };
             }
 
-            int size = (int)(2 * Marshal.SizeOf(typeof(uint)) + dmactrl.Size);            
+            int size = (int)(2 * Marshal.SizeOf(typeof(uint)) + dmactrl.Size);
             priv.Bytes = MarshalHelper.StructureToBytes(dmactrl);
             Array.Resize(ref priv.Bytes, size);
 
