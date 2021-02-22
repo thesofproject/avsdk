@@ -1111,7 +1111,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetParamSections(Param param, Ops extOps)
+        static IEnumerable<Section> GetParamSections(Param param, Ops extOps)
         {
             var section = new SectionData(GetParamName(param));
             byte[] defVal = param.DefaultValue.ToBytes();
