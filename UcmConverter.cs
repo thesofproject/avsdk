@@ -180,28 +180,6 @@ namespace itt
             return result;
         }
 
-        public static IEnumerable<Section> GetAllSections(System topology)
-        {
-            var result = new List<Section>();
-            result.Add(new SectionSkylakeTokens());
-
-            result.AddRange(GetFirmwareInfosSections(topology.GetManifestData()));
-            result.AddRange(GetFirmwareConfigSections(topology.GetFirmwareConfig()));
-
-            ModuleType[] moduleType = topology.GetModuleTypes();
-            Paths paths = topology.GetPaths();
-            PathConnectors pathConnectors = topology.GetPathConnectors();
-
-            result.AddRange(GetModuleTypesSections(moduleType));
-            result.AddRange(GetPathsSections(moduleType, pathConnectors, paths));
-            result.AddRange(GetPathConnectorsSections(pathConnectors));
-            result.Add(GetGraphSection(paths, pathConnectors));
-            result.AddRange(GetPCMSections(paths));
-
-            result.AddRange(GetManifestSections(topology, result));
-            return result;
-        }
-
         static VendorTuples GetFirmwareInfoTuples(FirmwareInfo info, int id)
         {
             var strings = new VendorTuples<string>($"lib_name_{id}");
