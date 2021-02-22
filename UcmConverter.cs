@@ -704,11 +704,11 @@ namespace itt
                 pairs = path.Links.Select(l => Tuple.Create(l.To, l.From));
                 if (pathConnectors != null)
                 {
-                    var connectors = pathConnectors.PathConnector
+                    var query = pathConnectors.PathConnector
                         .Where(c => c.Output[0].PathName.Equals(path.Name))
                         .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
 
-                    pairs = pairs.Concat(connectors);
+                    pairs = pairs.Concat(query);
                 }
             }
             else
@@ -718,11 +718,11 @@ namespace itt
                 pairs = path.Links.Select(l => Tuple.Create(l.From, l.To));
                 if (pathConnectors != null)
                 {
-                    var connectors = pathConnectors.PathConnector
+                    var query = pathConnectors.PathConnector
                         .Where(c => c.Input[0].PathName.Equals(path.Name))
                         .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
 
-                    pairs = pairs.Concat(connectors);
+                    pairs = pairs.Concat(query);
                 }
             }
 
@@ -990,13 +990,13 @@ namespace itt
             // Append mixers from path connectors
             if (pathConnectors != null)
             {
-                IEnumerable<PathConnector> connectors = pathConnectors.PathConnector.Where(
+                IEnumerable<PathConnector> query = pathConnectors.PathConnector.Where(
                     c => c.Type == LinkType.MIXER && c.Output.Any(
                         o => o.PathName.Equals(path.Name) &&
                              o.Module.Equals(module.Type) &&
                              o.Instance == module.Instance));
 
-                IEnumerable<InputOutput> inputs = connectors.SelectMany(c => c.Input);
+                IEnumerable<InputOutput> inputs = query.SelectMany(c => c.Input);
                 ids = ids.Concat(inputs.Select(
                     i => GetMixerName(i.PathName, i.Module)));
             }
@@ -1141,27 +1141,27 @@ namespace itt
             if (pathConnectors == null)
                 return result;
 
-            IEnumerable<PathConnector> connectors = pathConnectors.PathConnector
+            IEnumerable<PathConnector> query = pathConnectors.PathConnector
                 .Where(c => c.Type == LinkType.MIXER);
-            foreach (var connector in connectors)
+            foreach (var entry in query)
             {
-                foreach (var input in connector.Input)
+                foreach (var input in entry.Input)
                     result.Add(GetMixerControl(
                         GetMixerName(input.PathName, input.Module), 1,
                         TPLG_CTL.DAPM_VOLSW,
                         TPLG_CTL.DAPM_VOLSW));
             }
 
-            connectors = pathConnectors.PathConnector
+            query = pathConnectors.PathConnector
                 .Where(c => c.Type == LinkType.SWITCH);
-            foreach (var connector in connectors)
+            foreach (var entry in query)
             {
                 SectionControlMixer mixer = GetMixerControl(
                     "Switch", 1,
                     TPLG_CTL.DAPM_VOLSW,
                     TPLG_CTL.DAPM_VOLSW);
 
-                var widget = new SectionWidget(connector.Name);
+                var widget = new SectionWidget(entry.Name);
                 widget.Index = 0;
                 widget.Type = TPLG_DAPM.SWITCH;
                 widget.NoPm = true;
