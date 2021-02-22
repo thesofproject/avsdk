@@ -158,7 +158,7 @@ namespace itt
 
             result.AddRange(GetPathsSections());
             result.AddRange(GetPathConnectorsSections());
-            result.Add(GetGraphSection());
+            result.Add(GetGraphSection(paths, pathConnectors));
             result.AddRange(GetPCMSections());
 
             result.AddRange(GetManifestSections(result));
@@ -1280,7 +1280,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<string> GetConnectorRoutes(PathConnector connector)
+        static IEnumerable<string> GetConnectorRoutes(PathConnector connector)
         {
             var result = new List<string>();
             var route = new StringBuilder();
@@ -1313,7 +1313,7 @@ namespace itt
             return result;
         }
 
-        public SectionGraph GetGraphSection()
+        public static SectionGraph GetGraphSection(Paths paths, PathConnectors connectors)
         {
             var graph = new SectionGraph("Pipeline 1 Graph");
             var routes = new List<string>();
@@ -1321,8 +1321,8 @@ namespace itt
             if (paths != null)
                 foreach (var path in paths.Path)
                     routes.AddRange(GetPathRoutes(path));
-            if (pathConnectors != null)
-                foreach (var connector in pathConnectors.PathConnector)
+            if (connectors != null)
+                foreach (var connector in connectors.PathConnector)
                     routes.AddRange(GetConnectorRoutes(connector));
 
             graph.Lines = routes.ToArray();
