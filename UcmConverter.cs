@@ -538,7 +538,7 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetInitParamSections(InitParam param, string moduleId)
+        static IEnumerable<Section> GetInitParamSections(InitParam param, string moduleId)
         {
             var result = new List<Section>();
 
