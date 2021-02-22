@@ -157,7 +157,7 @@ namespace itt
             result.AddRange(GetModuleTypesSections(moduleType));
 
             result.AddRange(GetPathsSections());
-            result.AddRange(GetPathConnectorsSections());
+            result.AddRange(GetPathConnectorsSections(pathConnectors));
             result.Add(GetGraphSection(paths, pathConnectors));
             result.AddRange(GetPCMSections(paths));
 
@@ -1166,7 +1166,7 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<Section> GetPathConnectorsSections()
+        public static IEnumerable<Section> GetPathConnectorsSections(PathConnectors pathConnectors)
         {
             var result = new List<Section>();
             if (pathConnectors == null)
