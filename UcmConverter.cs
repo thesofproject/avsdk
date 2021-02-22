@@ -126,6 +126,8 @@ namespace itt
 
             Path[] paths = topology.GetPaths()?.Path;
             PathConnector[] connectors = topology.GetPathConnectors()?.PathConnector;
+            if (paths == null || connectors == null)
+                goto exit;
 
             result.AddRange(GetPathsSections(templates, connectors, paths));
             result.AddRange(GetPathConnectorsSections(connectors));
