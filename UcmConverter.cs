@@ -142,9 +142,9 @@ namespace itt
                 return ((uint)dir & 0xF) | ((uint)index << 4);
         }
 
-        public ModuleType GetTemplate(string type)
+        static ModuleType GetTemplate(ModuleType[] templates, string type)
         {
-            return moduleType.SingleOrDefault(t => t.Name.Equals(type));
+            return templates.SingleOrDefault(t => t.Name.Equals(type));
         }
 
         public IEnumerable<Section> GetAllSections()
@@ -672,7 +672,7 @@ namespace itt
             return path.ConnType.GetValue();
         }
 
-        IEnumerable<VendorTuples> GetPinDirTuples(PinDir dir, uint pinCount, uint maxQueue,
+        IEnumerable<VendorTuples> GetPinDirTuples(ModuleType[] templates, PinDir dir, uint pinCount, uint maxQueue,
             IEnumerable<Tuple<FromTo, FromTo>> pairs)
         {
             int anyCount = pairs.Count(p => p.Item1.Interface == InterfaceName.ANY);
@@ -693,7 +693,7 @@ namespace itt
                         p => (uint)p.Item1.Interface % maxQueue == i);
                     if (pair != null)
                     {
-                        ModuleType template = GetTemplate(pair.Item2.Module);
+                        ModuleType template = GetTemplate(templates, pair.Item2.Module);
                         moduleId = template.ModuleId;
                         instanceId = pair.Item2.Instance;
                         uuid = template.Uuid;
@@ -720,9 +720,9 @@ namespace itt
             return result;
         }
 
-        IEnumerable<VendorTuples> GetModuleTuples(Module module, Path path, PinDir dir)
+        IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, Module module, Path path, PinDir dir)
         {
-            ModuleType template = GetTemplate(module.Type);
+            ModuleType template = GetTemplate(templates, module.Type);
             IEnumerable<Tuple<FromTo, FromTo>> pairs;
             uint pinCount, maxQueue;
 
@@ -760,14 +760,14 @@ namespace itt
             pairs = pairs.Where(
                 p => p.Item1.Module.Equals(module.Type) &&
                      p.Item1.Instance == module.Instance);
-            return GetPinDirTuples(dir, pinCount, maxQueue, pairs);
+            return GetPinDirTuples(templates, dir, pinCount, maxQueue, pairs);
         }
 
-        IEnumerable<Section> GetModuleSections(Module module, Path path)
+        IEnumerable<Section> GetModuleSections(ModuleType[] templates, Module module, Path path)
         {
-            ModuleType template = GetTemplate(module.Type);
-            var inTuples = GetModuleTuples(module, path, PinDir.IN);
-            var outTuples = GetModuleTuples(module, path, PinDir.OUT);
+            ModuleType template = GetTemplate(templates, module.Type);
+            var inTuples = GetModuleTuples(templates, module, path, PinDir.IN);
+            var outTuples = GetModuleTuples(templates, module, path, PinDir.OUT);
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
@@ -927,13 +927,13 @@ namespace itt
             return new Ops("ctl") { Get = call, Put = call };
         }
 
-        IEnumerable<Section> GetBytesControls(Module module)
+        IEnumerable<Section> GetBytesControls(ModuleType[] templates, Module module)
         {
             var result = new List<Section>();
             Param[] prms = module.Params;
 
             if (prms == null)
-                prms = GetTemplate(module.Type).Params;
+                prms = GetTemplate(templates, module.Type).Params;
 
             if (prms != null)
             {
@@ -992,11 +992,11 @@ namespace itt
             return result;
         }
 
-        IEnumerable<Section> GetPathModuleSections(Path path, Module module)
+        IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, Path path, Module module)
         {
             var result = new List<Section>();
 
-            IEnumerable<Section> sections = GetModuleSections(module, path);
+            IEnumerable<Section> sections = GetModuleSections(templates, module, path);
             var widget = new SectionWidget(GetWidgetName(path, module));
             widget.Type = module.ModulePosition.ToDapm();
             widget.NoPm = true;
@@ -1009,7 +1009,7 @@ namespace itt
             result.AddRange(sections);
             result.Add(widget);
             result.AddRange(GetModuleControls(module));
-            result.AddRange(GetBytesControls(module));
+            result.AddRange(GetBytesControls(templates, module));
 
             IEnumerable<string> ids = result.OfType<SectionControlBytes>()
                 .Select(c => c.Identifier);
@@ -1096,7 +1096,7 @@ namespace itt
             var result = new List<Section>();
 
             foreach (var module in path.Modules.Module)
-                result.AddRange(GetPathModuleSections(path, module));
+                result.AddRange(GetPathModuleSections(moduleType, path, module));
             result.AddRange(GetPathConfigurationsSections(path));
 
             if (path.Port != null)
