@@ -159,7 +159,7 @@ namespace itt
             result.AddRange(GetPathsSections());
             result.AddRange(GetPathConnectorsSections());
             result.Add(GetGraphSection(paths, pathConnectors));
-            result.AddRange(GetPCMSections());
+            result.AddRange(GetPCMSections(paths));
 
             result.AddRange(GetManifestSections(result));
             return result;
@@ -1329,7 +1329,7 @@ namespace itt
             return graph;
         }
 
-        SectionPCMCapabilities GetPCMCapabilities(Path path)
+        static SectionPCMCapabilities GetPCMCapabilities(Path path)
         {
             PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.IN
                                                                 : PinDir.OUT;
@@ -1351,7 +1351,7 @@ namespace itt
             return result;
         }
 
-        public IEnumerable<Section> GetPCMSections()
+        public static IEnumerable<Section> GetPCMSections(Paths paths)
         {
             var result = new List<Section>();
             if (paths == null)
