@@ -31,52 +31,8 @@ using System.Text;
 
 namespace itt
 {
-    public sealed class UcmConverter
+    public static class UcmConverter
     {
-        readonly FirmwareInfo[] manifestData;
-        readonly FirmwareConfig firmwareConfig;
-
-        readonly ModuleType[] moduleType;
-
-        readonly Paths paths;
-        readonly PathConnectors pathConnectors;
-
-        public UcmConverter(System system)
-        {
-            if (system == null)
-                throw new ArgumentNullException(nameof(system));
-            if (system.SubsystemType == null)
-                throw new ArgumentNullException(nameof(system.SubsystemType));
-
-            SubsystemType[] subsystems = system.SubsystemType;
-
-            // Retrieve manifest and firmware config
-            SubsystemType sub = subsystems.SingleOrDefault(e => e.ManifestData != null);
-            if (sub != null)
-                manifestData = sub.ManifestData;
-            sub = subsystems.SingleOrDefault(e => e.FirmwareConfig != null);
-            if (sub != null)
-                firmwareConfig = sub.FirmwareConfig;
-
-            // Retrieve module types. If none found, bail out
-            sub = subsystems.SingleOrDefault(e => e.ModuleTypes != null);
-            if (sub == null)
-                return;
-
-            moduleType = sub.ModuleTypes;
-
-            // Retrieve paths and connectors
-            sub = subsystems.SingleOrDefault(
-                e => e.Paths != null && e.Paths.Path != null);
-            if (sub != null)
-                paths = sub.Paths;
-
-            sub = subsystems.SingleOrDefault(
-                e => e.PathConnectors != null && e.PathConnectors.PathConnector != null);
-            if (sub != null)
-                pathConnectors = sub.PathConnectors;
-        }
-
         static Tuple<string, T> GetTuple<T>(SKL_TKN token, T value)
         {
             return Tuple.Create(token.GetName(), value);
