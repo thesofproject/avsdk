@@ -244,8 +244,7 @@ namespace itt
 
         internal static uint ToIndex(this InterfaceName iface)
         {
-            // assumes MAX_IN_QUEUE equals MAX_OUT_QUEUE
-            return (uint)iface % Constants.MAX_IN_QUEUE;
+            return (uint)iface % Constants.MAX_QUEUE;
         }
     }
 }

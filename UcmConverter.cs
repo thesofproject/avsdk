@@ -643,7 +643,7 @@ namespace itt
             return path.ConnType.GetValue();
         }
 
-        static IEnumerable<VendorTuples> GetPinDirTuples(ModuleType[] templates, PinDir dir, uint pinCount, uint maxQueue,
+        static IEnumerable<VendorTuples> GetPinDirTuples(ModuleType[] templates, PinDir dir, uint pinCount,
             IEnumerable<Tuple<FromTo, FromTo>> pairs)
         {
             int anyCount = pairs.Count(p => p.Item1.Interface == InterfaceName.ANY);
@@ -661,7 +661,7 @@ namespace itt
                 if (!dynamic)
                 {
                     Tuple<FromTo, FromTo> pair = pairs.FirstOrDefault(
-                        p => (uint)p.Item1.Interface % maxQueue == i);
+                        p => (uint)p.Item1.Interface % Constants.MAX_QUEUE == i);
                     if (pair != null)
                     {
                         ModuleType template = GetTemplate(templates, pair.Item2.Module);
@@ -695,12 +695,11 @@ namespace itt
         {
             ModuleType template = GetTemplate(templates, module.Type);
             IEnumerable<Tuple<FromTo, FromTo>> pairs;
-            uint pinCount, maxQueue;
+            uint pinCount;
 
             if (dir == PinDir.IN)
             {
                 pinCount = template.InputPins;
-                maxQueue = Constants.MAX_IN_QUEUE;
 
                 pairs = path.Links.Select(l => Tuple.Create(l.To, l.From));
                 if (pathConnectors != null)
@@ -715,7 +714,6 @@ namespace itt
             else
             {
                 pinCount = template.OutputPins;
-                maxQueue = Constants.MAX_OUT_QUEUE;
 
                 pairs = path.Links.Select(l => Tuple.Create(l.From, l.To));
                 if (pathConnectors != null)
@@ -731,7 +729,7 @@ namespace itt
             pairs = pairs.Where(
                 p => p.Item1.Module.Equals(module.Type) &&
                      p.Item1.Instance == module.Instance);
-            return GetPinDirTuples(templates, dir, pinCount, maxQueue, pairs);
+            return GetPinDirTuples(templates, dir, pinCount, pairs);
         }
 
         static IEnumerable<Section> GetModuleSections(ModuleType[] templates, PathConnectors connectors, Module module, Path path)

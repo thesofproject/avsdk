@@ -35,8 +35,7 @@ namespace itt
 
         public const uint DMA_BUFFER_COUNT        = 40;
 
-        public const uint MAX_IN_QUEUE   = 8;
-        public const uint MAX_OUT_QUEUE  = 8;
+        public const uint MAX_QUEUE      = 8;
 
         public const int GAIN_MIN_INDEX  = 0;
         public const int GAIN_MAX_INDEX  = 1440;
