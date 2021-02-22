@@ -124,8 +124,8 @@ namespace itt
 
             result.AddRange(GetModuleTypesSections(templates));
 
-            Paths paths = topology.GetPaths();
-            PathConnectors connectors = topology.GetPathConnectors();
+            Path[] paths = topology.GetPaths()?.Path;
+            PathConnector[] connectors = topology.GetPathConnectors()?.PathConnector;
 
             result.AddRange(GetPathsSections(templates, connectors, paths));
             result.AddRange(GetPathConnectorsSections(connectors));
@@ -691,7 +691,7 @@ namespace itt
             return result;
         }
 
-        static IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, PathConnectors pathConnectors, Module module, Path path, PinDir dir)
+        static IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, PathConnector[] pathConnectors, Module module, Path path, PinDir dir)
         {
             ModuleType template = GetTemplate(templates, module.Type);
             IEnumerable<Tuple<FromTo, FromTo>> pairs;
@@ -704,7 +704,7 @@ namespace itt
                 pairs = path.Links.Select(l => Tuple.Create(l.To, l.From));
                 if (pathConnectors != null)
                 {
-                    var query = pathConnectors.PathConnector
+                    var query = pathConnectors
                         .Where(c => c.Output[0].PathName.Equals(path.Name))
                         .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
 
@@ -718,7 +718,7 @@ namespace itt
                 pairs = path.Links.Select(l => Tuple.Create(l.From, l.To));
                 if (pathConnectors != null)
                 {
-                    var query = pathConnectors.PathConnector
+                    var query = pathConnectors
                         .Where(c => c.Input[0].PathName.Equals(path.Name))
                         .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
 
@@ -732,7 +732,7 @@ namespace itt
             return GetPinDirTuples(templates, dir, pinCount, pairs);
         }
 
-        static IEnumerable<Section> GetModuleSections(ModuleType[] templates, PathConnectors connectors, Module module, Path path)
+        static IEnumerable<Section> GetModuleSections(ModuleType[] templates, PathConnector[] connectors, Module module, Path path)
         {
             ModuleType template = GetTemplate(templates, module.Type);
             var inTuples = GetModuleTuples(templates, connectors, module, path, PinDir.IN);
@@ -961,7 +961,7 @@ namespace itt
             return result;
         }
 
-        static IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, PathConnectors pathConnectors, Path path, Module module)
+        static IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, PathConnector[] pathConnectors, Path path, Module module)
         {
             var result = new List<Section>();
 
@@ -990,7 +990,7 @@ namespace itt
             // Append mixers from path connectors
             if (pathConnectors != null)
             {
-                IEnumerable<PathConnector> query = pathConnectors.PathConnector.Where(
+                IEnumerable<PathConnector> query = pathConnectors.Where(
                     c => c.Type == LinkType.MIXER && c.Output.Any(
                         o => o.PathName.Equals(path.Name) &&
                              o.Module.Equals(module.Type) &&
@@ -1060,7 +1060,7 @@ namespace itt
             return result;
         }
 
-        static IEnumerable<Section> GetPathSections(ModuleType[] templates, PathConnectors connectors, Path path)
+        static IEnumerable<Section> GetPathSections(ModuleType[] templates, PathConnector[] connectors, Path path)
         {
             var result = new List<Section>();
 
@@ -1122,26 +1122,26 @@ namespace itt
             return new Section[] { control, section };
         }
 
-        public static IEnumerable<Section> GetPathsSections(ModuleType[] templates, PathConnectors connectors, Paths paths)
+        public static IEnumerable<Section> GetPathsSections(ModuleType[] templates, PathConnector[] connectors, Path[] paths)
         {
             var result = new List<Section>();
             if (paths == null)
                 return result;
 
-            foreach (var path in paths.Path)
+            foreach (var path in paths)
                 result.AddRange(GetPathSections(templates, connectors, path));
 
             result = result.Distinct(new SectionComparer()).ToList();
             return result;
         }
 
-        public static IEnumerable<Section> GetPathConnectorsSections(PathConnectors pathConnectors)
+        public static IEnumerable<Section> GetPathConnectorsSections(PathConnector[] pathConnectors)
         {
             var result = new List<Section>();
             if (pathConnectors == null)
                 return result;
 
-            IEnumerable<PathConnector> query = pathConnectors.PathConnector
+            IEnumerable<PathConnector> query = pathConnectors
                 .Where(c => c.Type == LinkType.MIXER);
             foreach (var entry in query)
             {
@@ -1152,7 +1152,7 @@ namespace itt
                         TPLG_CTL.DAPM_VOLSW));
             }
 
-            query = pathConnectors.PathConnector
+            query = pathConnectors
                 .Where(c => c.Type == LinkType.SWITCH);
             foreach (var entry in query)
             {
@@ -1282,16 +1282,16 @@ namespace itt
             return result;
         }
 
-        public static SectionGraph GetGraphSection(Paths paths, PathConnectors connectors)
+        public static SectionGraph GetGraphSection(Path[] paths, PathConnector[] connectors)
         {
             var graph = new SectionGraph("Pipeline 1 Graph");
             var routes = new List<string>();
 
             if (paths != null)
-                foreach (var path in paths.Path)
+                foreach (var path in paths)
                     routes.AddRange(GetPathRoutes(path));
             if (connectors != null)
-                foreach (var connector in connectors.PathConnector)
+                foreach (var connector in connectors)
                     routes.AddRange(GetConnectorRoutes(connector));
 
             graph.Lines = routes.ToArray();
@@ -1320,13 +1320,13 @@ namespace itt
             return result;
         }
 
-        public static IEnumerable<Section> GetPCMSections(Paths paths)
+        public static IEnumerable<Section> GetPCMSections(Path[] paths)
         {
             var result = new List<Section>();
             if (paths == null)
                 return result;
 
-            IEnumerable<Path> fePaths = paths.Path.Where(
+            IEnumerable<Path> fePaths = paths.Where(
                 p => p.Device != null && p.DaiName != null && p.DaiLinkName != null);
 
             uint i = 0;
