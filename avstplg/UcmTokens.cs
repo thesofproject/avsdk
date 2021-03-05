@@ -82,7 +82,7 @@
     public enum AVS_TKN_PATH_TMPL
     {
         OBJECT_ID_U32 = 10100,
-        DAI_SNAME_STRING,
+        DAI_WNAME_STRING,
     }
 
     public enum AVS_TKN_LIBRARY

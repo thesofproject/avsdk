@@ -402,7 +402,7 @@ namespace avstplg
             var strings = new VendorTuples<string>();
             strings.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PATH_TMPL.DAI_SNAME_STRING, template.DAIStreamName),
+                GetTuple(AVS_TKN_PATH_TMPL.DAI_WNAME_STRING, template.WidgetName),
             };
 
             var tuples = new SectionVendorTuples($"{identifier}_tuples");

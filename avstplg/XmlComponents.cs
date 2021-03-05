@@ -153,7 +153,6 @@ namespace avstplg
         public int ObjectId { get; set; }
         [XmlAttribute("widget_name")]
         public string WidgetName { get; set; }
-        public string DAIStreamName { get; set; }
         public Path[] Paths;
     }
 
