@@ -23,6 +23,14 @@ namespace nhltdecode
 
         public FormatConfig ToNative()
         {
+            //Regenerate data that was omitted in xml
+            //Constant values from dicumentation
+            Format.FormatTag = 0xFFFE;
+            Format.Size = 22;
+            //Values calculated from other fields
+            Format.BlockAlign = (ushort)(Format.Channels * Format.BitsPerSample / 8);
+            Format.AvgBytesPerSec = Format.BlockAlign * Format.SamplesPerSec;
+
             var cfg = new FormatConfig();
             cfg.Format = Format;
             cfg.Config = FormatConfiguration.ToNative();
