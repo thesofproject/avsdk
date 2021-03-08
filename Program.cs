@@ -137,8 +137,8 @@ namespace itt
         {
             Console.WriteLine($"Usage: {appName} -c [INPUT] -o [OUTPUT]");
             Console.WriteLine();
-            Console.WriteLine($"  {Input}=FILE\tPath to XML document to convert");
-            Console.WriteLine($"  {Output}=FILE\tPath to output file to create");
+            Console.WriteLine($"  {Input} FILE\tPath to XML document to convert");
+            Console.WriteLine($"  {Output} FILE\tPath to output file to create");
             Console.WriteLine($"  {Help}\t\tShow this message and exit");
             Console.WriteLine($"  {Version}\t\tOutput version information and exit");
         }
