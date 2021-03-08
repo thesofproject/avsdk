@@ -85,6 +85,25 @@
         DAI_WNAME_STRING,
     }
 
+    public enum AVS_TKN_CONDPATH
+    {
+        VARIANT_ID_U32 = AVS_TKN_PATH.VARIANT_ID_U32,
+        SOURCE_VARIANT_ID_U32 = 10202,
+        SINK_VARIANT_ID_U32,
+    }
+
+    public enum AVS_TKN_CONDPATH_TMPL
+    {
+        OBJECT_ID_U32 = AVS_TKN_PATH_TMPL.OBJECT_ID_U32,
+        SOURCE_TPLG_NAME_STRING = 10302,
+        SOURCE_PATH_OBJECT_ID_U32,
+        SINK_TPLG_NAME_STRING,
+        SINK_PATH_OBJECT_ID_U32,
+        COND_TYPE_U32,
+        OVERRIDDABLE_BOOL,
+        PRIORITY_U8,
+    }
+
     public enum AVS_TKN_LIBRARY
     {
         FILE_STRING = 11100,
@@ -98,5 +117,6 @@
         NUM_PIPES_U32,
         NUM_LIBRARIES_U32,
         NAME_STRING,
+        NUM_CONDPATH_TMPLS_U32,
     }
 }

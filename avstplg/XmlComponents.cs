@@ -156,6 +156,29 @@ namespace avstplg
         public Path[] Paths;
     }
 
+    public class Condpath
+    {
+        [XmlAttribute("variant_id")]
+        public int VariantId { get; set; }
+        public uint SourceVariantId;
+        public uint SinkVariantId;
+        public Route[] Routes;
+    }
+
+    public class CondpathTemplate
+    {
+        [XmlAttribute("obj_id")]
+        public int ObjectId { get; set; }
+        public string SourceTopologyName { get; set; }
+        public uint SourcePathObjId { get; set; }
+        public string SinkTopologyName { get; set; }
+        public uint SinkPathObjId { get; set; }
+        public uint ConditionType { get; set; }
+        public bool Overriddable { get; set; }
+        public byte Priority { get; set; }
+        public Condpath[] Condpaths;
+    }
+
     public class PCMCapabilities
     {
         public string Formats { get; set; }
@@ -199,6 +222,7 @@ namespace avstplg
         public ModuleConfigBase[] ModuleConfigsBase;
         public Pipeline[] Pipelines;
         public PathTemplate[] PathTemplates;
+        public CondpathTemplate[] CondpathTemplates;
         public FEDAI[] FEDAIs;
         public DAPMGraph[] Graphs;
     }

@@ -40,6 +40,8 @@ namespace avstplg
             result.Add(GetSectionTokens<AVS_TKN_ROUTE>("avs_route_tokens"));
             result.Add(GetSectionTokens<AVS_TKN_PATH>("avs_path_tokens"));
             result.Add(GetSectionTokens<AVS_TKN_PATH_TMPL>("avs_path_template_tokens"));
+            result.Add(GetSectionTokens<AVS_TKN_CONDPATH>("avs_condpath_tokens"));
+            result.Add(GetSectionTokens<AVS_TKN_CONDPATH_TMPL>("avs_condpath_template_tokens"));
             result.Add(GetSectionTokens<AVS_TKN_LIBRARY>("avs_library_tokens"));
             result.Add(GetSectionTokens<AVS_TKN_TPLG>("avs_tplg_core_tokens"));
 
@@ -425,6 +427,109 @@ namespace avstplg
             return result;
         }
 
+        public static IEnumerable<Section> GetCondpathSections(Condpath path, string namePrefix, int id)
+        {
+            var result = new List<Section>();
+            string identifier = $"{namePrefix}_condpath{id}";
+
+            if (path.Routes != null)
+                for (int i = 0; i < path.Routes.Length; i++)
+                    result.AddRange(GetRouteSections(path.Routes[i], identifier, i));
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_CONDPATH.VARIANT_ID_U32, (uint)path.VariantId),
+                GetTuple(AVS_TKN_CONDPATH.SOURCE_VARIANT_ID_U32, path.SourceVariantId),
+                GetTuple(AVS_TKN_CONDPATH.SINK_VARIANT_ID_U32, path.SinkVariantId),
+            };
+
+            var section = new SectionVendorTuples($"{identifier}_tuples");
+            section.Tokens = "avs_condpath_tokens";
+            section.Tuples = new VendorTuples[] { words };
+            // ensure main section prepends child sections
+            result.Insert(0, section);
+
+            return result;
+        }
+
+        public static IEnumerable<Section> GetCondpathTemplateSections(CondpathTemplate template, int id)
+        {
+            var result = new List<Section>();
+            string identifier = $"condpath_tmpl{id}";
+
+            for (int i = 0; i < template.Condpaths.Length; i++)
+                result.AddRange(GetCondpathSections(template.Condpaths[i], identifier, i));
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_CONDPATH_TMPL.OBJECT_ID_U32, (uint)template.ObjectId),
+                GetTuple(AVS_TKN_CONDPATH_TMPL.SOURCE_PATH_OBJECT_ID_U32, template.SourcePathObjId),
+                GetTuple(AVS_TKN_CONDPATH_TMPL.SINK_PATH_OBJECT_ID_U32, template.SinkPathObjId),
+                GetTuple(AVS_TKN_CONDPATH_TMPL.COND_TYPE_U32, template.ConditionType),
+            };
+
+            var strings = new VendorTuples<string>();
+            strings.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_CONDPATH_TMPL.SOURCE_TPLG_NAME_STRING, template.SourceTopologyName),
+                GetTuple(AVS_TKN_CONDPATH_TMPL.SINK_TPLG_NAME_STRING, template.SinkTopologyName),
+            };
+
+            var bytes = new VendorTuples<byte>();
+            bytes.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_CONDPATH_TMPL.PRIORITY_U8, template.Priority),
+            };
+
+            var bools = new VendorTuples<bool>();
+            bools.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_CONDPATH_TMPL.OVERRIDDABLE_BOOL, template.Overriddable),
+            };
+
+            var tuples = new SectionVendorTuples($"{identifier}_tuples");
+            tuples.Tokens = "avs_condpath_template_tokens";
+            tuples.Tuples = new VendorTuples[] { words, strings, bytes, bools };
+            // ensure main section prepends child sections
+            result.Insert(0, tuples);
+
+            // create private section listing all template components
+            var data = new SectionData($"{identifier}_data");
+            data.Tuples = result.Select(s => s.Identifier).ToArray();
+            result.Add(data);
+
+            return result;
+        }
+
+        public static IEnumerable<Section> GetCondpathTemplatesSections(CondpathTemplate[] templates)
+        {
+            var result = new List<Section>();
+            int length = (templates != null) ? templates.Length : 0;
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_TPLG.NUM_CONDPATH_TMPLS_U32, (uint)length),
+            };
+
+            var tuples = new SectionVendorTuples("condpath_hdr_tuples");
+            tuples.Tokens = "avs_tplg_core_tokens";
+            tuples.Tuples = new[] { words };
+            result.Add(tuples);
+
+            for (int i = 0; i < length; i++)
+                result.AddRange(GetCondpathTemplateSections(templates[i], i));
+
+            // create private section referencing all added entries
+            var data = new SectionData("condpath_data");
+            data.Tuples = result.Select(s => s.Identifier).ToArray();
+            result.Add(data);
+
+            return result;
+        }
+
         public static SectionPCMCapabilities GetPCMCapabilitiesSection(PCMCapabilities caps, string identifier)
         {
             uint[] formats = caps.Formats.ToUInts32();
@@ -504,6 +609,7 @@ namespace avstplg
             result.AddRange(GetAudioFormatsSections(topology.AudioFormats));
             result.AddRange(GetModuleConfigsBaseSections(topology.ModuleConfigsBase));
             result.AddRange(GetPipelinesSections(topology.Pipelines));
+            result.AddRange(GetCondpathTemplatesSections(topology.CondpathTemplates));
 
             var manifest = new SectionManifest("avs_manifest");
             // Manifest should not reference any SectionData that is already
