@@ -94,9 +94,9 @@ namespace nhltdecode
         {
             Console.WriteLine("nhltdecode");
             Console.WriteLine("-h, --help              help");
-            Console.WriteLine("-c, --compile=FILE      compile XML file");
-            Console.WriteLine("-d, --decode=FILE       decode NHLT binary file");
-            Console.WriteLine("-o, --output=FILE       set output file");
+            Console.WriteLine("-c, --compile FILE      compile XML file");
+            Console.WriteLine("-d, --decode FILE       decode NHLT binary file");
+            Console.WriteLine("-o, --output FILE       set output file");
             Console.WriteLine("-b, --blob              parse blob while decoding binary");
         }
     }
