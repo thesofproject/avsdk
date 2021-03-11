@@ -1,16 +1,16 @@
-CC=g++
-CFLAGS=-I./include -I/usr/local/include -L/usr/local/lib/boost/
-ODIR=src
-LIBS=-lboost_program_options -lboost_filesystem
+CXX ?= g++
+CXXFLAGS = -I./include -I/usr/local/include -L/usr/local/lib/boost/
+SRCDIR = src
+LIBS = -lboost_program_options -lboost_filesystem
 
-_OBJ = main.cpp fileupdate_listener_linux.cpp fileupdate_listener_win.cpp \
-       log_entry_icl.cpp log_entry_spt.cpp
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+SRCFILES = main.cpp fileupdate_listener_linux.cpp fileupdate_listener_win.cpp \
+	   log_entry_icl.cpp log_entry_spt.cpp
+OBJFILES = $(patsubst %,$(SRCDIR)/%,$(SRCFILES))
 
-avsfwlog_parse: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+avsfwlog_parse: $(OBJFILES)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o avsfwlog_parse
+	rm -f $(SRCDIR)/*.o avsfwlog_parse
