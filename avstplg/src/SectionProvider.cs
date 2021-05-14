@@ -208,6 +208,8 @@ namespace avstplg
             // module-type specific tuples
             if (module.CprOutAudioFormatId.HasValue)
             wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
+            if (module.CprBlobFormatId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_BLOB_FMT_ID_U32, module.CprBlobFormatId.Value));
             if (module.CprFeatureMask.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_FEATURE_MASK_U32, module.CprFeatureMask.Value));
             if (module.CprVirtualIndex != null)

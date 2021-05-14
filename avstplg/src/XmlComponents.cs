@@ -75,6 +75,7 @@ namespace avstplg
 
         // module-type specific fields
         public uint? CprOutAudioFormatId { get; set; }
+        public uint? CprBlobFormatId { get; set; }
         public uint? CprFeatureMask { get; set; }
         public byte? CprVirtualIndex { get; set; }
         public uint? CprDMAType { get; set; }

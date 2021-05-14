@@ -52,6 +52,7 @@
         CPR_DMA_TYPE_U32,
         CPR_DMABUFF_SIZE_U32,
         CPR_VINDEX_U8,
+        CPR_BLOB_FMT_ID_U32,
 
         MICSEL_OUT_AFMT_ID_U32 = 831,
 
