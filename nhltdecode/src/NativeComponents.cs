@@ -329,7 +329,9 @@ namespace nhltdecode
                 reader.BaseStream.Position = pos + table.Descriptors[i].EndpointDescriptorLength;
             }
 
-            table.OEDConfig = SpecificConfig.ReadFromBinary(reader);
+            if (reader.BaseStream.Position < reader.BaseStream.Length)
+                //this field is optional
+                table.OEDConfig = SpecificConfig.ReadFromBinary(reader);
 
             return table;
         }
