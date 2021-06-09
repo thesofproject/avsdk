@@ -31,22 +31,15 @@ namespace nhltdecode
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct WaveFormatExtensible
     {
-        [XmlIgnore]
         public ushort FormatTag;
         public ushort Channels;
         public uint SamplesPerSec;
-        [XmlIgnore]
         public uint AvgBytesPerSec;
-        [XmlIgnore]
         public ushort BlockAlign;
         public ushort BitsPerSample;
-        [XmlIgnore]
         public ushort Size;
         public ushort ValidBitsPerSample;
-        [XmlElement(DataType = "hexBinary")]
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public byte[] ChannelMask;
-        [XmlElement(DataType = "hexBinary")]
+        public uint ChannelMask;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] Subformat;
     }

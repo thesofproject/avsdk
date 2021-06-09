@@ -69,13 +69,13 @@ namespace nhltdecode
     {
         [XmlAttribute("idx")]
         public int Idx;
-        public WaveFormatExtensible Format;
+        public WaveFormatExtensibleXml Format;
         public FormatConfigurationXml FormatConfiguration;
 
         public static FormatConfigXml FromNative(FormatConfig cfg)
         {
             var xcfg = new FormatConfigXml();
-            xcfg.Format = cfg.Format;
+            xcfg.Format = WaveFormatExtensibleXml.FromNative(cfg.Format);
             xcfg.FormatConfiguration = FormatConfigurationXml.FromNative(cfg.Config);
 
             return xcfg;
@@ -83,16 +83,8 @@ namespace nhltdecode
 
         public FormatConfig ToNative()
         {
-            //Regenerate data that was omitted in xml
-            //Constant values from dicumentation
-            Format.FormatTag = 0xFFFE;
-            Format.Size = 22;
-            //Values calculated from other fields
-            Format.BlockAlign = (ushort)(Format.Channels * Format.BitsPerSample / 8);
-            Format.AvgBytesPerSec = Format.BlockAlign * Format.SamplesPerSec;
-
             var cfg = new FormatConfig();
-            cfg.Format = Format;
+            cfg.Format = Format.ToNative();
             cfg.Config = FormatConfiguration.ToNative();
 
             return cfg;
