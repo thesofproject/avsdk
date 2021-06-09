@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 
@@ -77,7 +78,13 @@ namespace nhltdecode
             {
                 var xtable = new NhltXml();
                 var xs = new XmlSerializer(typeof(NhltXml));
-                TextReader reader = new StreamReader(input);
+
+                // To preserve whitespaces in header
+                XmlReaderSettings settings = new XmlReaderSettings()
+                {
+                    IgnoreWhitespace = false
+                };
+                var reader = XmlReader.Create(new StreamReader(input), settings);
 
                 xtable = (NhltXml)xs.Deserialize(reader);
                 reader.Close();

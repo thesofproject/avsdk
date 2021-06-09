@@ -184,7 +184,7 @@ namespace nhltdecode
     [XmlType("Nhlt")]
     public class NhltXml
     {
-        public AcpiDescriptionHeader EfiAcpiDescriptionHeader;
+        public AcpiDescriptionHeaderXml EfiAcpiDescriptionHeader;
         public EndpointDescriptorXml[] EndpointDescriptors;
         [XmlElement(DataType = "hexBinary")]
         public byte[] OedSpecificConfig;
@@ -199,7 +199,7 @@ namespace nhltdecode
             }
 
             var xtable = new NhltXml();
-            xtable.EfiAcpiDescriptionHeader = table.Header;
+            xtable.EfiAcpiDescriptionHeader = AcpiDescriptionHeaderXml.FromNative(table.Header);
             xtable.EndpointDescriptors = xdescs;
             xtable.OedSpecificConfig = table.OEDConfig.Capabilities;
 
@@ -210,7 +210,7 @@ namespace nhltdecode
         {
             var table = new NHLT();
 
-            table.Header = EfiAcpiDescriptionHeader;
+            table.Header = EfiAcpiDescriptionHeader.ToNative();
             table.DescriptorCount = (byte)EndpointDescriptors.Length;
             table.Descriptors = new EndpointDescriptor[table.DescriptorCount];
             for (byte i = 0; i < table.DescriptorCount; i++)

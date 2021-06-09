@@ -13,22 +13,16 @@ namespace nhltdecode
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct AcpiDescriptionHeader
     {
-        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public byte[] Signature;
-        [XmlIgnore]
         public uint Length;
         public byte Revision;
-        [XmlIgnore]
         public byte Checksum;
-        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public byte[] OemId;
-        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public byte[] OemIdTableId;
         public uint OemRevision;
-        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public byte[] CreatorId; // AslCompilerId
         public uint CreatorRevision; // AslCompilerRevision
