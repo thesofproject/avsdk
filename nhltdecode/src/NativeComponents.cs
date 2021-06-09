@@ -226,16 +226,11 @@ namespace nhltdecode
     {
         public uint EndpointDescriptorLength;
         public LINK_TYPE LinkType; // 4 bits only
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
-        public byte[] InstanceId;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public byte[] VendorId;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public byte[] DeviceId;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public byte[] RevisionId;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public byte[] SubsystemId;
+        public byte InstanceId;
+        public ushort VendorId;
+        public ushort DeviceId;
+        public ushort RevisionId;
+        public uint SubsystemId;
         public byte DeviceType;
         public byte Direction;
         public byte VirtualBusId;
@@ -250,11 +245,11 @@ namespace nhltdecode
 
             desc.EndpointDescriptorLength = reader.ReadUInt32();
             desc.LinkType = (LINK_TYPE)reader.ReadByte();
-            desc.InstanceId = reader.ReadBytes(1);
-            desc.VendorId = reader.ReadBytes(2);
-            desc.DeviceId = reader.ReadBytes(2);
-            desc.RevisionId = reader.ReadBytes(2);
-            desc.SubsystemId = reader.ReadBytes(4);
+            desc.InstanceId = reader.ReadByte();
+            desc.VendorId = reader.ReadUInt16();
+            desc.DeviceId = reader.ReadUInt16();
+            desc.RevisionId = reader.ReadUInt16();
+            desc.SubsystemId = reader.ReadUInt32();
             desc.DeviceType = reader.ReadByte();
             desc.Direction = reader.ReadByte();
             desc.VirtualBusId = reader.ReadByte();

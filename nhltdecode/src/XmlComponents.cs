@@ -45,16 +45,11 @@ namespace nhltdecode
         [XmlAttribute("idx")]
         public int Idx;
         public byte LinkType; // 4 bits only
-        [XmlElement(DataType = "hexBinary")]
-        public byte[] InstanceId = new byte[1];
-        [XmlElement(DataType = "hexBinary")]
-        public byte[] VendorId = new byte[2];
-        [XmlElement(DataType = "hexBinary")]
-        public byte[] DeviceId = new byte[2];
-        [XmlElement(DataType = "hexBinary")]
-        public byte[] RevisionId = new byte[2];
-        [XmlElement(DataType = "hexBinary")]
-        public byte[] SubsystemId = new byte[4];
+        public byte InstanceId;
+        public string VendorId;
+        public string DeviceId;
+        public ushort RevisionId;
+        public uint SubsystemId;
 
         public byte DeviceType;
         public byte Direction;
@@ -69,8 +64,8 @@ namespace nhltdecode
 
             xdesc.LinkType = (byte)desc.LinkType;
             xdesc.InstanceId = desc.InstanceId;
-            xdesc.VendorId = desc.VendorId;
-            xdesc.DeviceId = desc.DeviceId;
+            xdesc.VendorId = string.Format("0x{0:X4}", desc.VendorId);
+            xdesc.DeviceId = string.Format("0x{0:X4}", desc.DeviceId);
             xdesc.RevisionId = desc.RevisionId;
             xdesc.SubsystemId = desc.SubsystemId;
             xdesc.DeviceType = desc.DeviceType;
@@ -98,8 +93,8 @@ namespace nhltdecode
 
             desc.LinkType = (LINK_TYPE)LinkType;
             desc.InstanceId = InstanceId;
-            desc.VendorId = VendorId;
-            desc.DeviceId = DeviceId;
+            desc.VendorId = VendorId.ToUInt16();
+            desc.DeviceId = DeviceId.ToUInt16();
             desc.RevisionId = RevisionId;
             desc.SubsystemId = SubsystemId;
             desc.DeviceType = DeviceType;
