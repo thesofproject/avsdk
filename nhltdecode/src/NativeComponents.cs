@@ -1,6 +1,5 @@
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Xml.Serialization;
 
 namespace nhltdecode
 {
@@ -150,7 +149,6 @@ namespace nhltdecode
     [StructLayout(LayoutKind.Sequential)]
     public struct DeviceInfo
     {
-        [XmlElement(DataType = "hexBinary")]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] DeviceId;
         public byte DeviceInstanceId;

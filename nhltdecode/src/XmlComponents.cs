@@ -108,7 +108,7 @@ namespace nhltdecode
         public byte VirtualBusId;
         public EndpointSpecificConfigXml SpecificConfig;
         public FormatConfigXml[] FormatsConfiguration;
-        public DeviceInfo[] Devices;
+        public DeviceInfoXml[] Devices;
 
         public static EndpointDescriptorXml FromNative(EndpointDescriptor desc)
         {
@@ -134,7 +134,14 @@ namespace nhltdecode
                 xdesc.FormatsConfiguration[i].Idx = i;
             }
 
-            xdesc.Devices = desc.DevicesInfo.Devices;
+            if (desc.DevicesInfo.Devices != null)
+            {
+                xdesc.Devices = new DeviceInfoXml[desc.DevicesInfo.Count];
+                for (int i = 0; i < desc.DevicesInfo.Count; i++)
+                {
+                    xdesc.Devices[i] = DeviceInfoXml.FromNative(desc.DevicesInfo.Devices[i]);
+                }
+            }
 
             return xdesc;
         }
@@ -164,7 +171,11 @@ namespace nhltdecode
             if (Devices != null)
             {
                 desc.DevicesInfo.Count = (byte)Devices.Length;
-                desc.DevicesInfo.Devices = Devices;
+                desc.DevicesInfo.Devices = new DeviceInfo[Devices.Length];
+                for (int i = 0; i < Devices.Length; i++)
+                {
+                    desc.DevicesInfo.Devices[i] = Devices[i].ToNative();
+                }
             }
 
             desc.EndpointDescriptorLength = (uint)desc.SizeOf();
