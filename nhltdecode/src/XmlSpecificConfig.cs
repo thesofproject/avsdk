@@ -145,12 +145,12 @@ namespace nhltdecode
 
     public class FormatConfigurationXml
     {
-        [XmlElement(DataType = "hexBinary")]
-        public byte[] Blob;
         public uint? GatewayAttributes;
         public I2sConfigurationBlob? I2sBlob;
         public I2sConfigurationBlobLegacy? I2sBlobLegacy;
         public DmicConfigurationBlob? DmicBlob;
+        [XmlElement(DataType = "hexBinary")]
+        public byte[] Blob;
 
         public void ParseBlob(LINK_TYPE type)
         {
@@ -187,6 +187,12 @@ namespace nhltdecode
                 DmicBlob = DmicConfigurationBlob.ReadFromBinary(reader);
             }
 
+            if (reader.BaseStream.Position < reader.BaseStream.Length)
+                Blob = reader.ReadBytes((int)(reader.BaseStream.Length
+                                                - reader.BaseStream.Position));
+            else
+                Blob = null;
+
             reader.Close();
         }
 
@@ -200,8 +206,6 @@ namespace nhltdecode
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
 
-            if (Blob != null)
-                writer.Write(Blob);
             if (GatewayAttributes.HasValue)
                 writer.Write(GatewayAttributes.Value);
             if (I2sBlob.HasValue)
@@ -210,6 +214,8 @@ namespace nhltdecode
                 writer.Write(MarshalHelper.StructureToBytes(I2sBlobLegacy.Value));
             if (DmicBlob.HasValue)
                 DmicBlob.Value.WriteToBinary(writer);
+            if (Blob != null)
+                writer.Write(Blob);
 
             var cfg = new SpecificConfig();
             cfg.Capabilities = stream.ToArray();
@@ -219,10 +225,6 @@ namespace nhltdecode
             return cfg;
         }
 
-        public bool ShouldSerializeBlob()
-        {
-            return !GatewayAttributes.HasValue;
-        }
         public bool ShouldSerializeGatewayAttributes()
         {
             return GatewayAttributes.HasValue;
