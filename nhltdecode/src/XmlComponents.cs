@@ -1,9 +1,69 @@
+using System;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace nhltdecode
 {
+    [XmlType("AcpiDescriptionHeader")]
+    public struct AcpiDescriptionHeaderXml
+    {
+        public byte Revision;
+        public string OemId;
+        public string OemIdTableId;
+        public uint OemRevision;
+        public string CreatorId; // AslCompilerId
+        public uint CreatorRevision; // AslCompilerRevision
+
+        public static AcpiDescriptionHeaderXml FromNative(AcpiDescriptionHeader hdr)
+        {
+            return new AcpiDescriptionHeaderXml
+            {
+                Revision = hdr.Revision,
+                OemRevision = hdr.OemRevision,
+                CreatorRevision = hdr.CreatorRevision,
+                OemId = PrintID(hdr.OemId),
+                OemIdTableId = PrintID(hdr.OemIdTableId),
+                CreatorId = PrintID(hdr.CreatorId)
+            };
+        }
+
+        public AcpiDescriptionHeader ToNative()
+        {
+            return new AcpiDescriptionHeader
+            {
+                // Length and checksum are populated by NhltXml.ToNative()
+                Signature = Encoding.ASCII.GetBytes("NHLT"),
+                Revision = Revision,
+                OemRevision = OemRevision,
+                CreatorRevision = CreatorRevision,
+                OemId = IdToBytes(OemId, 6),
+                OemIdTableId = IdToBytes(OemIdTableId, 8),
+                CreatorId = IdToBytes(CreatorId, 4)
+            };
+        }
+
+        private static string PrintID(byte[] id)
+        {
+            string print = string.Empty;
+
+            foreach (var letter in id)
+            {
+                // Ignore non printable ASCII characters
+                if (letter >= ' ' && letter <= '~')
+                    print += Encoding.ASCII.GetString(new byte[] { letter });
+            }
+            return print;
+        }
+
+        private static byte[] IdToBytes(string printed, int size)
+        {
+            byte[] id = Encoding.ASCII.GetBytes(printed);
+            Array.Resize(ref id, size);
+            return id;
+        }
+    }
+
     [XmlType("FormatConfig")]
     public class FormatConfigXml
     {
@@ -162,6 +222,75 @@ namespace nhltdecode
             table.Header.Checksum = table.CalculateChecksum();
 
             return table;
+        }
+    }
+
+    public struct WaveFormatExtensibleXml
+    {
+        public ushort Channels;
+        public uint SamplesPerSec;
+        public ushort BitsPerSample;
+        public ushort ValidBitsPerSample;
+        public string ChannelMask;
+        public Guid Subformat;
+
+        public static WaveFormatExtensibleXml FromNative(WaveFormatExtensible format)
+        {
+            return new WaveFormatExtensibleXml
+            {
+                Channels = format.Channels,
+                SamplesPerSec = format.SamplesPerSec,
+                BitsPerSample = format.BitsPerSample,
+                ValidBitsPerSample = format.ValidBitsPerSample,
+                ChannelMask = string.Format("0x{0:X8}", format.ChannelMask),
+                Subformat = new Guid(format.Subformat),
+            };
+        }
+
+        public WaveFormatExtensible ToNative()
+        {
+            WaveFormatExtensible format = new WaveFormatExtensible();
+
+            format.Channels = Channels;
+            format.SamplesPerSec = SamplesPerSec;
+            format.BitsPerSample = BitsPerSample;
+            format.ValidBitsPerSample = ValidBitsPerSample;
+            format.Subformat = Subformat.ToByteArray();
+            format.ChannelMask = ChannelMask.ToUInt32();
+
+            // As per specification, below values ar constant or calculated
+            format.FormatTag = 0xFFFE;
+            format.Size = 22;
+            format.BlockAlign = (ushort)(Channels * BitsPerSample / 8);
+            format.AvgBytesPerSec = format.BlockAlign * format.SamplesPerSec;
+
+            return format;
+        }
+    }
+
+    public struct DeviceInfoXml
+    {
+        public Guid DeviceId;
+        public byte DeviceInstanceId;
+        public byte DevicePortId;
+
+        public static DeviceInfoXml FromNative(DeviceInfo device)
+        {
+            return new DeviceInfoXml
+            {
+                DeviceId = new Guid(device.DeviceId),
+                DeviceInstanceId = device.DeviceInstanceId,
+                DevicePortId = device.DevicePortId
+            };
+        }
+        public DeviceInfo ToNative()
+        {
+            return new DeviceInfo
+            {
+                DeviceId = DeviceId.ToByteArray(),
+                DeviceInstanceId = DeviceInstanceId,
+                DevicePortId = DevicePortId
+            };
         }
     }
 }
