@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
 
 namespace nhltdecode
 {
@@ -27,6 +29,27 @@ namespace nhltdecode
         internal static uint PopCount(uint i)
         {
             return (i & 0x01) + ((i >> 1) & 0x01);
+        }
+
+        internal static bool TryUInt32(this string value, out uint result)
+        {
+            if (value.StartsWith("0x", StringComparison.CurrentCulture))
+                return uint.TryParse(value.Substring(2), NumberStyles.HexNumber,
+                              CultureInfo.CurrentCulture, out result);
+
+            return uint.TryParse(value, out result);
+        }
+
+        internal static uint ToUInt32(this string value)
+        {
+            TryUInt32(value, out uint result);
+            return result;
+        }
+
+        internal static ushort ToUInt16(this string value)
+        {
+            TryUInt32(value, out uint result);
+            return (ushort)result;
         }
     }
 }
