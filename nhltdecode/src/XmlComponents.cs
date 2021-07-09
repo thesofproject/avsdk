@@ -74,20 +74,20 @@ namespace nhltdecode
 
         public static FormatConfigXml FromNative(FormatConfig cfg)
         {
-            var xcfg = new FormatConfigXml();
-            xcfg.Format = WaveFormatExtensibleXml.FromNative(cfg.Format);
-            xcfg.FormatConfiguration = FormatConfigurationXml.FromNative(cfg.Config);
-
-            return xcfg;
+            return new FormatConfigXml
+            {
+                Format = WaveFormatExtensibleXml.FromNative(cfg.Format),
+                FormatConfiguration = FormatConfigurationXml.FromNative(cfg.Config)
+            };
         }
 
         public FormatConfig ToNative()
         {
-            var cfg = new FormatConfig();
-            cfg.Format = Format.ToNative();
-            cfg.Config = FormatConfiguration.ToNative();
-
-            return cfg;
+            return new FormatConfig
+            {
+                Format = Format.ToNative(),
+                Config = FormatConfiguration.ToNative()
+            };
         }
     }
 
