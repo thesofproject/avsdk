@@ -154,6 +154,7 @@ namespace avstplg
         public int ObjectId { get; set; }
         [XmlAttribute("widget_name")]
         public string WidgetName { get; set; }
+        public bool IgnoreSuspend { get; set; }
         public Path[] Paths;
     }
 
@@ -191,6 +192,7 @@ namespace avstplg
     {
         [XmlAttribute("name")]
         public string Name { get; set; }
+        public bool IgnoreSuspend { get; set; }
         public PCMCapabilities CaptureCapabilities;
         public PCMCapabilities PlaybackCapabilities;
     }

@@ -423,6 +423,7 @@ namespace avstplg
             var widget = new SectionWidget(template.WidgetName);
             widget.Type = TPLG_DAPM.SCHEDULER;
             widget.NoPm = true;
+	    widget.IgnoreSuspend = template.IgnoreSuspend;
             widget.Data = new[] { data.Identifier };
             result.Add(widget);
 
@@ -553,6 +554,7 @@ namespace avstplg
             string identifier;
 
             var section = new SectionPCM(fedai.Name);
+	    section.IgnoreSuspend = fedai.IgnoreSuspend;
             if (fedai.CaptureCapabilities != null)
             {
                 identifier = $"{fedai.Name}-capture";
