@@ -580,6 +580,8 @@ namespace NUcmSerializer
 
         [UcmElement("no_pm")]
         public bool? NoPm { get; set; }
+        [UcmElement("ignore_suspend")]
+        public bool? IgnoreSuspend { get; set; }
         [UcmElement("reg")]
         public int? Reg { get; set; }
         [UcmElement("shift")]
@@ -825,6 +827,9 @@ namespace NUcmSerializer
         public bool? SymmetricChannels { get; set; }
         [UcmElement("symmetric_sample_bits")]
         public bool? SymmetricSampleBits { get; set; }
+
+        [UcmElement("ignore_suspend")]
+        public bool? IgnoreSuspend { get; set; }
 
         [UcmElement("data")]
         public string Data { get; set; }
