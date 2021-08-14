@@ -101,7 +101,7 @@ namespace avstplg
     {
         public string TargetTopologyName { get; set; }
         public uint TargetPathObjId { get; set; }
-        public uint TargetPipeObjId { get; set; }
+        public uint TargetRouteObjId { get; set; }
         public uint TargetModuleObjId { get; set; }
         public byte TargetModulePin { get; set; }
         public uint ModuleObjId { get; set; }

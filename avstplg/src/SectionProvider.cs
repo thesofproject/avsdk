@@ -319,7 +319,7 @@ namespace avstplg
             words.Tuples = new[]
             {
                 GetTuple(AVS_TKN_ROUTE.TARGET_PATH_OBJECT_ID_U32, binding.TargetPathObjId),
-                GetTuple(AVS_TKN_ROUTE.TARGET_PPL_OBJECT_ID_U32, binding.TargetPipeObjId),
+                GetTuple(AVS_TKN_ROUTE.TARGET_ROUTE_OBJECT_ID_U32, binding.TargetRouteObjId),
                 GetTuple(AVS_TKN_ROUTE.TARGET_MOD_OBJECT_ID_U32, binding.TargetModuleObjId),
                 GetTuple(AVS_TKN_ROUTE.MOD_OBJECT_ID_U32, binding.ModuleObjId),
             };
