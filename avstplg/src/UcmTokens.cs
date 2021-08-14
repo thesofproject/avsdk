@@ -7,6 +7,7 @@
         PRIORITY_U8,
         LOW_POWER_BOOL,
         TRIGGER_U32,
+        ATTRIBUTES_U16,
     }
 
     public enum AVS_TKN_PIPE

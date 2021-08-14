@@ -92,6 +92,7 @@ namespace avstplg
         public ushort RequiredSize { get; set; }
         public byte Priority { get; set; }
         public bool LowPower { get; set; }
+        public ushort Attributes { get; set; }
         public uint Trigger { get; set; }
         public Module[] Modules;
     }

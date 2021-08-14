@@ -257,6 +257,7 @@ namespace avstplg
             shorts.Tuples = new[]
             {
                 GetTuple(AVS_TKN_PIPELINE.REQ_SIZE_U16, pipeline.RequiredSize),
+                GetTuple(AVS_TKN_PIPELINE.ATTRIBUTES_U16, pipeline.Attributes),
             };
 
             var bytes = new VendorTuples<byte>();
