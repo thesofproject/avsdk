@@ -800,6 +800,7 @@ namespace itt
                 GetTuple(SKL_TKN.U32_PROC_DOMAIN, (uint)module.Domain),
                 GetTuple(SKL_TKN.U32_PIPE_DIRECTION, (uint)path.Direction),
                 GetTuple(SKL_TKN.U32_NUM_CONFIGS, (uint)path.PathConfigurations.PathConfiguration.Length),
+                // Implicit assumption that copier's dma_buffer_size equals ibs|obs times two
                 GetTuple(SKL_TKN.U32_DMA_BUF_SIZE, 2u),
             };
 
