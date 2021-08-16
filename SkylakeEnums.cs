@@ -28,6 +28,7 @@ namespace itt
 {
     public enum SKL_MODULE_TYPE
     {
+        NONE = 0xFF,
         MIXER = 0,
         COPIER,
         UPDWMIX,

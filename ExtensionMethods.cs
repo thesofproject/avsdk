@@ -111,6 +111,8 @@ namespace itt
         {
             switch (value)
             {
+                case ModuleNames.None:
+                    return SKL_MODULE_TYPE.NONE;
                 case ModuleNames.Mixin:
                 case ModuleNames.Mixout:
                     return SKL_MODULE_TYPE.MIXER;

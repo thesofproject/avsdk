@@ -66,6 +66,7 @@ namespace itt
 
     public static class ModuleNames
     {
+        public const string None = "NONE";
         public const string Mixin = "mixin";
         public const string Mixout = "mixout";
         public const string Copier = "copier";

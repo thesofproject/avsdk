@@ -58,10 +58,22 @@ namespace itt
 
         static string GetWidgetName(string path, string module, uint instance)
         {
-            string result = $"{path} {GetModuleShortName(module)}";
+            SKL_MODULE_TYPE type = module.GetModuleType();
+            string result;
 
-            if (module.GetModuleType() != SKL_MODULE_TYPE.MIXER)
-                result += $" {instance}";
+            switch (type)
+            {
+                case SKL_MODULE_TYPE.NONE:
+                    result = $"{path}";
+                    break;
+                case SKL_MODULE_TYPE.MIXER:
+                    result = $"{path} {GetModuleShortName(module)}";
+                    break;
+                default:
+                    result = $"{path} {GetModuleShortName(module)} {instance}";
+		    break;
+            }
+
             return result;
         }
 
