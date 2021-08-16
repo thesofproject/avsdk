@@ -50,9 +50,10 @@ namespace itt
         public const uint SKL_CTL_TLV_PROBE        = 0x101;
         public const uint SKL_CTL_MIC_SELECT       = 0x102;
         public const uint SKL_CTL_MULTI_IO_SELECT  = 0x103;
-        public const uint SKL_CTL_VOLUME           = 0x104;
+        // Reserved, used by upstream code
         public const uint SKL_CTL_RAMP_DURATION    = 0x105;
         public const uint SKL_CTL_RAMP_TYPE        = 0x106;
+        public const uint SKL_CTL_VOLUME           = 0x107;
 
         public const int NOPM = -1;
 
