@@ -432,7 +432,7 @@ namespace itt
     public class Param
     {
         internal uint paramId;
-      
+
         [XmlAttribute("name")]
         public string Name { get; set; }
         [XmlAttribute("param_id")]
