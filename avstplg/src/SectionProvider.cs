@@ -234,6 +234,10 @@ namespace avstplg
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_CURVE_DURATION_UPPER_U32, (uint)(module.PeakvolCurveDuration.Value >> 32)));
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_CURVE_DURATION_LOWER_U32, (uint)module.PeakvolCurveDuration.Value));
             }
+            if (module.MuxRefFrequency.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MUX_REF_FREQ_U32, module.MuxRefFrequency.Value));
+            if (module.MuxOutFrequency.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MUX_OUT_FREQ_U32, module.MuxOutFrequency.Value));
 
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();
