@@ -89,6 +89,7 @@ namespace avstplg
         public ulong? PeakvolCurveDuration { get; set; }
         public uint? MuxRefFrequency { get; set; }
         public uint? MuxOutFrequency { get; set; }
+        public uint? AecRefFrequency { get; set; }
     }
 
     public class Pipeline

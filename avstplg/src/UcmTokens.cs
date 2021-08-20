@@ -69,6 +69,8 @@
 
         MUX_REF_FREQ_U32 = 871,
         MUX_OUT_FREQ_U32,
+
+        AEC_REF_FREQ_U32 = 881,
     }
 
     public enum AVS_TKN_ROUTE
