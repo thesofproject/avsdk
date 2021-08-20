@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Xml.Serialization;
+using System.Collections.Generic;
 
 namespace avstplg
 {
@@ -90,6 +91,12 @@ namespace avstplg
         public uint? MuxRefFrequency { get; set; }
         public uint? MuxOutFrequency { get; set; }
         public uint? AecRefFrequency { get; set; }
+        public uint? UpDownMixOutChanCfg { get; set; }
+        public uint? UpDownMixCoeffSelect { get; set; }
+        [XmlArray("UpDownMixCoeff")]
+        [XmlArrayItem("int")]
+        public int[] UpDownMixCoeff { get; set; }
+        public uint? UpDownMixChanMap { get; set; }
     }
 
     public class Pipeline

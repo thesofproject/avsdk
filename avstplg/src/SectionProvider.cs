@@ -241,6 +241,25 @@ namespace avstplg
             if (module.AecRefFrequency.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.AEC_REF_FREQ_U32, module.AecRefFrequency.Value));
 
+            if (module.UpDownMixOutChanCfg.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_OUT_CHAN_CFG_U32, module.UpDownMixOutChanCfg.Value));
+            if (module.UpDownMixCoeffSelect.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_SELECT_U32, module.UpDownMixCoeffSelect.Value));
+
+            if (module.UpDownMixCoeff != null)
+            {
+                if (module.UpDownMixCoeff.Length > 8)
+                    throw new InvalidOperationException("Too many coefficients passed to UpDownMix");
+                for (int i = (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32; i <= (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_7_S32; i++)
+                {
+                    int j = i - (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32;
+                    if (j <= module.UpDownMixCoeff.Length)
+                        wordTuples.Add(GetTuple(i, (uint)module.UpDownMixCoeff[j]));
+                }
+            }
+            if (module.UpDownMixChanMap.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_CHAN_MAP_U32, module.UpDownMixChanMap.Value));
+
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();
 
