@@ -260,6 +260,13 @@ namespace avstplg
             if (module.UpDownMixChanMap.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_CHAN_MAP_U32, module.UpDownMixChanMap.Value));
 
+            if (module.ASrcOutFrequency.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_OUT_FREQ_U32, module.ASrcOutFrequency.Value));
+            if (module.ASrcMode.HasValue)
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_MODE_U8, module.ASrcMode.Value));
+            if (module.ASrcDisableJitterBuffer.HasValue)
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_DISABLE_JITTER_BUFFER_U8, module.ASrcDisableJitterBuffer.Value));
+
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();
 

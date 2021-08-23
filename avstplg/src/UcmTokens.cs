@@ -84,6 +84,9 @@
         UPDOWN_MIX_COEFF_7_S32,
         UPDOWN_MIX_CHAN_MAP_U32,
 
+        ASRC_OUT_FREQ_U32 = 911,
+        ASRC_MODE_U8,
+        ASRC_DISABLE_JITTER_BUFFER_U8,
     }
 
     public enum AVS_TKN_ROUTE

@@ -97,6 +97,9 @@ namespace avstplg
         [XmlArrayItem("int")]
         public int[] UpDownMixCoeff { get; set; }
         public uint? UpDownMixChanMap { get; set; }
+        public uint? ASrcOutFrequency { get; set; }
+        public byte? ASrcMode { get; set; }
+        public byte? ASrcDisableJitterBuffer { get; set; }
     }
 
     public class Pipeline
