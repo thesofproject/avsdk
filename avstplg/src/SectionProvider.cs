@@ -541,11 +541,6 @@ namespace avstplg
             // ensure main section prepends child sections
             result.Insert(0, tuples);
 
-            // create private section listing all template components
-            var data = new SectionData($"{identifier}_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
-
             return result;
         }
 
