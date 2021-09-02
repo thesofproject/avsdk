@@ -194,7 +194,7 @@ namespace avstplg
         public string SinkTopologyName { get; set; }
         public uint SinkPathObjId { get; set; }
         public uint ConditionType { get; set; }
-        public bool Overriddable { get; set; }
+        public bool Overridable { get; set; }
         public byte Priority { get; set; }
         public Condpath[] Condpaths;
     }

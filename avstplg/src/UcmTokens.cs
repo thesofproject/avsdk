@@ -129,7 +129,7 @@
         SINK_TPLG_NAME_STRING,
         SINK_PATH_OBJECT_ID_U32,
         COND_TYPE_U32,
-        OVERRIDDABLE_BOOL,
+        OVERRIDABLE_BOOL,
         PRIORITY_U8,
     }
 

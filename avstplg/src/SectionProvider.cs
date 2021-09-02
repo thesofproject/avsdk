@@ -532,7 +532,7 @@ namespace avstplg
             var bools = new VendorTuples<bool>();
             bools.Tuples = new[]
             {
-                GetTuple(AVS_TKN_CONDPATH_TMPL.OVERRIDDABLE_BOOL, template.Overriddable),
+                GetTuple(AVS_TKN_CONDPATH_TMPL.OVERRIDABLE_BOOL, template.Overridable),
             };
 
             var tuples = new SectionVendorTuples($"{identifier}_tuples");
