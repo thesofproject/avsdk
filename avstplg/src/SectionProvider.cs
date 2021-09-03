@@ -215,7 +215,7 @@ namespace avstplg
             if (module.CprVirtualIndex != null)
                 byteTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_VINDEX_U8, module.CprVirtualIndex.Value));
             if (module.CprDMAType != null)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMA_TYPE_U32, module.CprDMAType.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMA_TYPE_U32, module.cprDMAType));
             if (module.CprDMABufferSize != null)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMABUFF_SIZE_U32, module.CprDMABufferSize.Value));
             if (module.MicselOutAudioFormatId.HasValue)

@@ -51,6 +51,8 @@ namespace avstplg
     public class Module
     {
         internal Guid uuid;
+        internal uint cprDMAType;
+
         public string UUID
         {
             get
@@ -79,7 +81,17 @@ namespace avstplg
         public uint? CprBlobFormatId { get; set; }
         public uint? CprFeatureMask { get; set; }
         public byte? CprVirtualIndex { get; set; }
-        public uint? CprDMAType { get; set; }
+        public string CprDMAType
+        {
+            get
+            {
+                return string.Format("0x{0:X8}", cprDMAType);
+            }
+            set
+            {
+                cprDMAType = (value != null) ? value.ToUInt32() : 0;
+            }
+        }
         public uint? CprDMABufferSize { get; set; }
         public uint? MicselOutAudioFormatId { get; set; }
         public uint? IntelWOVCpcLowPowerMode { get; set; }
