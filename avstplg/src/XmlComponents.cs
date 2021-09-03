@@ -136,33 +136,10 @@ namespace avstplg
 
     public class Path
     {
-        internal uint feAudioFormatId;
-        internal uint beAudioFormatId;
-
         [XmlAttribute("variant_id")]
         public int VariantId { get; set; }
-        public string FEAudioFormatId
-        {
-            get
-            {
-                return string.Format("0x{0:X8}", feAudioFormatId);
-            }
-            set
-            {
-                feAudioFormatId = (value != null) ? value.ToUInt32() : 0;
-            }
-        }
-        public string BEAudioFormatId
-        {
-            get
-            {
-                return string.Format("0x{0:X8}", beAudioFormatId);
-            }
-            set
-            {
-                beAudioFormatId = (value != null) ? value.ToUInt32() : 0;
-            }
-        }
+        public uint FEAudioFormatId;
+        public uint BEAudioFormatId;
         public Route[] Routes;
     }
 

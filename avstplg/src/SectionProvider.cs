@@ -419,8 +419,8 @@ namespace avstplg
             words.Tuples = new[]
             {
                 GetTuple(AVS_TKN_PATH.VARIANT_ID_U32, (uint)path.VariantId),
-                GetTuple(AVS_TKN_PATH.FE_FMT_ID_U32, path.feAudioFormatId),
-                GetTuple(AVS_TKN_PATH.BE_FMT_ID_U32, path.beAudioFormatId),
+                GetTuple(AVS_TKN_PATH.FE_FMT_ID_U32, path.FEAudioFormatId),
+                GetTuple(AVS_TKN_PATH.BE_FMT_ID_U32, path.BEAudioFormatId),
             };
 
             var section = new SectionVendorTuples($"{identifier}_tuples");
