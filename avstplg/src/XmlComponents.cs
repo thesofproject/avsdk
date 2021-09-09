@@ -115,10 +115,10 @@ namespace avstplg
         [XmlAttribute("id")]
         public uint Id { get; set; }
         public ushort RequiredSize { get; set; }
-        public byte Priority { get; set; }
-        public bool LowPower { get; set; }
-        public ushort Attributes { get; set; }
-        public uint Trigger { get; set; }
+        public byte? Priority { get; set; }
+        public bool? LowPower { get; set; }
+        public ushort? Attributes { get; set; }
+        public uint? Trigger { get; set; }
     }
 
     public class Binding
@@ -141,8 +141,8 @@ namespace avstplg
         public uint Id { get; set; }
         public uint ConfigBaseId { get; set; }
         public uint InAudioFormatId { get; set; }
-        public byte CoreId { get; set; }
-        public byte ProcessingDomain { get; set; }
+        public byte? CoreId { get; set; }
+        public byte? ProcessingDomain { get; set; }
         public uint ConfigExtId { get; set; }
     }
 

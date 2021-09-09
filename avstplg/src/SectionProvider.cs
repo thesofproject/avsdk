@@ -303,31 +303,39 @@ namespace avstplg
 
         public static Section GetPipelineConfigSection(PipelineConfig config, int id)
         {
-            var words = new VendorTuples<uint>();
-            words.Tuples = new[]
+            var wordTuples = new List<Tuple<string, uint>>
             {
                 GetTuple(AVS_TKN_PPLCFG.ID_U32, config.Id),
-                GetTuple(AVS_TKN_PPLCFG.TRIGGER_U32, config.Trigger),
             };
 
-            var shorts = new VendorTuples<ushort>();
-            shorts.Tuples = new[]
+            var shortTuples = new List<Tuple<string, ushort>>
             {
                 GetTuple(AVS_TKN_PPLCFG.REQ_SIZE_U16, config.RequiredSize),
-                GetTuple(AVS_TKN_PPLCFG.ATTRIBUTES_U16, config.Attributes),
             };
+
+            var byteTuples = new List<Tuple<string, byte>>();
+            var boolTuples = new List<Tuple<string, bool>>();
+
+            if (config.Trigger.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_PPLCFG.TRIGGER_U32, config.Trigger.Value));
+            if (config.Attributes.HasValue)
+                shortTuples.Add(GetTuple(AVS_TKN_PPLCFG.ATTRIBUTES_U16, config.Attributes.Value));
+            if (config.Priority.HasValue)
+                byteTuples.Add(GetTuple(AVS_TKN_PPLCFG.PRIORITY_U8, config.Priority.Value));
+            if (config.LowPower.HasValue)
+                boolTuples.Add(GetTuple(AVS_TKN_PPLCFG.LOW_POWER_BOOL, config.LowPower.Value));
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = wordTuples.ToArray();
+
+            var shorts = new VendorTuples<ushort>();
+            shorts.Tuples = shortTuples.ToArray();
 
             var bytes = new VendorTuples<byte>();
-            bytes.Tuples = new[]
-            {
-                GetTuple(AVS_TKN_PPLCFG.PRIORITY_U8, config.Priority),
-            };
+            bytes.Tuples = byteTuples.ToArray();
 
             var bools = new VendorTuples<bool>();
-            bools.Tuples = new[]
-            {
-                GetTuple(AVS_TKN_PPLCFG.LOW_POWER_BOOL, config.LowPower),
-            };
+            bools.Tuples = boolTuples.ToArray();
 
             var section = new SectionVendorTuples($"pplcfg{id}_tuples");
             section.Tokens = "avs_pplcfg_tokens";
@@ -432,12 +440,15 @@ namespace avstplg
                 GetTuple(AVS_TKN_MOD.MODCFG_EXT_ID_U32, module.ConfigExtId),
             };
 
+            var byteTuples = new List<Tuple<string, byte>>();
+
+            if (module.CoreId.HasValue)
+                byteTuples.Add(GetTuple(AVS_TKN_MOD.CORE_ID_U8, module.CoreId.Value));
+            if (module.ProcessingDomain.HasValue)
+                byteTuples.Add(GetTuple(AVS_TKN_MOD.PROC_DOMAIN_U8, module.ProcessingDomain.Value));
+
             var bytes = new VendorTuples<byte>();
-            bytes.Tuples = new[]
-            {
-                GetTuple(AVS_TKN_MOD.CORE_ID_U8, module.CoreId),
-                GetTuple(AVS_TKN_MOD.PROC_DOMAIN_U8, module.ProcessingDomain),
-            };
+            bytes.Tuples = byteTuples.ToArray();
 
             var section = new SectionVendorTuples($"{namePrefix}_mod{id}_tuples");
             section.Tokens = "avs_module_tokens";
@@ -551,7 +562,7 @@ namespace avstplg
             var widget = new SectionWidget(template.WidgetName);
             widget.Type = TPLG_DAPM.SCHEDULER;
             widget.NoPm = true;
-	    widget.IgnoreSuspend = template.IgnoreSuspend;
+            widget.IgnoreSuspend = template.IgnoreSuspend;
             widget.Data = new[] { data.Identifier };
             sections.Add(widget);
 
@@ -677,7 +688,7 @@ namespace avstplg
             string identifier;
 
             var pcm = new SectionPCM(fedai.Name);
-	    pcm.IgnoreSuspend = fedai.IgnoreSuspend;
+            pcm.IgnoreSuspend = fedai.IgnoreSuspend;
             if (fedai.CaptureCapabilities != null)
             {
                 identifier = $"{fedai.Name}-capture";
