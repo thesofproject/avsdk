@@ -45,14 +45,15 @@ namespace avstplg
         public uint Ibs { get; set; }
         public uint Obs { get; set; }
         public uint Pages { get; set; }
-        public uint AudioFormatId { get; set; }
     }
 
-    public class Module
+    public class ModuleConfigExt
     {
         internal Guid uuid;
         internal uint cprDMAType;
 
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
         public string UUID
         {
             get
@@ -70,9 +71,6 @@ namespace avstplg
             }
         }
 
-        [XmlAttribute("obj_id")]
-        public int ObjectId { get; set; }
-        public uint ModuleConfigBaseId { get; set; }
         public byte CoreId { get; set; }
         public byte ProcessingDomain { get; set; }
 
@@ -123,11 +121,12 @@ namespace avstplg
         public bool LowPower { get; set; }
         public ushort Attributes { get; set; }
         public uint Trigger { get; set; }
-        public Module[] Modules;
     }
 
     public class Binding
     {
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
         public string TargetTopologyName { get; set; }
         public uint TargetPathObjId { get; set; }
         public uint TargetRouteObjId { get; set; }
@@ -138,12 +137,23 @@ namespace avstplg
         public bool IsSink { get; set; }
     }
 
+    public class Module
+    {
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
+        public uint ConfigBaseId { get; set; }
+        public uint InAudioFormatId { get; set; }
+        public uint ConfigExtId { get; set; }
+    }
+
     public class Route
     {
         [XmlAttribute("obj_id")]
         public int ObjectId { get; set; }
         public uint ImplementingPipelineId { get; set; }
-        public Binding[] Bindings;
+        public Module[] Modules;
+        [XmlElement]
+        public uint[] BindingId;
     }
 
     public class Path
@@ -230,7 +240,9 @@ namespace avstplg
         public Library[] Libraries;
         public AudioFormat[] AudioFormats;
         public ModuleConfigBase[] ModuleConfigsBase;
+        public ModuleConfigExt[] ModuleConfigsExt;
         public Pipeline[] Pipelines;
+        public Binding[] Bindings;
         public PathTemplate[] PathTemplates;
         public CondpathTemplate[] CondpathTemplates;
         public FEDAI[] FEDAIs;

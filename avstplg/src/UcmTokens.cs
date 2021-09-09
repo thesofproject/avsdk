@@ -14,6 +14,8 @@
     {
         OBJECT_ID_U32 = 9101,
         IMPL_ID_U32,
+        NUM_BINDING_ID_U32,
+        BINDING_ID_U32,
     }
 
     public enum AVS_TKN_AFMT
@@ -36,17 +38,14 @@
         IBS_U32,
         OBS_U32,
         PAGES_U32,
-        AFMT_ID_U32,
     }
 
     public enum AVS_TKN_MODCFG
     {
-        OBJECT_ID_U32 = 801,
+        ID_U32 = 801,
         TYPE_UUID,
         CORE_ID_U8 = 804,
         PROC_DOMAIN_U8,
-
-        BASE_ID_U32 = 811,
 
         CPR_OUT_AFMT_ID_U32 = 821,
         CPR_FEATURE_MASK_U32,
@@ -91,7 +90,8 @@
 
     public enum AVS_TKN_ROUTE
     {
-        TARGET_TPLG_NAME_STRING = 9001,
+        ID_U32 = 9001,
+        TARGET_TPLG_NAME_STRING,
         TARGET_PATH_OBJECT_ID_U32,
         TARGET_ROUTE_OBJECT_ID_U32,
         TARGET_MOD_OBJECT_ID_U32,
@@ -99,6 +99,14 @@
         MOD_OBJECT_ID_U32,
         MOD_PIN_U8,
         IS_SINK_U8,
+    }
+
+    public enum AVS_TKN_MOD
+    {
+        ID_U32 = 12000,
+        MODCFG_BASE_ID_U32,
+        IN_AFMT_ID_U32,
+        MODCFG_EXT_ID_U32,
     }
 
     public enum AVS_TKN_PATH
@@ -147,5 +155,7 @@
         NUM_LIBRARIES_U32,
         NAME_STRING,
         NUM_CONDPATH_TMPLS_U32,
+        NUM_MODCFG_EXT_U32,
+        NUM_BINDING_U32,
     }
 }
