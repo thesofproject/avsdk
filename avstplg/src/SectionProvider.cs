@@ -30,23 +30,23 @@ namespace avstplg
 
         public static IEnumerable<Section> GetAllSectionTokens()
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
 
-            result.Add(GetSectionTokens<AVS_TKN_PIPELINE>("avs_pipeline_impl_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_PIPE>("avs_pipeline_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_AFMT>("avs_audio_format_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_MODCFG_BASE>("avs_mod_cfg_base_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_MODCFG>("avs_mod_cfg_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_MOD>("avs_module_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_ROUTE>("avs_route_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_PATH>("avs_path_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_PATH_TMPL>("avs_path_template_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_CONDPATH>("avs_condpath_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_CONDPATH_TMPL>("avs_condpath_template_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_LIBRARY>("avs_library_tokens"));
-            result.Add(GetSectionTokens<AVS_TKN_TPLG>("avs_tplg_core_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_MANIFEST>("avs_manifest_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_LIBRARY>("avs_library_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_AFMT>("avs_audio_format_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_MODCFG_BASE>("avs_modcfg_base_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_MODCFG_EXT>("avs_modcfg_ext_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_PPLCFG>("avs_pplcfg_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_BINDING>("avs_binding_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_PPL>("avs_pipeline_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_MOD>("avs_module_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_PATH_TMPL>("avs_path_template_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_PATH>("avs_path_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_CONDPATH_TMPL>("avs_condpath_template_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_CONDPATH>("avs_condpath_tokens"));
 
-            return result;
+            return sections;
         }
 
         public static Section GetLibrarySection(Library library, int id)
@@ -67,28 +67,28 @@ namespace avstplg
 
         public static IEnumerable<Section> GetLibrariesSections(Library[] libraries)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_TPLG.NUM_LIBRARIES_U32, (uint)libraries.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_LIBRARY_U32, (uint)libraries.Length),
             };
 
             var tuples = new SectionVendorTuples("library_hdr_tuples");
-            tuples.Tokens = "avs_tplg_core_tokens";
+            tuples.Tokens = "avs_manifest_tokens";
             tuples.Tuples = new[] { words };
-            result.Add(tuples);
+            sections.Add(tuples);
 
             for (int i = 0; i < libraries.Length; i++)
-                result.Add(GetLibrarySection(libraries[i], i));
+                sections.Add(GetLibrarySection(libraries[i], i));
 
             // create private section referencing all added entries
             var data = new SectionData("library_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
 
-            return result;
+            return sections;
         }
 
         public static Section GetAudioFormatSection(AudioFormat format, int id)
@@ -96,7 +96,7 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_AFMT.ID_U32, (uint)format.Id),
+                GetTuple(AVS_TKN_AFMT.ID_U32, format.Id),
                 GetTuple(AVS_TKN_AFMT.SAMPLE_RATE_U32, format.SampleRate),
                 GetTuple(AVS_TKN_AFMT.BIT_DEPTH_U32, format.BitDepth),
                 GetTuple(AVS_TKN_AFMT.CHANNEL_MAP_U32, format.channelMap),
@@ -116,28 +116,28 @@ namespace avstplg
 
         public static IEnumerable<Section> GetAudioFormatsSections(AudioFormat[] formats)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_TPLG.NUM_AUDIO_FMTS_U32, (uint)formats.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_AUDIO_FMTS_U32, (uint)formats.Length),
             };
 
             var tuples = new SectionVendorTuples("audio_format_hdr_tuples");
-            tuples.Tokens = "avs_tplg_core_tokens";
+            tuples.Tokens = "avs_manifest_tokens";
             tuples.Tuples = new[] { words };
-            result.Add(tuples);
+            sections.Add(tuples);
 
             for (int i = 0; i < formats.Length; i++)
-                result.Add(GetAudioFormatSection(formats[i], i));
+                sections.Add(GetAudioFormatSection(formats[i], i));
 
             // create private section referencing all added entries
             var data = new SectionData("audio_format_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
 
-            return result;
+            return sections;
         }
 
         public static Section GetModuleConfigBaseSection(ModuleConfigBase config, int id)
@@ -145,15 +145,15 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MODCFG_BASE.ID_U32, (uint)config.Id),
+                GetTuple(AVS_TKN_MODCFG_BASE.ID_U32, config.Id),
                 GetTuple(AVS_TKN_MODCFG_BASE.CPC_U32, config.Cpc),
                 GetTuple(AVS_TKN_MODCFG_BASE.IBS_U32, config.Ibs),
                 GetTuple(AVS_TKN_MODCFG_BASE.OBS_U32, config.Obs),
                 GetTuple(AVS_TKN_MODCFG_BASE.PAGES_U32, config.Pages),
             };
 
-            var section = new SectionVendorTuples($"mod_cfg_base{id}_tuples");
-            section.Tokens = "avs_mod_cfg_base_tokens";
+            var section = new SectionVendorTuples($"modcfg_base{id}_tuples");
+            section.Tokens = "avs_modcfg_base_tokens";
             section.Tuples = new VendorTuples[] { words };
 
             return section;
@@ -161,112 +161,106 @@ namespace avstplg
 
         public static IEnumerable<Section> GetModuleConfigsBaseSections(ModuleConfigBase[] configs)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_TPLG.NUM_BASE_CFGS_U32, (uint)configs.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_MODCFG_BASE_U32, (uint)configs.Length),
             };
 
-            var tuples = new SectionVendorTuples("mod_cfg_base_hdr_tuples");
-            tuples.Tokens = "avs_tplg_core_tokens";
+            var tuples = new SectionVendorTuples("modcfg_base_hdr_tuples");
+            tuples.Tokens = "avs_manifest_tokens";
             tuples.Tuples = new[] { words };
-            result.Add(tuples);
+            sections.Add(tuples);
 
             for (int i = 0; i < configs.Length; i++)
-                result.Add(GetModuleConfigBaseSection(configs[i], i));
+                sections.Add(GetModuleConfigBaseSection(configs[i], i));
 
             // create private section referencing all added entries
-            var data = new SectionData("mod_cfg_base_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
+            var data = new SectionData("modcfg_base_data");
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
 
-            return result;
+            return sections;
         }
 
         public static Section GetModuleConfigExtSection(ModuleConfigExt module, int id)
         {
-            string identifier = $"modcfg_ext{id}";
-
             var uuids = new VendorTuples<Guid>();
             uuids.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MODCFG.TYPE_UUID, module.uuid),
+                GetTuple(AVS_TKN_MODCFG_EXT.TYPE_UUID, module.uuid),
             };
 
             var wordTuples = new List<Tuple<string, uint>>
             {
-                GetTuple(AVS_TKN_MODCFG.ID_U32, module.Id),
+                GetTuple(AVS_TKN_MODCFG_EXT.ID_U32, module.Id),
             };
 
-            var byteTuples = new List<Tuple<string, byte>>
-            {
-                GetTuple(AVS_TKN_MODCFG.CORE_ID_U8, module.CoreId),
-                GetTuple(AVS_TKN_MODCFG.PROC_DOMAIN_U8, module.ProcessingDomain),
-            };
+            var byteTuples = new List<Tuple<string, byte>>();
 
             // module-type specific tuples
             if (module.CprOutAudioFormatId.HasValue)
-            wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
+            wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
             if (module.CprBlobFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_BLOB_FMT_ID_U32, module.CprBlobFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_BLOB_FMT_ID_U32, module.CprBlobFormatId.Value));
             if (module.CprFeatureMask.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_FEATURE_MASK_U32, module.CprFeatureMask.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_FEATURE_MASK_U32, module.CprFeatureMask.Value));
             if (module.CprVirtualIndex != null)
-                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_VINDEX_U8, module.CprVirtualIndex.Value));
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_VINDEX_U8, module.CprVirtualIndex.Value));
             if (module.CprDMAType != null)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMA_TYPE_U32, module.cprDMAType));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_DMA_TYPE_U32, module.cprDMAType));
             if (module.CprDMABufferSize != null)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMABUFF_SIZE_U32, module.CprDMABufferSize.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_DMABUFF_SIZE_U32, module.CprDMABufferSize.Value));
             if (module.MicselOutAudioFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MICSEL_OUT_AFMT_ID_U32, module.MicselOutAudioFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MICSEL_OUT_AFMT_ID_U32, module.MicselOutAudioFormatId.Value));
             if (module.IntelWOVCpcLowPowerMode.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.INTELWOV_CPC_LOW_POWER_MODE_U32, module.IntelWOVCpcLowPowerMode.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.INTELWOV_CPC_LOW_POWER_MODE_U32, module.IntelWOVCpcLowPowerMode.Value));
             if (module.SrcOutFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.SRC_OUT_FREQ_U32, module.SrcOutFrequency.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.SRC_OUT_FREQ_U32, module.SrcOutFrequency.Value));
             if (module.PeakvolChanId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_CHANNEL_ID_U32, module.PeakvolChanId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CHANNEL_ID_U32, module.PeakvolChanId.Value));
             if (module.PeakvolTargetVolume.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_TARGET_VOLUME_U32, module.PeakvolTargetVolume.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_TARGET_VOLUME_U32, module.PeakvolTargetVolume.Value));
             if (module.PeakvolCurveType.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_CURVE_TYPE_U32, module.PeakvolCurveType.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CURVE_TYPE_U32, module.PeakvolCurveType.Value));
             if (module.PeakvolCurveDuration.HasValue) {
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_CURVE_DURATION_UPPER_U32, (uint)(module.PeakvolCurveDuration.Value >> 32)));
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_CURVE_DURATION_LOWER_U32, (uint)module.PeakvolCurveDuration.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CURVE_DURATION_UPPER_U32, (uint)(module.PeakvolCurveDuration.Value >> 32)));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CURVE_DURATION_LOWER_U32, (uint)module.PeakvolCurveDuration.Value));
             }
             if (module.MuxRefFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MUX_REF_FREQ_U32, module.MuxRefFrequency.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_REF_FREQ_U32, module.MuxRefFrequency.Value));
             if (module.MuxOutFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MUX_OUT_FREQ_U32, module.MuxOutFrequency.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_OUT_FREQ_U32, module.MuxOutFrequency.Value));
             if (module.AecRefFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.AEC_REF_FREQ_U32, module.AecRefFrequency.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_REF_FREQ_U32, module.AecRefFrequency.Value));
 
             if (module.UpDownMixOutChanCfg.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_OUT_CHAN_CFG_U32, module.UpDownMixOutChanCfg.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_OUT_CHAN_CFG_U32, module.UpDownMixOutChanCfg.Value));
             if (module.UpDownMixCoeffSelect.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_SELECT_U32, module.UpDownMixCoeffSelect.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_COEFF_SELECT_U32, module.UpDownMixCoeffSelect.Value));
 
             if (module.UpDownMixCoeff != null)
             {
                 if (module.UpDownMixCoeff.Length > 8)
                     throw new InvalidOperationException("Too many coefficients passed to UpDownMix");
-                for (int i = (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32; i <= (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_7_S32; i++)
+                for (int i = (int)AVS_TKN_MODCFG_EXT.UPDOWN_MIX_COEFF_0_S32; i <= (int)AVS_TKN_MODCFG_EXT.UPDOWN_MIX_COEFF_7_S32; i++)
                 {
-                    int j = i - (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32;
+                    int j = i - (int)AVS_TKN_MODCFG_EXT.UPDOWN_MIX_COEFF_0_S32;
                     if (j <= module.UpDownMixCoeff.Length)
                         wordTuples.Add(GetTuple(i, (uint)module.UpDownMixCoeff[j]));
                 }
             }
             if (module.UpDownMixChanMap.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_CHAN_MAP_U32, module.UpDownMixChanMap.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_CHAN_MAP_U32, module.UpDownMixChanMap.Value));
 
             if (module.ASrcOutFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_OUT_FREQ_U32, module.ASrcOutFrequency.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.ASRC_OUT_FREQ_U32, module.ASrcOutFrequency.Value));
             if (module.ASrcMode.HasValue)
-                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_MODE_U8, module.ASrcMode.Value));
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.ASRC_MODE_U8, module.ASrcMode.Value));
             if (module.ASrcDisableJitterBuffer.HasValue)
-                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_DISABLE_JITTER_BUFFER_U8, module.ASrcDisableJitterBuffer.Value));
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.ASRC_DISABLE_JITTER_BUFFER_U8, module.ASrcDisableJitterBuffer.Value));
 
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();
@@ -274,8 +268,8 @@ namespace avstplg
             var bytes = new VendorTuples<byte>();
             bytes.Tuples = byteTuples.ToArray();
 
-            var section = new SectionVendorTuples($"{identifier}_tuples");
-            section.Tokens = "avs_mod_cfg_tokens";
+            var section = new SectionVendorTuples($"modcfg_ext{id}_tuples");
+            section.Tokens = "avs_modcfg_ext_tokens";
             section.Tuples = new VendorTuples[] { words, uuids, bytes };
 
             return section;
@@ -283,123 +277,119 @@ namespace avstplg
 
         public static IEnumerable<Section> GetModuleConfigsExtSections(ModuleConfigExt[] configs)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_TPLG.NUM_MODCFG_EXT_U32, (uint)configs.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_MODCFG_EXT_U32, (uint)configs.Length),
             };
 
             var tuples = new SectionVendorTuples("modcfg_ext_hdr_tuples");
-            tuples.Tokens = "avs_tplg_core_tokens";
+            tuples.Tokens = "avs_manifest_tokens";
             tuples.Tuples = new[] { words };
-            result.Add(tuples);
+            sections.Add(tuples);
 
             for (int i = 0; i < configs.Length; i++)
-                result.Add(GetModuleConfigExtSection(configs[i], i));
+                sections.Add(GetModuleConfigExtSection(configs[i], i));
 
             // create private section referencing all added entries
             var data = new SectionData("modcfg_ext_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
 
-            return result;
+            return sections;
         }
 
-        public static Section GetPipelineSection(Pipeline pipeline, int id)
+        public static Section GetPipelineConfigSection(PipelineConfig config, int id)
         {
-            string identifier = $"pipeline{id}";
-
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PIPELINE.ID_U32, (uint)pipeline.Id),
-                GetTuple(AVS_TKN_PIPELINE.TRIGGER_U32, (uint)pipeline.Trigger),
+                GetTuple(AVS_TKN_PPLCFG.ID_U32, config.Id),
+                GetTuple(AVS_TKN_PPLCFG.TRIGGER_U32, config.Trigger),
             };
 
             var shorts = new VendorTuples<ushort>();
             shorts.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PIPELINE.REQ_SIZE_U16, pipeline.RequiredSize),
-                GetTuple(AVS_TKN_PIPELINE.ATTRIBUTES_U16, pipeline.Attributes),
+                GetTuple(AVS_TKN_PPLCFG.REQ_SIZE_U16, config.RequiredSize),
+                GetTuple(AVS_TKN_PPLCFG.ATTRIBUTES_U16, config.Attributes),
             };
 
             var bytes = new VendorTuples<byte>();
             bytes.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PIPELINE.PRIORITY_U8, pipeline.Priority),
+                GetTuple(AVS_TKN_PPLCFG.PRIORITY_U8, config.Priority),
             };
 
             var bools = new VendorTuples<bool>();
             bools.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PIPELINE.LOW_POWER_BOOL, pipeline.LowPower),
+                GetTuple(AVS_TKN_PPLCFG.LOW_POWER_BOOL, config.LowPower),
             };
 
-            var section = new SectionVendorTuples($"{identifier}_tuples");
-            section.Tokens = "avs_pipeline_impl_tokens";
+            var section = new SectionVendorTuples($"pplcfg{id}_tuples");
+            section.Tokens = "avs_pplcfg_tokens";
             section.Tuples = new VendorTuples[] { words, shorts, bytes, bools };
 
             return section;
         }
 
-        public static IEnumerable<Section> GetPipelinesSections(Pipeline[] pipelines)
+        public static IEnumerable<Section> GetPipelineConfigsSections(PipelineConfig[] configs)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_TPLG.NUM_PIPES_U32, (uint)pipelines.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_PPLCFG_U32, (uint)configs.Length),
             };
 
-            var tuples = new SectionVendorTuples("pipeline_hdr_tuples");
-            tuples.Tokens = "avs_tplg_core_tokens";
+            var tuples = new SectionVendorTuples("pplcfg_hdr_tuples");
+            tuples.Tokens = "avs_manifest_tokens";
             tuples.Tuples = new[] { words };
-            result.Add(tuples);
+            sections.Add(tuples);
 
-            for (int i = 0; i < pipelines.Length; i++)
-                result.Add(GetPipelineSection(pipelines[i], i));
+            for (int i = 0; i < configs.Length; i++)
+                sections.Add(GetPipelineConfigSection(configs[i], i));
 
             // create private section referencing all added entries
-            var data = new SectionData("pipeline_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
+            var data = new SectionData("pplcfg_data");
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
 
-            return result;
+            return sections;
         }
 
         public static Section GetBindingSection(Binding binding, int id)
         {
-            string identifier = $"binding{id}";
-
             var strings = new VendorTuples<string>();
             strings.Tuples = new[]
             {
-                GetTuple(AVS_TKN_ROUTE.TARGET_TPLG_NAME_STRING, binding.TargetTopologyName),
+                GetTuple(AVS_TKN_BINDING.TARGET_TPLG_NAME_STRING, binding.TargetTopologyName),
             };
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_ROUTE.ID_U32, binding.Id),
-                GetTuple(AVS_TKN_ROUTE.TARGET_PATH_OBJECT_ID_U32, binding.TargetPathObjId),
-                GetTuple(AVS_TKN_ROUTE.TARGET_ROUTE_OBJECT_ID_U32, binding.TargetRouteObjId),
-                GetTuple(AVS_TKN_ROUTE.TARGET_MOD_OBJECT_ID_U32, binding.TargetModuleObjId),
-                GetTuple(AVS_TKN_ROUTE.MOD_OBJECT_ID_U32, binding.ModuleObjId),
+                GetTuple(AVS_TKN_BINDING.ID_U32, binding.Id),
+                GetTuple(AVS_TKN_BINDING.TARGET_PATH_TMPL_ID_U32, binding.TargetPathTemplateId),
+                GetTuple(AVS_TKN_BINDING.TARGET_PPL_ID_U32, binding.TargetPipelineId),
+                GetTuple(AVS_TKN_BINDING.TARGET_MOD_ID_U32, binding.TargetModuleId),
+                GetTuple(AVS_TKN_BINDING.MOD_ID_U32, binding.ModuleId),
             };
 
             var bytes = new VendorTuples<byte>();
             bytes.Tuples = new[]
             {
-                GetTuple(AVS_TKN_ROUTE.TARGET_MOD_PIN_U8, binding.TargetModulePin),
-                GetTuple(AVS_TKN_ROUTE.MOD_PIN_U8, binding.ModulePin),
-                GetTuple(AVS_TKN_ROUTE.IS_SINK_U8, Convert.ToByte(binding.IsSink)),
+                GetTuple(AVS_TKN_BINDING.TARGET_MOD_PIN_U8, binding.TargetModulePin),
+                GetTuple(AVS_TKN_BINDING.MOD_PIN_U8, binding.ModulePin),
+                GetTuple(AVS_TKN_BINDING.IS_SINK_U8, Convert.ToByte(binding.IsSink)),
             };
 
-            var section = new SectionVendorTuples($"{identifier}_tuples");
-            section.Tokens = "avs_route_tokens";
+            var section = new SectionVendorTuples($"binding{id}_tuples");
+            section.Tokens = "avs_binding_tokens";
             section.Tuples = new VendorTuples[] { words, strings, bytes };
 
             return section;
@@ -407,34 +397,32 @@ namespace avstplg
 
         public static IEnumerable<Section> GetBindingsSections(Binding[] bindings)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_TPLG.NUM_BINDING_U32, (uint)bindings.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_BINDING_U32, (uint)bindings.Length),
             };
 
-            var tuples = new SectionVendorTuples("bindings_hdr_tuples");
-            tuples.Tokens = "avs_tplg_core_tokens";
-            tuples.Tuples = new[] { words };
-            result.Add(tuples);
+            var tuples = new SectionVendorTuples("binding_hdr_tuples");
+            tuples.Tokens = "avs_manifest_tokens";
+            tuples.Tuples = new VendorTuples[] { words };
+            sections.Add(tuples);
 
             for (int i = 0; i < bindings.Length; i++)
-                result.Add(GetBindingSection(bindings[i], i));
+                sections.Add(GetBindingSection(bindings[i], i));
 
             // create private section referencing all added entries
-            var data = new SectionData("bindings_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
+            var data = new SectionData("binding_data");
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
 
-            return result;
+            return sections;
         }
 
         public static Section GetModuleSection(Module module, string namePrefix, uint id)
         {
-            string identifier = $"{namePrefix}_mod{id}";
-
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
@@ -444,98 +432,103 @@ namespace avstplg
                 GetTuple(AVS_TKN_MOD.MODCFG_EXT_ID_U32, module.ConfigExtId),
             };
 
-            var section = new SectionVendorTuples($"{identifier}_tuples");
+            var bytes = new VendorTuples<byte>();
+            bytes.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_MOD.CORE_ID_U8, module.CoreId),
+                GetTuple(AVS_TKN_MOD.PROC_DOMAIN_U8, module.ProcessingDomain),
+            };
+
+            var section = new SectionVendorTuples($"{namePrefix}_mod{id}_tuples");
             section.Tokens = "avs_module_tokens";
-            section.Tuples = new VendorTuples[] { words };
+            section.Tuples = new VendorTuples[] { words, bytes };
 
             return section;
         }
 
         public static Section GetBindingIdSection(uint bindid, string namePrefix, uint id)
         {
-            string identifier = $"{namePrefix}_bindid{id}";
-
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PIPE.BINDING_ID_U32, bindid),
+                GetTuple(AVS_TKN_PPL.BINDING_ID_U32, bindid),
             };
 
-            var section = new SectionVendorTuples($"{identifier}_tuples");
+            var section = new SectionVendorTuples($"{namePrefix}_bindid{id}_tuples");
             section.Tokens = "avs_pipeline_tokens";
             section.Tuples = new VendorTuples[] { words };
 
             return section;
         }
 
-        public static IEnumerable<Section> GetRouteSections(Route route, string namePrefix, int id)
+        public static IEnumerable<Section> GetPipelineSections(Pipeline ppl, string namePrefix, int id)
         {
-            var result = new List<Section>();
-            string identifier = $"{namePrefix}_pipe{id}";
-            int numBindings = (route.BindingId == null) ? 0 : route.BindingId.Length;
+            var sections = new List<Section>();
+            string identifier = $"{namePrefix}_ppl{id}";
+            int numBindings = (ppl.BindingId == null) ? 0 : ppl.BindingId.Length;
 
-            if (route.Modules != null)
-                for (uint i = 0; i < route.Modules.Length; i++)
-                    result.Add(GetModuleSection(route.Modules[i], identifier, i));
-            if (route.Modules != null)
+            if (ppl.Modules != null)
+                for (uint i = 0; i < ppl.Modules.Length; i++)
+                    sections.Add(GetModuleSection(ppl.Modules[i], identifier, i));
+            if (ppl.Modules != null)
                 for (uint i = 0; i < numBindings; i++)
-                    result.Add(GetBindingIdSection(route.BindingId[i], identifier, i));
+                    sections.Add(GetBindingIdSection(ppl.BindingId[i], identifier, i));
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PIPE.OBJECT_ID_U32, (uint)route.ObjectId),
-                GetTuple(AVS_TKN_PIPE.IMPL_ID_U32, route.ImplementingPipelineId),
-                GetTuple(AVS_TKN_PIPE.NUM_BINDING_ID_U32, (uint)numBindings),
+                GetTuple(AVS_TKN_PPL.ID_U32, ppl.Id),
+                GetTuple(AVS_TKN_PPL.PPLCFG_ID_U32, ppl.ConfigId),
+                GetTuple(AVS_TKN_PPL.NUM_BINDING_ID_U32, (uint)numBindings),
             };
 
-            var section = new SectionVendorTuples($"{identifier}_tuples");
-            section.Tokens = "avs_pipeline_tokens";
-            section.Tuples = new VendorTuples[] { words };
+            var tuples = new SectionVendorTuples($"{identifier}_tuples");
+            tuples.Tokens = "avs_pipeline_tokens";
+            tuples.Tuples = new VendorTuples[] { words };
             // ensure main section prepends child sections
-            result.Insert(0, section);
+            sections.Insert(0, tuples);
 
-            return result;
+            return sections;
         }
 
         public static IEnumerable<Section> GetPathSections(Path path, string namePrefix, int id)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
             string identifier = $"{namePrefix}_path{id}";
 
-            if (path.Routes != null)
-                for (int i = 0; i < path.Routes.Length; i++)
-                    result.AddRange(GetRouteSections(path.Routes[i], identifier, i));
+            if (path.Pipelines != null)
+                for (int i = 0; i < path.Pipelines.Length; i++)
+                    sections.AddRange(GetPipelineSections(path.Pipelines[i], identifier, i));
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PATH.VARIANT_ID_U32, (uint)path.VariantId),
-                GetTuple(AVS_TKN_PATH.FE_FMT_ID_U32, path.FEAudioFormatId),
-                GetTuple(AVS_TKN_PATH.BE_FMT_ID_U32, path.BEAudioFormatId),
+                GetTuple(AVS_TKN_PATH.ID_U32, path.Id),
+                GetTuple(AVS_TKN_PATH.FE_AFMT_ID_U32, path.FEAudioFormatId),
+                GetTuple(AVS_TKN_PATH.BE_AFMT_ID_U32, path.BEAudioFormatId),
             };
 
-            var section = new SectionVendorTuples($"{identifier}_tuples");
-            section.Tokens = "avs_path_tokens";
-            section.Tuples = new VendorTuples[] { words };
+            var tuples = new SectionVendorTuples($"{identifier}_tuples");
+            tuples.Tokens = "avs_path_tokens";
+            tuples.Tuples = new VendorTuples[] { words };
             // ensure main section prepends child sections
-            result.Insert(0, section);
+            sections.Insert(0, tuples);
 
-            return result;
+            return sections;
         }
 
         public static IEnumerable<Section> GetPathTemplateSections(PathTemplate template, int id)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
             string identifier = $"path_tmpl{id}";
 
             for (int i = 0; i < template.Paths.Length; i++)
-                result.AddRange(GetPathSections(template.Paths[i], identifier, i));
+                sections.AddRange(GetPathSections(template.Paths[i], identifier, i));
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_PATH_TMPL.OBJECT_ID_U32, (uint)template.ObjectId),
+                GetTuple(AVS_TKN_PATH_TMPL.ID_U32, template.Id),
             };
 
             var strings = new VendorTuples<string>();
@@ -548,63 +541,63 @@ namespace avstplg
             tuples.Tokens = "avs_path_template_tokens";
             tuples.Tuples = new VendorTuples[] { words, strings };
             // ensure main section prepends child sections
-            result.Insert(0, tuples);
+            sections.Insert(0, tuples);
 
             // create private section listing all template components
             var data = new SectionData($"{identifier}_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
 
             var widget = new SectionWidget(template.WidgetName);
             widget.Type = TPLG_DAPM.SCHEDULER;
             widget.NoPm = true;
 	    widget.IgnoreSuspend = template.IgnoreSuspend;
             widget.Data = new[] { data.Identifier };
-            result.Add(widget);
+            sections.Add(widget);
 
-            return result;
+            return sections;
         }
 
         public static IEnumerable<Section> GetCondpathSections(Condpath path, string namePrefix, int id)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
             string identifier = $"{namePrefix}_condpath{id}";
 
-            if (path.Routes != null)
-                for (int i = 0; i < path.Routes.Length; i++)
-                    result.AddRange(GetRouteSections(path.Routes[i], identifier, i));
+            if (path.Pipelines != null)
+                for (int i = 0; i < path.Pipelines.Length; i++)
+                    sections.AddRange(GetPipelineSections(path.Pipelines[i], identifier, i));
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_CONDPATH.VARIANT_ID_U32, (uint)path.VariantId),
-                GetTuple(AVS_TKN_CONDPATH.SOURCE_VARIANT_ID_U32, path.SourceVariantId),
-                GetTuple(AVS_TKN_CONDPATH.SINK_VARIANT_ID_U32, path.SinkVariantId),
+                GetTuple(AVS_TKN_CONDPATH.ID_U32, path.Id),
+                GetTuple(AVS_TKN_CONDPATH.SOURCE_PATH_ID_U32, path.SourcePathId),
+                GetTuple(AVS_TKN_CONDPATH.SINK_PATH_ID_U32, path.SinkPathId),
             };
 
-            var section = new SectionVendorTuples($"{identifier}_tuples");
-            section.Tokens = "avs_condpath_tokens";
-            section.Tuples = new VendorTuples[] { words };
+            var tuples = new SectionVendorTuples($"{identifier}_tuples");
+            tuples.Tokens = "avs_condpath_tokens";
+            tuples.Tuples = new VendorTuples[] { words };
             // ensure main section prepends child sections
-            result.Insert(0, section);
+            sections.Insert(0, tuples);
 
-            return result;
+            return sections;
         }
 
         public static IEnumerable<Section> GetCondpathTemplateSections(CondpathTemplate template, int id)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
             string identifier = $"condpath_tmpl{id}";
 
             for (int i = 0; i < template.Condpaths.Length; i++)
-                result.AddRange(GetCondpathSections(template.Condpaths[i], identifier, i));
+                sections.AddRange(GetCondpathSections(template.Condpaths[i], identifier, i));
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_CONDPATH_TMPL.OBJECT_ID_U32, (uint)template.ObjectId),
-                GetTuple(AVS_TKN_CONDPATH_TMPL.SOURCE_PATH_OBJECT_ID_U32, template.SourcePathObjId),
-                GetTuple(AVS_TKN_CONDPATH_TMPL.SINK_PATH_OBJECT_ID_U32, template.SinkPathObjId),
+                GetTuple(AVS_TKN_CONDPATH_TMPL.ID_U32, template.Id),
+                GetTuple(AVS_TKN_CONDPATH_TMPL.SOURCE_PATH_TMPL_ID_U32, template.SourcePathTemplateId),
+                GetTuple(AVS_TKN_CONDPATH_TMPL.SINK_PATH_TMPL_ID_U32, template.SinkPathTemplateId),
                 GetTuple(AVS_TKN_CONDPATH_TMPL.COND_TYPE_U32, template.ConditionType),
             };
 
@@ -631,36 +624,36 @@ namespace avstplg
             tuples.Tokens = "avs_condpath_template_tokens";
             tuples.Tuples = new VendorTuples[] { words, strings, bytes, bools };
             // ensure main section prepends child sections
-            result.Insert(0, tuples);
+            sections.Insert(0, tuples);
 
-            return result;
+            return sections;
         }
 
         public static IEnumerable<Section> GetCondpathTemplatesSections(CondpathTemplate[] templates)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
             int length = (templates != null) ? templates.Length : 0;
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_TPLG.NUM_CONDPATH_TMPLS_U32, (uint)length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_CONDPATH_TMPL_U32, (uint)length),
             };
 
             var tuples = new SectionVendorTuples("condpath_hdr_tuples");
-            tuples.Tokens = "avs_tplg_core_tokens";
+            tuples.Tokens = "avs_manifest_tokens";
             tuples.Tuples = new[] { words };
-            result.Add(tuples);
+            sections.Add(tuples);
 
             for (int i = 0; i < length; i++)
-                result.AddRange(GetCondpathTemplateSections(templates[i], i));
+                sections.AddRange(GetCondpathTemplateSections(templates[i], i));
 
             // create private section referencing all added entries
             var data = new SectionData("condpath_data");
-            data.Tuples = result.Select(s => s.Identifier).ToArray();
-            result.Add(data);
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
 
-            return result;
+            return sections;
         }
 
         public static SectionPCMCapabilities GetPCMCapabilitiesSection(PCMCapabilities caps, string identifier)
@@ -680,31 +673,31 @@ namespace avstplg
 
         public static IEnumerable<Section> GetFEDAISections(FEDAI fedai)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
             string identifier;
 
-            var section = new SectionPCM(fedai.Name);
-	    section.IgnoreSuspend = fedai.IgnoreSuspend;
+            var pcm = new SectionPCM(fedai.Name);
+	    pcm.IgnoreSuspend = fedai.IgnoreSuspend;
             if (fedai.CaptureCapabilities != null)
             {
                 identifier = $"{fedai.Name}-capture";
-                section.Capture = new PCMStream("capture");
-                section.Capture.Capabilities = identifier;
-                result.Add(GetPCMCapabilitiesSection(fedai.CaptureCapabilities, identifier));
+                pcm.Capture = new PCMStream("capture");
+                pcm.Capture.Capabilities = identifier;
+                sections.Add(GetPCMCapabilitiesSection(fedai.CaptureCapabilities, identifier));
             }
 
             if (fedai.PlaybackCapabilities != null)
             {
                 identifier = $"{fedai.Name}-playback";
-                section.Playback = new PCMStream("playback");
-                section.Playback.Capabilities = identifier;
-                result.Add(GetPCMCapabilitiesSection(fedai.PlaybackCapabilities, identifier));
+                pcm.Playback = new PCMStream("playback");
+                pcm.Playback.Capabilities = identifier;
+                sections.Add(GetPCMCapabilitiesSection(fedai.PlaybackCapabilities, identifier));
             }
 
-            section.DAI = new FE_DAI($"{fedai.Name}-dai");
-            result.Add(section);
+            pcm.DAI = new FE_DAI($"{fedai.Name}-dai");
+            sections.Add(pcm);
 
-            return result;
+            return sections;
         }
 
         public static Section GetDAPMGraphSection(DAPMGraph graph)
@@ -718,52 +711,58 @@ namespace avstplg
 
         public static IEnumerable<Section> GetTopologySections(Topology topology)
         {
-            var result = new List<Section>();
+            var sections = new List<Section>();
 
-            result.AddRange(GetAllSectionTokens());
+            sections.AddRange(GetAllSectionTokens());
 
             // append topology header
             var strings = new VendorTuples<string>();
             strings.Tuples = new[]
             {
-                GetTuple(AVS_TKN_TPLG.NAME_STRING, topology.Name),
+                GetTuple(AVS_TKN_MANIFEST.NAME_STRING, topology.Name),
             };
 
-            var tuples = new SectionVendorTuples("tplg_hdr_tuples");
-            tuples.Tokens = "avs_tplg_core_tokens";
-            tuples.Tuples = new[] { strings };
-            result.Add(tuples);
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_MANIFEST.VERSION_U32, topology.Version),
+            };
 
-            var data = new SectionData("tplg_hdr_data");
+            var tuples = new SectionVendorTuples("manifest_hdr_tuples");
+            tuples.Tokens = "avs_manifest_tokens";
+            tuples.Tuples = new VendorTuples[] { strings, words };
+            sections.Add(tuples);
+
+            var data = new SectionData("manifest_hdr_data");
             data.Tuples = new[] { tuples.Identifier };
-            result.Add(data);
+            sections.Add(data);
 
             // then all other components topology consists of
-            result.AddRange(GetLibrariesSections(topology.Libraries));
-            result.AddRange(GetAudioFormatsSections(topology.AudioFormats));
-            result.AddRange(GetModuleConfigsBaseSections(topology.ModuleConfigsBase));
-            result.AddRange(GetModuleConfigsExtSections(topology.ModuleConfigsExt));
-            result.AddRange(GetPipelinesSections(topology.Pipelines));
-            result.AddRange(GetBindingsSections(topology.Bindings));
-            result.AddRange(GetCondpathTemplatesSections(topology.CondpathTemplates));
+            sections.AddRange(GetLibrariesSections(topology.Libraries));
+            sections.AddRange(GetAudioFormatsSections(topology.AudioFormats));
+            sections.AddRange(GetModuleConfigsBaseSections(topology.ModuleConfigsBase));
+            sections.AddRange(GetModuleConfigsExtSections(topology.ModuleConfigsExt));
+            sections.AddRange(GetPipelineConfigsSections(topology.PipelineConfigs));
+            sections.AddRange(GetBindingsSections(topology.Bindings));
+            sections.AddRange(GetCondpathTemplatesSections(topology.CondpathTemplates));
 
             var manifest = new SectionManifest("avs_manifest");
             // Manifest should not reference any SectionData that is already
             // owned by other section e.g.: SectionWidget. Assign Data here
             // before any widgets are added by GetPathTemplateSections
-            manifest.Data = result.OfType<SectionData>().Select(s => s.Identifier).ToArray();
-            result.Add(manifest);
+            manifest.Data = sections.OfType<SectionData>().Select(s => s.Identifier).ToArray();
+            sections.Add(manifest);
 
             for (int i = 0; i < topology.PathTemplates.Length; i++)
-                result.AddRange(GetPathTemplateSections(topology.PathTemplates[i], i));
+                sections.AddRange(GetPathTemplateSections(topology.PathTemplates[i], i));
 
             for (int i = 0; i < topology.FEDAIs.Length; i++)
-                result.AddRange(GetFEDAISections(topology.FEDAIs[i]));
+                sections.AddRange(GetFEDAISections(topology.FEDAIs[i]));
 
             for (int i = 0; i < topology.Graphs.Length; i++)
-                result.Add(GetDAPMGraphSection(topology.Graphs[i]));
+                sections.Add(GetDAPMGraphSection(topology.Graphs[i]));
 
-            return result;
+            return sections;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace avstplg
         internal uint channelMap;
 
         [XmlAttribute("id")]
-        public int Id { get; set; }
+        public uint Id { get; set; }
         public uint SampleRate { get; set; }
         public uint BitDepth { get; set; }
         public string ChannelMap
@@ -40,7 +40,7 @@ namespace avstplg
     public class ModuleConfigBase
     {
         [XmlAttribute("id")]
-        public int Id { get; set; }
+        public uint Id { get; set; }
         public uint Cpc { get; set; }
         public uint Ibs { get; set; }
         public uint Obs { get; set; }
@@ -70,9 +70,6 @@ namespace avstplg
                 catch { }
             }
         }
-
-        public byte CoreId { get; set; }
-        public byte ProcessingDomain { get; set; }
 
         // module-type specific fields
         public uint? CprOutAudioFormatId { get; set; }
@@ -104,6 +101,7 @@ namespace avstplg
         public uint? UpDownMixOutChanCfg { get; set; }
         public uint? UpDownMixCoeffSelect { get; set; }
         [XmlArray("UpDownMixCoeff")]
+
         [XmlArrayItem("int")]
         public int[] UpDownMixCoeff { get; set; }
         public uint? UpDownMixChanMap { get; set; }
@@ -112,10 +110,10 @@ namespace avstplg
         public byte? ASrcDisableJitterBuffer { get; set; }
     }
 
-    public class Pipeline
+    public class PipelineConfig
     {
         [XmlAttribute("id")]
-        public int Id { get; set; }
+        public uint Id { get; set; }
         public ushort RequiredSize { get; set; }
         public byte Priority { get; set; }
         public bool LowPower { get; set; }
@@ -128,11 +126,11 @@ namespace avstplg
         [XmlAttribute("id")]
         public uint Id { get; set; }
         public string TargetTopologyName { get; set; }
-        public uint TargetPathObjId { get; set; }
-        public uint TargetRouteObjId { get; set; }
-        public uint TargetModuleObjId { get; set; }
+        public uint TargetPathTemplateId { get; set; }
+        public uint TargetPipelineId { get; set; }
+        public uint TargetModuleId { get; set; }
         public byte TargetModulePin { get; set; }
-        public uint ModuleObjId { get; set; }
+        public uint ModuleId { get; set; }
         public byte ModulePin { get; set; }
         public bool IsSink { get; set; }
     }
@@ -143,14 +141,16 @@ namespace avstplg
         public uint Id { get; set; }
         public uint ConfigBaseId { get; set; }
         public uint InAudioFormatId { get; set; }
+        public byte CoreId { get; set; }
+        public byte ProcessingDomain { get; set; }
         public uint ConfigExtId { get; set; }
     }
 
-    public class Route
+    public class Pipeline
     {
-        [XmlAttribute("obj_id")]
-        public int ObjectId { get; set; }
-        public uint ImplementingPipelineId { get; set; }
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
+        public uint ConfigId { get; set; }
         public Module[] Modules;
         [XmlElement]
         public uint[] BindingId;
@@ -158,17 +158,17 @@ namespace avstplg
 
     public class Path
     {
-        [XmlAttribute("variant_id")]
-        public int VariantId { get; set; }
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
         public uint FEAudioFormatId;
         public uint BEAudioFormatId;
-        public Route[] Routes;
+        public Pipeline[] Pipelines;
     }
 
     public class PathTemplate
     {
-        [XmlAttribute("obj_id")]
-        public int ObjectId { get; set; }
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
         [XmlAttribute("widget_name")]
         public string WidgetName { get; set; }
         public bool IgnoreSuspend { get; set; }
@@ -177,21 +177,21 @@ namespace avstplg
 
     public class Condpath
     {
-        [XmlAttribute("variant_id")]
-        public int VariantId { get; set; }
-        public uint SourceVariantId;
-        public uint SinkVariantId;
-        public Route[] Routes;
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
+        public uint SourcePathId;
+        public uint SinkPathId;
+        public Pipeline[] Pipelines;
     }
 
     public class CondpathTemplate
     {
-        [XmlAttribute("obj_id")]
-        public int ObjectId { get; set; }
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
         public string SourceTopologyName { get; set; }
-        public uint SourcePathObjId { get; set; }
+        public uint SourcePathTemplateId { get; set; }
         public string SinkTopologyName { get; set; }
-        public uint SinkPathObjId { get; set; }
+        public uint SinkPathTemplateId { get; set; }
         public uint ConditionType { get; set; }
         public bool Overridable { get; set; }
         public byte Priority { get; set; }
@@ -237,11 +237,12 @@ namespace avstplg
     public class Topology
     {
         public string Name { get; set; }
+        public uint Version { get; set; }
         public Library[] Libraries;
         public AudioFormat[] AudioFormats;
         public ModuleConfigBase[] ModuleConfigsBase;
         public ModuleConfigExt[] ModuleConfigsExt;
-        public Pipeline[] Pipelines;
+        public PipelineConfig[] PipelineConfigs;
         public Binding[] Bindings;
         public PathTemplate[] PathTemplates;
         public CondpathTemplate[] CondpathTemplates;
