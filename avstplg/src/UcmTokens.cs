@@ -4,19 +4,19 @@
     {
         NAME_STRING = 1,
         VERSION_U32,
-        NUM_LIBRARY_U32,
-        NUM_AUDIO_FMTS_U32,
-        NUM_MODCFG_BASE_U32,
-        NUM_MODCFG_EXT_U32,
-        NUM_PPLCFG_U32,
-        NUM_BINDING_U32,
-        NUM_CONDPATH_TMPL_U32,
+        NUM_LIBRARIES_U32,
+        NUM_AFMTS_U32,
+        NUM_MODCFGS_BASE_U32,
+        NUM_MODCFGS_EXT_U32,
+        NUM_PPLCFGS_U32,
+        NUM_BINDINGS_U32,
+        NUM_CONDPATH_TMPLS_U32,
     }
 
     public enum AVS_TKN_LIBRARY
     {
-        FILE_STRING = 101,
-        FW_NAME_STRING,
+        ID_U32 = 101,
+        FILENAME_STRING,
     }
 
     public enum AVS_TKN_AFMT
@@ -65,10 +65,10 @@
         PEAKVOL_CURVE_DURATION_UPPER_U32,
         PEAKVOL_CURVE_DURATION_LOWER_U32,
 
-        MUX_REF_FREQ_U32,
-        MUX_OUT_FREQ_U32,
+        MUX_REF_AFMT_ID_U32,
+        MUX_OUT_AFMT_ID_U32,
 
-        AEC_REF_FREQ_U32,
+        AEC_REF_AFMT_ID_U32,
 
         ASRC_OUT_FREQ_U32,
         ASRC_MODE_U8,
@@ -114,7 +114,7 @@
     {
         ID_U32 = 1601,
         PPLCFG_ID_U32,
-        NUM_BINDING_ID_U32,
+        NUM_BINDING_IDS_U32,
         BINDING_ID_U32,
     }
 
@@ -144,7 +144,7 @@
     public enum AVS_TKN_CONDPATH_TMPL
     {
         ID_U32 = AVS_TKN_PATH_TMPL.ID_U32,
-        SOURCE_TPLG_NAME_STRING = 2001,
+        SOURCE_TPLG_NAME_STRING = 2002,
         SOURCE_PATH_TMPL_ID_U32,
         SINK_TPLG_NAME_STRING,
         SINK_PATH_TMPL_ID_U32,
@@ -156,7 +156,7 @@
     public enum AVS_TKN_CONDPATH
     {
         ID_U32 = AVS_TKN_PATH.ID_U32,
-        SOURCE_PATH_ID_U32 = 2101,
+        SOURCE_PATH_ID_U32 = 2102,
         SINK_PATH_ID_U32,
     }
 }

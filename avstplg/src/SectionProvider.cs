@@ -51,16 +51,21 @@ namespace avstplg
 
         public static Section GetLibrarySection(Library library, int id)
         {
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_LIBRARY.ID_U32, library.Id),
+	    };
+
             var strings = new VendorTuples<string>();
             strings.Tuples = new[]
             {
-                GetTuple(AVS_TKN_LIBRARY.FILE_STRING, library.FileName),
-                GetTuple(AVS_TKN_LIBRARY.FW_NAME_STRING, library.FwName),
+                GetTuple(AVS_TKN_LIBRARY.FILENAME_STRING, library.FileName),
             };
 
             var section = new SectionVendorTuples($"library{id}_tuples");
             section.Tokens = "avs_library_tokens";
-            section.Tuples = new VendorTuples[] { strings };
+            section.Tuples = new VendorTuples[] { words, strings };
 
             return section;
         }
@@ -72,12 +77,12 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MANIFEST.NUM_LIBRARY_U32, (uint)libraries.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_LIBRARIES_U32, (uint)libraries.Length),
             };
 
             var tuples = new SectionVendorTuples("library_hdr_tuples");
             tuples.Tokens = "avs_manifest_tokens";
-            tuples.Tuples = new[] { words };
+            tuples.Tuples = new VendorTuples[] { words };
             sections.Add(tuples);
 
             for (int i = 0; i < libraries.Length; i++)
@@ -121,12 +126,12 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MANIFEST.NUM_AUDIO_FMTS_U32, (uint)formats.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_AFMTS_U32, (uint)formats.Length),
             };
 
             var tuples = new SectionVendorTuples("audio_format_hdr_tuples");
             tuples.Tokens = "avs_manifest_tokens";
-            tuples.Tuples = new[] { words };
+            tuples.Tuples = new VendorTuples[] { words };
             sections.Add(tuples);
 
             for (int i = 0; i < formats.Length; i++)
@@ -166,12 +171,12 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MANIFEST.NUM_MODCFG_BASE_U32, (uint)configs.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_MODCFGS_BASE_U32, (uint)configs.Length),
             };
 
             var tuples = new SectionVendorTuples("modcfg_base_hdr_tuples");
             tuples.Tokens = "avs_manifest_tokens";
-            tuples.Tuples = new[] { words };
+            tuples.Tuples = new VendorTuples[] { words };
             sections.Add(tuples);
 
             for (int i = 0; i < configs.Length; i++)
@@ -229,12 +234,12 @@ namespace avstplg
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CURVE_DURATION_UPPER_U32, (uint)(module.PeakvolCurveDuration.Value >> 32)));
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CURVE_DURATION_LOWER_U32, (uint)module.PeakvolCurveDuration.Value));
             }
-            if (module.MuxRefFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_REF_FREQ_U32, module.MuxRefFrequency.Value));
-            if (module.MuxOutFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_OUT_FREQ_U32, module.MuxOutFrequency.Value));
-            if (module.AecRefFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_REF_FREQ_U32, module.AecRefFrequency.Value));
+            if (module.MuxRefAudioFormatId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_REF_AFMT_ID_U32, module.MuxRefAudioFormatId.Value));
+            if (module.MuxOutAudioFormatId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_OUT_AFMT_ID_U32, module.MuxOutAudioFormatId.Value));
+            if (module.AecRefAudioFormatId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_REF_AFMT_ID_U32, module.AecRefAudioFormatId.Value));
 
             if (module.UpDownMixOutChanCfg.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_OUT_CHAN_CFG_U32, module.UpDownMixOutChanCfg.Value));
@@ -282,12 +287,12 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MANIFEST.NUM_MODCFG_EXT_U32, (uint)configs.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_MODCFGS_EXT_U32, (uint)configs.Length),
             };
 
             var tuples = new SectionVendorTuples("modcfg_ext_hdr_tuples");
             tuples.Tokens = "avs_manifest_tokens";
-            tuples.Tuples = new[] { words };
+            tuples.Tuples = new VendorTuples[] { words };
             sections.Add(tuples);
 
             for (int i = 0; i < configs.Length; i++)
@@ -351,12 +356,12 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MANIFEST.NUM_PPLCFG_U32, (uint)configs.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_PPLCFGS_U32, (uint)configs.Length),
             };
 
             var tuples = new SectionVendorTuples("pplcfg_hdr_tuples");
             tuples.Tokens = "avs_manifest_tokens";
-            tuples.Tuples = new[] { words };
+            tuples.Tuples = new VendorTuples[] { words };
             sections.Add(tuples);
 
             for (int i = 0; i < configs.Length; i++)
@@ -410,7 +415,7 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MANIFEST.NUM_BINDING_U32, (uint)bindings.Length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_BINDINGS_U32, (uint)bindings.Length),
             };
 
             var tuples = new SectionVendorTuples("binding_hdr_tuples");
@@ -490,7 +495,7 @@ namespace avstplg
             {
                 GetTuple(AVS_TKN_PPL.ID_U32, ppl.Id),
                 GetTuple(AVS_TKN_PPL.PPLCFG_ID_U32, ppl.ConfigId),
-                GetTuple(AVS_TKN_PPL.NUM_BINDING_ID_U32, (uint)numBindings),
+                GetTuple(AVS_TKN_PPL.NUM_BINDING_IDS_U32, (uint)numBindings),
             };
 
             var tuples = new SectionVendorTuples($"{identifier}_tuples");
@@ -563,7 +568,7 @@ namespace avstplg
             widget.Type = TPLG_DAPM.SCHEDULER;
             widget.NoPm = true;
             widget.IgnoreSuspend = template.IgnoreSuspend;
-            widget.Data = new[] { data.Identifier };
+            widget.Data = new string[] { data.Identifier };
             sections.Add(widget);
 
             return sections;
@@ -648,12 +653,12 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MANIFEST.NUM_CONDPATH_TMPL_U32, (uint)length),
+                GetTuple(AVS_TKN_MANIFEST.NUM_CONDPATH_TMPLS_U32, (uint)length),
             };
 
             var tuples = new SectionVendorTuples("condpath_hdr_tuples");
             tuples.Tokens = "avs_manifest_tokens";
-            tuples.Tuples = new[] { words };
+            tuples.Tuples = new VendorTuples[] { words };
             sections.Add(tuples);
 
             for (int i = 0; i < length; i++)
@@ -745,7 +750,7 @@ namespace avstplg
             sections.Add(tuples);
 
             var data = new SectionData("manifest_hdr_data");
-            data.Tuples = new[] { tuples.Identifier };
+            data.Tuples = new string[] { tuples.Identifier };
             sections.Add(data);
 
             // then all other components topology consists of

@@ -7,8 +7,9 @@ namespace avstplg
 {
     public class Library
     {
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
         public string FileName { get; set; }
-        public string FwName { get; set; }
     }
 
     public class AudioFormat
@@ -95,9 +96,9 @@ namespace avstplg
         public uint? PeakvolTargetVolume { get; set; }
         public uint? PeakvolCurveType { get; set; }
         public ulong? PeakvolCurveDuration { get; set; }
-        public uint? MuxRefFrequency { get; set; }
-        public uint? MuxOutFrequency { get; set; }
-        public uint? AecRefFrequency { get; set; }
+        public uint? MuxRefAudioFormatId { get; set; }
+        public uint? MuxOutAudioFormatId { get; set; }
+        public uint? AecRefAudioFormatId { get; set; }
         public uint? UpDownMixOutChanCfg { get; set; }
         public uint? UpDownMixCoeffSelect { get; set; }
         [XmlArray("UpDownMixCoeff")]
