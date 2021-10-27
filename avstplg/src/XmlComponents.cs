@@ -99,6 +99,8 @@ namespace avstplg
         public uint? MuxRefAudioFormatId { get; set; }
         public uint? MuxOutAudioFormatId { get; set; }
         public uint? AecRefAudioFormatId { get; set; }
+        public uint? AecOutAudioFormatId { get; set; }
+        public uint? AecCpcLowPowerMode { get; set; }
         public uint? UpDownMixOutChanCfg { get; set; }
         public uint? UpDownMixCoeffSelect { get; set; }
         [XmlArray("UpDownMixCoeff")]

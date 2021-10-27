@@ -69,6 +69,8 @@
         MUX_OUT_AFMT_ID_U32,
 
         AEC_REF_AFMT_ID_U32,
+        AEC_OUT_AFMT_ID_U32,
+        AEC_CPC_LOW_POWER_MODE_U32,
 
         ASRC_OUT_FREQ_U32,
         ASRC_MODE_U8,

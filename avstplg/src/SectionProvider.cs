@@ -240,7 +240,10 @@ namespace avstplg
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_OUT_AFMT_ID_U32, module.MuxOutAudioFormatId.Value));
             if (module.AecRefAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_REF_AFMT_ID_U32, module.AecRefAudioFormatId.Value));
-
+            if (module.AecOutAudioFormatId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_OUT_AFMT_ID_U32, module.AecOutAudioFormatId.Value));
+            if (module.AecCpcLowPowerMode.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_CPC_LOW_POWER_MODE_U32, module.AecCpcLowPowerMode.Value));
             if (module.UpDownMixOutChanCfg.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_OUT_CHAN_CFG_U32, module.UpDownMixOutChanCfg.Value));
             if (module.UpDownMixCoeffSelect.HasValue)
