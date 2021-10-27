@@ -221,7 +221,7 @@ namespace avstplg
             if (module.MicselOutAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MICSEL_OUT_AFMT_ID_U32, module.MicselOutAudioFormatId.Value));
             if (module.IntelWOVCpcLowPowerMode.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.INTELWOV_CPC_LOW_POWER_MODE_U32, module.IntelWOVCpcLowPowerMode.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.INTELWOV_CPC_LP_MODE_U32, module.IntelWOVCpcLowPowerMode.Value));
             if (module.SrcOutFrequency.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.SRC_OUT_FREQ_U32, module.SrcOutFrequency.Value));
             if (module.PeakvolChanId.HasValue)
@@ -243,7 +243,7 @@ namespace avstplg
             if (module.AecOutAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_OUT_AFMT_ID_U32, module.AecOutAudioFormatId.Value));
             if (module.AecCpcLowPowerMode.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_CPC_LOW_POWER_MODE_U32, module.AecCpcLowPowerMode.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_CPC_LP_MODE_U32, module.AecCpcLowPowerMode.Value));
             if (module.UpDownMixOutChanCfg.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_OUT_CHAN_CFG_U32, module.UpDownMixOutChanCfg.Value));
             if (module.UpDownMixCoeffSelect.HasValue)
