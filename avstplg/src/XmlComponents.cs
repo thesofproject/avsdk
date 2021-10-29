@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Globalization;
 using System.Xml.Serialization;
-using System.Collections.Generic;
 
 namespace avstplg
 {
@@ -51,7 +49,7 @@ namespace avstplg
     public class ModuleConfigExt
     {
         internal Guid uuid;
-        internal uint cprDMAType;
+        public uint? cprDMAType;
 
         [XmlAttribute("id")]
         public uint Id { get; set; }
@@ -81,11 +79,12 @@ namespace avstplg
         {
             get
             {
-                return string.Format("0x{0:X8}", cprDMAType);
+                return cprDMAType.HasValue ? string.Format("0x{0:X8}", cprDMAType) : null;
             }
             set
             {
-                cprDMAType = (value != null) ? value.ToUInt32() : 0;
+                if (value != null)
+                    cprDMAType = value.ToUInt32();
             }
         }
         public uint? CprDMABufferSize { get; set; }
