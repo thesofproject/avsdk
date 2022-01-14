@@ -224,16 +224,6 @@ namespace avstplg
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.INTELWOV_CPC_LP_MODE_U32, module.IntelWOVCpcLowPowerMode.Value));
             if (module.SrcOutFrequency.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.SRC_OUT_FREQ_U32, module.SrcOutFrequency.Value));
-            if (module.PeakvolChanId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CHANNEL_ID_U32, module.PeakvolChanId.Value));
-            if (module.PeakvolTargetVolume.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_TARGET_VOLUME_U32, module.PeakvolTargetVolume.Value));
-            if (module.PeakvolCurveType.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CURVE_TYPE_U32, module.PeakvolCurveType.Value));
-            if (module.PeakvolCurveDuration.HasValue) {
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CURVE_DURATION_UPPER_U32, (uint)(module.PeakvolCurveDuration.Value >> 32)));
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.PEAKVOL_CURVE_DURATION_LOWER_U32, (uint)module.PeakvolCurveDuration.Value));
-            }
             if (module.MuxRefAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_REF_AFMT_ID_U32, module.MuxRefAudioFormatId.Value));
             if (module.MuxOutAudioFormatId.HasValue)

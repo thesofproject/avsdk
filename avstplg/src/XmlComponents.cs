@@ -91,10 +91,6 @@ namespace avstplg
         public uint? MicselOutAudioFormatId { get; set; }
         public uint? IntelWOVCpcLowPowerMode { get; set; }
         public uint? SrcOutFrequency { get; set; }
-        public uint? PeakvolChanId { get; set; }
-        public uint? PeakvolTargetVolume { get; set; }
-        public uint? PeakvolCurveType { get; set; }
-        public ulong? PeakvolCurveDuration { get; set; }
         public uint? MuxRefAudioFormatId { get; set; }
         public uint? MuxOutAudioFormatId { get; set; }
         public uint? AecRefAudioFormatId { get; set; }
