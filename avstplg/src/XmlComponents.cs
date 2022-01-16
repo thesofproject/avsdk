@@ -46,6 +46,12 @@ namespace avstplg
         public uint Pages { get; set; }
     }
 
+    public class IOPinFormat
+    {
+        public uint IObs { get; set; }
+        public uint AudioFormatId { get; set; }
+    }
+
     public class ModuleConfigExt
     {
         internal Guid uuid;
@@ -106,6 +112,10 @@ namespace avstplg
         public uint? ASrcOutFrequency { get; set; }
         public byte? ASrcMode { get; set; }
         public byte? ASrcDisableJitterBuffer { get; set; }
+        [XmlArrayItem("InPinFormat")]
+        public IOPinFormat[] InPinFormats;
+        [XmlArrayItem("OutPinFormat")]
+        public IOPinFormat[] OutPinFormats;
     }
 
     public class PipelineConfig

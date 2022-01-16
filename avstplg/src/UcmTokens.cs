@@ -81,6 +81,9 @@
         UPDOWN_MIX_COEFF_6_S32,
         UPDOWN_MIX_COEFF_7_S32,
         UPDOWN_MIX_CHAN_MAP_U32,
+
+        NUM_INPUT_PINS_U16,
+        NUM_OUTPUT_PINS_U16,
     }
 
     public enum AVS_TKN_PPLCFG
@@ -154,5 +157,12 @@
         ID_U32 = AVS_TKN_PATH.ID_U32,
         SOURCE_PATH_ID_U32 = 2102,
         SINK_PATH_ID_U32,
+    }
+
+    public enum AVS_TKN_PIN_FMT
+    {
+        INDEX_U32 = 2201,
+        IOBS_U32,
+        AFMT_ID_U32,
     }
 }

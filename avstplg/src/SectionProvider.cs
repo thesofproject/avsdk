@@ -45,6 +45,7 @@ namespace avstplg
             sections.Add(GetSectionTokens<AVS_TKN_PATH>("avs_path_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_CONDPATH_TMPL>("avs_condpath_template_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_CONDPATH>("avs_condpath_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_PIN_FMT>("avs_pin_format_tokens"));
 
             return sections;
         }
@@ -190,6 +191,35 @@ namespace avstplg
             return sections;
         }
 
+        public static Section GetPinFormatSection(IOPinFormat pin, string namePrefix, uint id)
+        {
+            var wordTuples = new List<Tuple<string, uint>>()
+            {
+                GetTuple(AVS_TKN_PIN_FMT.INDEX_U32, id),
+                GetTuple(AVS_TKN_PIN_FMT.IOBS_U32, pin.IObs),
+                GetTuple(AVS_TKN_PIN_FMT.AFMT_ID_U32, pin.AudioFormatId),
+            };
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = wordTuples.ToArray();
+
+            var section = new SectionVendorTuples($"{namePrefix}pin{id}_tuples");
+            section.Tokens = "avs_pin_format_tokens";
+            section.Tuples = new VendorTuples[] { words };
+
+            return section;
+        }
+
+        public static IEnumerable<Section> GetPinFormatsSections(IOPinFormat[] pins, string namePrefix)
+        {
+            var sections = new List<Section>();
+
+            for (uint i = 0; i < pins.Length; i++)
+                sections.Add(GetPinFormatSection(pins[i], namePrefix, i));
+
+            return sections;
+        }
+
         public static Section GetModuleConfigExtSection(ModuleConfigExt module, int id)
         {
             var uuids = new VendorTuples<Guid>();
@@ -260,6 +290,11 @@ namespace avstplg
             if (module.ASrcDisableJitterBuffer.HasValue)
                 byteTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.ASRC_DISABLE_JITTER_BUFFER_U8, module.ASrcDisableJitterBuffer.Value));
 
+            if (module.InPinFormats != null)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.NUM_INPUT_PINS_U16, (uint)module.InPinFormats.Length));
+            if (module.OutPinFormats != null)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.NUM_OUTPUT_PINS_U16, (uint)module.OutPinFormats.Length));
+
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();
 
@@ -289,7 +324,13 @@ namespace avstplg
             sections.Add(tuples);
 
             for (int i = 0; i < configs.Length; i++)
+            {
                 sections.Add(GetModuleConfigExtSection(configs[i], i));
+                if (configs[i].InPinFormats != null)
+                    sections.AddRange(GetPinFormatsSections(configs[i].InPinFormats, $"modcfg_ext{i}_in"));
+                if (configs[i].OutPinFormats != null)
+                    sections.AddRange(GetPinFormatsSections(configs[i].OutPinFormats, $"modcfg_ext{i}_out"));
+            }
 
             // create private section referencing all added entries
             var data = new SectionData("modcfg_ext_data");
