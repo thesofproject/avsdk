@@ -36,7 +36,7 @@ namespace avstplg
             sections.Add(GetSectionTokens<AVS_TKN_LIBRARY>("avs_library_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_AFMT>("avs_audio_format_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_MODCFG_BASE>("avs_modcfg_base_tokens"));
-            sections.Add(GetSectionTokens<AVS_TKN_MODCFG_EXT>("avs_modcfg_ext_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_MODCFG>("avs_modcfg_ext_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_PPLCFG>("avs_pplcfg_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_BINDING>("avs_binding_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_PPL>("avs_pipeline_tokens"));
@@ -225,75 +225,75 @@ namespace avstplg
             var uuids = new VendorTuples<Guid>();
             uuids.Tuples = new[]
             {
-                GetTuple(AVS_TKN_MODCFG_EXT.TYPE_UUID, module.uuid),
+                GetTuple(AVS_TKN_MODCFG.EXT_TYPE_UUID, module.uuid),
             };
 
             var wordTuples = new List<Tuple<string, uint>>
             {
-                GetTuple(AVS_TKN_MODCFG_EXT.ID_U32, module.Id),
+                GetTuple(AVS_TKN_MODCFG.EXT_ID_U32, module.Id),
             };
 
             var byteTuples = new List<Tuple<string, byte>>();
 
             // module-type specific tuples
             if (module.CprOutAudioFormatId.HasValue)
-            wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
+            wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
             if (module.CprBlobFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_BLOB_FMT_ID_U32, module.CprBlobFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_BLOB_FMT_ID_U32, module.CprBlobFormatId.Value));
             if (module.CprFeatureMask.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_FEATURE_MASK_U32, module.CprFeatureMask.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_FEATURE_MASK_U32, module.CprFeatureMask.Value));
             if (module.CprVirtualIndex != null)
-                byteTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_VINDEX_U8, module.CprVirtualIndex.Value));
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_VINDEX_U8, module.CprVirtualIndex.Value));
             if (module.cprDMAType.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_DMA_TYPE_U32, module.cprDMAType.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMA_TYPE_U32, module.cprDMAType.Value));
             if (module.CprDMABufferSize != null)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.CPR_DMABUFF_SIZE_U32, module.CprDMABufferSize.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMABUFF_SIZE_U32, module.CprDMABufferSize.Value));
             if (module.MicselOutAudioFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MICSEL_OUT_AFMT_ID_U32, module.MicselOutAudioFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MICSEL_OUT_AFMT_ID_U32, module.MicselOutAudioFormatId.Value));
             if (module.IntelWOVCpcLowPowerMode.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.INTELWOV_CPC_LP_MODE_U32, module.IntelWOVCpcLowPowerMode.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.INTELWOV_CPC_LP_MODE_U32, module.IntelWOVCpcLowPowerMode.Value));
             if (module.SrcOutFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.SRC_OUT_FREQ_U32, module.SrcOutFrequency.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.SRC_OUT_FREQ_U32, module.SrcOutFrequency.Value));
             if (module.MuxRefAudioFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_REF_AFMT_ID_U32, module.MuxRefAudioFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MUX_REF_AFMT_ID_U32, module.MuxRefAudioFormatId.Value));
             if (module.MuxOutAudioFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.MUX_OUT_AFMT_ID_U32, module.MuxOutAudioFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MUX_OUT_AFMT_ID_U32, module.MuxOutAudioFormatId.Value));
             if (module.AecRefAudioFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_REF_AFMT_ID_U32, module.AecRefAudioFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.AEC_REF_AFMT_ID_U32, module.AecRefAudioFormatId.Value));
             if (module.AecOutAudioFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_OUT_AFMT_ID_U32, module.AecOutAudioFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.AEC_OUT_AFMT_ID_U32, module.AecOutAudioFormatId.Value));
             if (module.AecCpcLowPowerMode.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.AEC_CPC_LP_MODE_U32, module.AecCpcLowPowerMode.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.AEC_CPC_LP_MODE_U32, module.AecCpcLowPowerMode.Value));
             if (module.UpDownMixOutChanCfg.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_OUT_CHAN_CFG_U32, module.UpDownMixOutChanCfg.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_OUT_CHAN_CFG_U32, module.UpDownMixOutChanCfg.Value));
             if (module.UpDownMixCoeffSelect.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_COEFF_SELECT_U32, module.UpDownMixCoeffSelect.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_SELECT_U32, module.UpDownMixCoeffSelect.Value));
 
             if (module.UpDownMixCoeff != null)
             {
                 if (module.UpDownMixCoeff.Length > 8)
                     throw new InvalidOperationException("Too many coefficients passed to UpDownMix");
-                for (int i = (int)AVS_TKN_MODCFG_EXT.UPDOWN_MIX_COEFF_0_S32; i <= (int)AVS_TKN_MODCFG_EXT.UPDOWN_MIX_COEFF_7_S32; i++)
+                for (int i = (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32; i <= (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_7_S32; i++)
                 {
-                    int j = i - (int)AVS_TKN_MODCFG_EXT.UPDOWN_MIX_COEFF_0_S32;
+                    int j = i - (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32;
                     if (j <= module.UpDownMixCoeff.Length)
                         wordTuples.Add(GetTuple(i, (uint)module.UpDownMixCoeff[j]));
                 }
             }
             if (module.UpDownMixChanMap.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.UPDOWN_MIX_CHAN_MAP_U32, module.UpDownMixChanMap.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_CHAN_MAP_U32, module.UpDownMixChanMap.Value));
 
             if (module.ASrcOutFrequency.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.ASRC_OUT_FREQ_U32, module.ASrcOutFrequency.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_OUT_FREQ_U32, module.ASrcOutFrequency.Value));
             if (module.ASrcMode.HasValue)
-                byteTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.ASRC_MODE_U8, module.ASrcMode.Value));
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_MODE_U8, module.ASrcMode.Value));
             if (module.ASrcDisableJitterBuffer.HasValue)
-                byteTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.ASRC_DISABLE_JITTER_BUFFER_U8, module.ASrcDisableJitterBuffer.Value));
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_DISABLE_JITTER_BUFFER_U8, module.ASrcDisableJitterBuffer.Value));
 
             if (module.InPinFormats != null)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.NUM_INPUT_PINS_U16, (uint)module.InPinFormats.Length));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.EXT_NUM_INPUT_PINS_U16, (uint)module.InPinFormats.Length));
             if (module.OutPinFormats != null)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG_EXT.NUM_OUTPUT_PINS_U16, (uint)module.OutPinFormats.Length));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.EXT_NUM_OUTPUT_PINS_U16, (uint)module.OutPinFormats.Length));
 
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();

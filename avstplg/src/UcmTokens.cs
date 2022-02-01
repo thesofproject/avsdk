@@ -1,4 +1,4 @@
-﻿namespace avstplg
+namespace avstplg
 {
     public enum AVS_TKN_MANIFEST
     {
@@ -41,10 +41,10 @@
         PAGES_U32,
     }
 
-    public enum AVS_TKN_MODCFG_EXT
+    public enum AVS_TKN_MODCFG
     {
-        ID_U32 = 401,
-        TYPE_UUID,
+        EXT_ID_U32 = 401,
+        EXT_TYPE_UUID,
 
         CPR_OUT_AFMT_ID_U32,
         CPR_FEATURE_MASK_U32,
@@ -82,8 +82,8 @@
         UPDOWN_MIX_COEFF_7_S32,
         UPDOWN_MIX_CHAN_MAP_U32,
 
-        NUM_INPUT_PINS_U16,
-        NUM_OUTPUT_PINS_U16,
+        EXT_NUM_INPUT_PINS_U16,
+        EXT_NUM_OUTPUT_PINS_U16,
     }
 
     public enum AVS_TKN_PPLCFG
