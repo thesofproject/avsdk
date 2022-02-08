@@ -295,6 +295,21 @@ namespace avstplg
             if (module.OutPinFormats != null)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.EXT_NUM_OUTPUT_PINS_U16, (uint)module.OutPinFormats.Length));
 
+            if (module.WhmRefAudioFormatId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_REF_AFMT_ID_U32, module.WhmRefAudioFormatId.Value));
+            if (module.WhmOutAudioFormatId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_OUT_AFMT_ID_U32, module.WhmOutAudioFormatId.Value));
+            if (module.WhmBlobFormatId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_BLOB_FMT_ID_U32, module.WhmBlobFormatId.Value));
+            if (module.WhmWakeTickPeriod.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_WAKE_TICK_PERIOD_U32, module.WhmWakeTickPeriod.Value));
+            if (module.WhmVirtualIndex != null)
+                byteTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_VINDEX_U8, module.WhmVirtualIndex.Value));
+            if (module.whmDMAType.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_DMA_TYPE_U32, module.whmDMAType.Value));
+            if (module.WhmDMABufferSize != null)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_DMABUFF_SIZE_U32, module.WhmDMABufferSize.Value));
+
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();
 

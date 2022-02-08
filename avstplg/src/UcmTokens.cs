@@ -84,6 +84,14 @@ namespace avstplg
 
         EXT_NUM_INPUT_PINS_U16,
         EXT_NUM_OUTPUT_PINS_U16,
+
+        WHM_REF_AFMT_ID_U32,
+        WHM_OUT_AFMT_ID_U32,
+        WHM_WAKE_TICK_PERIOD_U32,
+        WHM_DMA_TYPE_U32,
+        WHM_DMABUFF_SIZE_U32,
+        WHM_VINDEX_U8,
+        WHM_BLOB_FMT_ID_U32,
     }
 
     public enum AVS_TKN_PPLCFG

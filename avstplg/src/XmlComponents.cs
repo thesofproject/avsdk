@@ -56,6 +56,7 @@ namespace avstplg
     {
         internal Guid uuid;
         public uint? cprDMAType;
+        public uint? whmDMAType;
 
         [XmlAttribute("id")]
         public uint Id { get; set; }
@@ -116,6 +117,25 @@ namespace avstplg
         public IOPinFormat[] InPinFormats;
         [XmlArrayItem("OutPinFormat")]
         public IOPinFormat[] OutPinFormats;
+
+        public uint? WhmRefAudioFormatId { get; set; }
+        public uint? WhmOutAudioFormatId { get; set; }
+        public uint? WhmBlobFormatId { get; set; }
+        public uint? WhmWakeTickPeriod { get; set; }
+        public byte? WhmVirtualIndex { get; set; }
+        public string WhmDMAType
+        {
+            get
+            {
+                return whmDMAType.HasValue ? string.Format("0x{0:X8}", whmDMAType) : null;
+            }
+            set
+            {
+                if (value != null)
+                    whmDMAType = value.ToUInt32();
+            }
+        }
+        public uint? WhmDMABufferSize { get; set; }
     }
 
     public class PipelineConfig
