@@ -84,17 +84,15 @@ namespace ProbeExtractor
                         break;
                     }
 
-                    ulong actualCheckSum = binaryReader.ReadUInt64();
-
-                    if (actualCheckSum != header.ExpectedChecksum)
-                    {
-                        Console.WriteLine($"Checksum mismatch. Expected: {header.ExpectedChecksum}, actual: {actualCheckSum}");
-                        checksumMismatchCount++;
-                    }
-                    else
+                    if (ChecksumCorrect(binaryReader.ReadUInt64(), header.ExpectedChecksum))
                     {
                         probeWriter.WriteSamples(tempArray, (int)dataSize);
                         chunkSuccessCount++;
+
+                    }
+                    else
+                    {
+                        checksumMismatchCount++;
                     }
                 }
             }
@@ -169,6 +167,23 @@ namespace ProbeExtractor
                 outFilename = outFilename + ".wav";
 
             return Path.Combine(Path.GetDirectoryName(inFilePath), outFilename);
+        }
+
+        private bool ChecksumCorrect(ulong actualChecksum, ulong expectedChecksum)
+        {
+            // FW bug, some checksums are in 4 most significant bytes, while 4 least significant contains garbage
+            if (actualChecksum > uint.MaxValue && (actualChecksum >> 32) == expectedChecksum)
+            {
+                if (verbose)
+                    Console.WriteLine("Checksum shifted to 4 most significant bytes due to FW issue");
+                return true;
+            }
+
+            if (actualChecksum == expectedChecksum)
+                return true;
+
+            Console.WriteLine($"Checksum mismatch. Expected: {expectedChecksum}, actual: {actualChecksum}");
+            return false;
         }
     }
 }
