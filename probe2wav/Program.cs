@@ -14,6 +14,7 @@ namespace ProbeExtractor
 
             string input = "";
             bool verbose = false;
+            bool ignoreChecksum = false;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -26,12 +27,16 @@ namespace ProbeExtractor
                 {
                     verbose = true;
                 }
+                else if (args[i].Equals("--ignore-checksum"))
+                {
+                    ignoreChecksum = true;
+                }
                 else
                 {
                     input = args[i];
                 }
             }
-            ProbeExtractor extractor = new ProbeExtractor(verbose, input);
+            ProbeExtractor extractor = new ProbeExtractor(verbose, input, ignoreChecksum);
 
             try
             {
@@ -63,6 +68,8 @@ namespace ProbeExtractor
             Console.WriteLine("Options:");
             Console.WriteLine("-h, --help         help");
             Console.WriteLine("-v, --verbose      show verbose output");
+            Console.WriteLine("--ignore-checksum  don't discard data when checksum is incorrect");
+            Console.WriteLine("                   Checksum mismatch will still be displayed in verbose mode");
         }
     }
 }

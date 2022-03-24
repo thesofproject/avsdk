@@ -13,14 +13,16 @@ namespace ProbeExtractor
         private int[] PROBE_SAMPLE_RATES = { 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100,
                                              48000, 64000, 88200, 96000, 128000, 176400, 192000 };
         private readonly bool verbose;
+        private readonly bool ignoreChecksum;
         private readonly string inFilePath;
         private BinaryReader binaryReader;
         private long BytesLeft => binaryReader.BaseStream.Length - binaryReader.BaseStream.Position;
 
-        public ProbeExtractor(bool verbose, string inFilePath)
+        public ProbeExtractor(bool verbose, string inFilePath, bool ignoreChecksum = false)
         {
             this.verbose = verbose;
             this.inFilePath = inFilePath;
+            this.ignoreChecksum = ignoreChecksum;
 
             FileStream probePcmDataStream = File.OpenRead(inFilePath);
             binaryReader = new BinaryReader(probePcmDataStream);
@@ -171,6 +173,9 @@ namespace ProbeExtractor
 
         private bool ChecksumCorrect(ulong actualChecksum, ulong expectedChecksum)
         {
+            if (ignoreChecksum && !verbose)
+                return true;
+
             // FW bug, some checksums are in 4 most significant bytes, while 4 least significant contains garbage
             if (actualChecksum > uint.MaxValue && (actualChecksum >> 32) == expectedChecksum)
             {
@@ -183,6 +188,9 @@ namespace ProbeExtractor
                 return true;
 
             Console.WriteLine($"Checksum mismatch. Expected: {expectedChecksum}, actual: {actualChecksum}");
+
+            if (ignoreChecksum)
+                return true;
             return false;
         }
     }
