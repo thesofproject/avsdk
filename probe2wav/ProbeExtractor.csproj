@@ -46,6 +46,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WavBuilder.cs" />
+    <Compile Include="ChunkHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
