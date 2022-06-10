@@ -12,12 +12,14 @@ namespace ProbeExtractor
         /// </summary>
         private int[] PROBE_SAMPLE_RATES = { 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100,
                                              48000, 64000, 88200, 96000, 128000, 176400, 192000 };
+        private readonly bool verbose;
         private readonly string inFilePath;
         private BinaryReader binaryReader;
         private long BytesLeft => binaryReader.BaseStream.Length - binaryReader.BaseStream.Position;
 
-        public WavProbeExtractor(string inFilePath)
+        public WavProbeExtractor(bool verbose, string inFilePath)
         {
+            this.verbose = verbose;
             this.inFilePath = inFilePath;
 
             FileStream probePcmDataStream = File.OpenRead(inFilePath);
@@ -106,7 +108,8 @@ namespace ProbeExtractor
             if (wavBuilders.Count == 0)
                 throw new Exception("Pcm file doesn't contain any probe data");
 
-            Console.WriteLine($"Conversion finished - {chunkSuccessCount}/{allChunksCount} chunks correct");
+            if (verbose)
+                Console.WriteLine($"Conversion finished - {chunkSuccessCount}/{allChunksCount} chunks correct");
 
             if (checksumMismatchCount > 0 || syncPatternSearchCount > 1 || formatMismatchCount > 0)
                 throw new Exception($"Checksum mismatch: {checksumMismatchCount}, Sync pattern search: {syncPatternSearchCount}, Format mismatch: {formatMismatchCount}");
@@ -122,7 +125,7 @@ namespace ProbeExtractor
                 {
                     long skipped = reader.BaseStream.Position - 4 - startPos;
 
-                    if (skipped > 0)
+                    if (skipped > 0 && verbose)
                         Console.WriteLine($"Found sync pattern, offset 0x{startPos.ToString("X8")}, skipped {skipped} bytes");
                     return (int)(reader.BaseStream.Position - 4 - startPos);
                 }

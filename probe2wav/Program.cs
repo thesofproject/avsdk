@@ -13,6 +13,7 @@ namespace ProbeExtractor
             }
 
             string input = "";
+            bool verbose = false;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -21,12 +22,16 @@ namespace ProbeExtractor
                     PrintHelp();
                     return 0;
                 }
+                if (args[i].Equals("-v") || args[i].Equals("--verbose"))
+                {
+                    verbose = true;
+                }
                 else
                 {
                     input = args[i];
                 }
             }
-            WavProbeExtractor extractor = new WavProbeExtractor(input);
+            WavProbeExtractor extractor = new WavProbeExtractor(verbose, input);
 
             try
             {
@@ -57,6 +62,7 @@ namespace ProbeExtractor
             Console.WriteLine("Usage: ProbeExtractor [Options][File]");
             Console.WriteLine("Options:");
             Console.WriteLine("-h, --help         help");
+            Console.WriteLine("-v, --verbose      show verbose output");
         }
     }
 }
