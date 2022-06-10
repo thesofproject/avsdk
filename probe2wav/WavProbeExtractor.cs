@@ -58,6 +58,14 @@ namespace ProbeExtractor
                         wavBuilders[header.ProbeId] = new WavBuilder(OutFilePath(header.ProbeIdStr),
                                                                      probeAudioFormat);
                     }
+                    else
+                    {
+                        if (!probeAudioFormat.Equals(wavBuilders[header.ProbeId].Format))
+                        {
+                            Console.WriteLine($"Probe format changed from {wavBuilders[header.ProbeId].Format} to {probeAudioFormat}");
+                            formatMismatchCount++;
+                        }
+                    }
 
                     WavBuilder wavBuilder = wavBuilders[header.ProbeId];
 
