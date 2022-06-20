@@ -57,7 +57,7 @@ namespace avstplg
             words.Tuples = new[]
             {
                 GetTuple(AVS_TKN_LIBRARY.ID_U32, library.Id),
-	    };
+            };
 
             var strings = new VendorTuples<string>();
             strings.Tuples = new[]
