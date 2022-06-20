@@ -172,6 +172,7 @@ namespace avstplg
         public byte? CoreId { get; set; }
         public byte? ProcessingDomain { get; set; }
         public uint ConfigExtId { get; set; }
+        public uint? KcontrolId { get; set; }
     }
 
     public class Pipeline
@@ -261,6 +262,13 @@ namespace avstplg
         public DAPMRoute[] Routes;
     }
 
+    public class Kcontrol
+    {
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
+        public string Name { get; set; }
+    }
+
     [XmlRoot]
     public class Topology
     {
@@ -276,5 +284,6 @@ namespace avstplg
         public CondpathTemplate[] CondpathTemplates;
         public FEDAI[] FEDAIs;
         public DAPMGraph[] Graphs;
+        public Kcontrol[] Kcontrols;
     }
 }

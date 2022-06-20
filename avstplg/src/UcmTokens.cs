@@ -133,6 +133,7 @@ namespace avstplg
         CORE_ID_U8,
         PROC_DOMAIN_U8,
         MODCFG_EXT_ID_U32,
+        KCONTROL_ID_U32,
     }
 
     public enum AVS_TKN_PATH_TMPL
@@ -172,5 +173,10 @@ namespace avstplg
         INDEX_U32 = 2201,
         IOBS_U32,
         AFMT_ID_U32,
+    }
+
+    public enum AVS_TKN_KCONTROL
+    {
+        ID_U32 = 2301,
     }
 }

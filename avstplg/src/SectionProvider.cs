@@ -46,6 +46,7 @@ namespace avstplg
             sections.Add(GetSectionTokens<AVS_TKN_CONDPATH_TMPL>("avs_condpath_template_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_CONDPATH>("avs_condpath_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_PIN_FMT>("avs_pin_format_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_KCONTROL>("avs_kcontrol_tokens"));
 
             return sections;
         }
@@ -485,8 +486,7 @@ namespace avstplg
 
         public static Section GetModuleSection(Module module, string namePrefix, uint id)
         {
-            var words = new VendorTuples<uint>();
-            words.Tuples = new[]
+            var wordTuples = new List<Tuple<string, uint>>
             {
                 GetTuple(AVS_TKN_MOD.ID_U32, module.Id),
                 GetTuple(AVS_TKN_MOD.MODCFG_BASE_ID_U32, module.ConfigBaseId),
@@ -500,6 +500,11 @@ namespace avstplg
                 byteTuples.Add(GetTuple(AVS_TKN_MOD.CORE_ID_U8, module.CoreId.Value));
             if (module.ProcessingDomain.HasValue)
                 byteTuples.Add(GetTuple(AVS_TKN_MOD.PROC_DOMAIN_U8, module.ProcessingDomain.Value));
+            if (module.KcontrolId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MOD.KCONTROL_ID_U32, module.KcontrolId.Value));
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = wordTuples.ToArray();
 
             var bytes = new VendorTuples<byte>();
             bytes.Tuples = byteTuples.ToArray();
@@ -774,6 +779,41 @@ namespace avstplg
             return section;
         }
 
+        public static IEnumerable<Section> GetKcontrolSections(Kcontrol kctrl)
+        {
+            var sections = new List<Section>();
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_KCONTROL.ID_U32, kctrl.Id),
+            };
+
+            var section = new SectionVendorTuples($"kctrl_{kctrl.Name}_tokens");
+            section.Tokens = "avs_kcontrol_tokens";
+            section.Tuples = new VendorTuples[] { words };
+            sections.Add(section);
+
+            var data = new SectionData($"kctrl_{kctrl.Name}_data");
+            data.Tuples = new[] { section.Identifier };
+            sections.Add(data);
+
+            var control = new SectionControlBytes(kctrl.Name);
+            // TODO: replace hardcodes below with descriptive constants
+            control.Max = 0x100000;
+            control.Ops = new Ops("ctl") { Info = TPLG_CTL.BYTES };
+            control.ExtOps = new Ops("ctl") { Put = 256 };
+            control.Access = new []
+            {
+                CTL_ELEM_ACCESS.TLV_WRITE,
+                CTL_ELEM_ACCESS.TLV_CALLBACK,
+            };
+            control.Data = data.Identifier;
+            sections.Add(control);
+
+            return sections;
+        }
+
         public static IEnumerable<Section> GetTopologySections(Topology topology)
         {
             var sections = new List<Section>();
@@ -826,6 +866,9 @@ namespace avstplg
 
             for (int i = 0; i < topology.Graphs.Length; i++)
                 sections.Add(GetDAPMGraphSection(topology.Graphs[i]));
+
+            for (int i = 0; i < topology.Kcontrols?.Length; i++)
+                sections.AddRange(GetKcontrolSections(topology.Kcontrols[i]));
 
             return sections;
         }
