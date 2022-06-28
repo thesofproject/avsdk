@@ -45,9 +45,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WavBuilder.cs" />
+    <Compile Include="ProbeWriter.cs" />
     <Compile Include="ChunkHeader.cs" />
-    <Compile Include="WavProbeExtractor.cs" />
+    <Compile Include="ProbeExtractor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

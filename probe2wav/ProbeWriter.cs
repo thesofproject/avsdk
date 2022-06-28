@@ -4,44 +4,32 @@ using System.Text;
 
 namespace ProbeExtractor
 {
-    /// <summary>
-    /// Utility to create new wav file and write samples to it.
-    /// </summary>
-    public class WavBuilder
+    public class ProbeWriter
     {
         public readonly AudioFormat Format;
 
         private BinaryWriter writer;
-        private readonly string filePath;
         private long bytesWritten;
 
         private readonly int headerSize = 36;
 
         /// <summary>
-        /// Creates new empty wav file with proper header.
-        /// Samples must be written and file must be closed.
-        /// If we dont know the number of samples upfront, so wav header is corrected while closing file.
+        /// Creates new empty file and adds proper header.
+        /// Data must be written and file must be closed.
+        /// Size in wav header is corrected while closing file.
         /// </summary>
         /// <param name="file">Path to file to create</param>
         /// <param name="format">Audio format</param>
-        /// <returns>Opened WavBuilder</returns>
-        public WavBuilder(string file, AudioFormat format)
+        public ProbeWriter(string file, AudioFormat format)
         {
-            filePath = file;
             Format = format;
             bytesWritten = 0;
 
-            FileStream fileStream = new FileStream(filePath, FileMode.Create);
+            FileStream fileStream = new FileStream(file, FileMode.Create);
             writer = new BinaryWriter(fileStream);
             WriteWavHeader();
         }
 
-        /// <summary>
-        /// Writes byte samples to opened wav file.
-        /// No conversion.
-        /// </summary>
-        /// <param name="nextSamples">Samples array for each channel - will be copied directly to wav.</param>
-        /// <param name="count">Number of bytes to write - actual number of samples will be calculated using block align.</param>
         public void WriteSamples(byte[] nextSamples, int count)
         {
             int samplesCount = count / Format.BlockAlign;
@@ -53,8 +41,7 @@ namespace ProbeExtractor
         }
 
         /// <summary>
-        /// Closes file - WavBuilder can no longer be used after closing.
-        /// Updates wav header if expected number of samples was not declared.
+        /// Closes file and updates wav header - ProbeWriter can no longer be used after closing.
         /// </summary>
         public void Close()
         {

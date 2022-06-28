@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace ProbeExtractor
 {
-    public class WavProbeExtractor
+    public class ProbeExtractor
     {
         /// <summary>
         /// Sample rates supported in firmware - we need to hardcode it as we only get index within this array
@@ -17,7 +17,7 @@ namespace ProbeExtractor
         private BinaryReader binaryReader;
         private long BytesLeft => binaryReader.BaseStream.Length - binaryReader.BaseStream.Position;
 
-        public WavProbeExtractor(bool verbose, string inFilePath)
+        public ProbeExtractor(bool verbose, string inFilePath)
         {
             this.verbose = verbose;
             this.inFilePath = inFilePath;
@@ -27,12 +27,11 @@ namespace ProbeExtractor
         }
 
         /// <summary>
-        /// Converts input pcm file to output wav file.
-        /// Fails after any checksum issue.
+        /// Converts input pcm file to output files.
         /// </summary>
-        public void ConvertDataToWav()
+        public void Convert()
         {
-            Dictionary<uint, WavBuilder> wavBuilders = new Dictionary<uint, WavBuilder>();
+            Dictionary<uint, ProbeWriter> probeWriters = new Dictionary<uint, ProbeWriter>();
             uint allChunksCount = 0, chunkSuccessCount = 0, checksumMismatchCount = 0,
                  syncPatternSearchCount = 0, formatMismatchCount = 0;
 
@@ -54,22 +53,22 @@ namespace ProbeExtractor
 
                     AudioFormat probeAudioFormat = DecodeAudioFormat(header.ProbeFormat);
 
-                    if (!wavBuilders.ContainsKey(header.ProbeId))
+                    if (!probeWriters.ContainsKey(header.ProbeId))
                     {
                         Console.WriteLine($"Found probeId {header.ProbeIdStr} with audio format {probeAudioFormat}");
-                        wavBuilders[header.ProbeId] = new WavBuilder(OutFilePath(header.ProbeIdStr),
-                                                                     probeAudioFormat);
+                        probeWriters[header.ProbeId] = new ProbeWriter(OutFilePath(header.ProbeIdStr),
+                                                                       probeAudioFormat);
                     }
                     else
                     {
-                        if (!probeAudioFormat.Equals(wavBuilders[header.ProbeId].Format))
+                        if (!probeAudioFormat.Equals(probeWriters[header.ProbeId].Format))
                         {
-                            Console.WriteLine($"Probe format changed from {wavBuilders[header.ProbeId].Format} to {probeAudioFormat}");
+                            Console.WriteLine($"Probe format changed from {probeWriters[header.ProbeId].Format} to {probeAudioFormat}");
                             formatMismatchCount++;
                         }
                     }
 
-                    WavBuilder wavBuilder = wavBuilders[header.ProbeId];
+                    ProbeWriter probeWriter = probeWriters[header.ProbeId];
 
                     // last chunk may be truncated
                     uint dataSize = Math.Min((uint)BytesLeft, header.DataSize);
@@ -81,7 +80,7 @@ namespace ProbeExtractor
                     if (BytesLeft < 8)
                     {
                         // checksum truncated in the last chunk
-                        wavBuilder.WriteSamples(tempArray, (int)dataSize);
+                        probeWriter.WriteSamples(tempArray, (int)dataSize);
                         break;
                     }
 
@@ -94,18 +93,18 @@ namespace ProbeExtractor
                     }
                     else
                     {
-                        wavBuilder.WriteSamples(tempArray, (int)dataSize);
+                        probeWriter.WriteSamples(tempArray, (int)dataSize);
                         chunkSuccessCount++;
                     }
                 }
             }
             finally
             {
-                foreach (var builder in wavBuilders)
-                    builder.Value.Close();
+                foreach (var writer in probeWriters)
+                    writer.Value.Close();
             }
 
-            if (wavBuilders.Count == 0)
+            if (probeWriters.Count == 0)
                 throw new Exception("Pcm file doesn't contain any probe data");
 
             if (verbose)

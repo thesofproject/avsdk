@@ -31,11 +31,11 @@ namespace ProbeExtractor
                     input = args[i];
                 }
             }
-            WavProbeExtractor extractor = new WavProbeExtractor(verbose, input);
+            ProbeExtractor extractor = new ProbeExtractor(verbose, input);
 
             try
             {
-                extractor.ConvertDataToWav();
+                extractor.Convert();
             }
             catch (Exception ex)
             {
