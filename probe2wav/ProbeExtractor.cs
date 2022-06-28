@@ -56,8 +56,8 @@ namespace ProbeExtractor
                     if (!probeWriters.ContainsKey(header.ProbeId))
                     {
                         Console.WriteLine($"Found probeId {header.ProbeIdStr} with audio format {probeAudioFormat}");
-                        probeWriters[header.ProbeId] = new ProbeWriter(OutFilePath(header.ProbeIdStr),
-                                                                       probeAudioFormat);
+                        probeWriters[header.ProbeId] = new ProbeWriter(OutFilePath(header),
+                                                            probeAudioFormat, header.Wav);
                     }
                     else
                     {
@@ -162,9 +162,11 @@ namespace ProbeExtractor
                                    (byte)((containerSize + 1) * 8), channels + 1);
         }
 
-        private string OutFilePath(string probeId)
+        private string OutFilePath(ChunkHeader header)
         {
-            string outFilename = Path.GetFileNameWithoutExtension(inFilePath) + "_" + probeId + ".wav";
+            string outFilename = Path.GetFileNameWithoutExtension(inFilePath) + "_" + header.ProbeIdStr;
+            if (header.Wav)
+                outFilename = outFilename + ".wav";
 
             return Path.Combine(Path.GetDirectoryName(inFilePath), outFilename);
         }

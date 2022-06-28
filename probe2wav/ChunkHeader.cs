@@ -6,6 +6,7 @@ namespace ProbeExtractor
     internal static class Constants
     {
         internal static readonly uint SyncPattern = 0xBABEBEBA;
+        internal static readonly uint BaseFWProbeId = 0x01000000;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -22,6 +23,7 @@ namespace ProbeExtractor
         // Most significant 4 bytes should be equal to 0.
         public ulong ExpectedChecksum =>
                 (ProbeId + ProbeFormat + Timestamp + DataSize + Constants.SyncPattern) & 0xFFFFFFFF;
+        public bool Wav => ProbeId != Constants.BaseFWProbeId;
 
         public static ChunkHeader Create(BinaryReader binaryReader)
         {

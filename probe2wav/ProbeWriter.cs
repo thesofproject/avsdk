@@ -10,31 +10,35 @@ namespace ProbeExtractor
 
         private BinaryWriter writer;
         private long bytesWritten;
+        private readonly bool wav;
 
         private readonly int headerSize = 36;
 
         /// <summary>
-        /// Creates new empty file and adds proper header.
+        /// Creates new empty file, if wav - adds proper header.
         /// Data must be written and file must be closed.
         /// Size in wav header is corrected while closing file.
         /// </summary>
         /// <param name="file">Path to file to create</param>
         /// <param name="format">Audio format</param>
-        public ProbeWriter(string file, AudioFormat format)
+        /// <param name="wav">Is output file wav or binary data</param>
+        public ProbeWriter(string file, AudioFormat format, bool wav)
         {
             Format = format;
             bytesWritten = 0;
+            this.wav = wav;
 
             FileStream fileStream = new FileStream(file, FileMode.Create);
             writer = new BinaryWriter(fileStream);
-            WriteWavHeader();
+            if (wav)
+                WriteWavHeader();
         }
 
         public void WriteSamples(byte[] nextSamples, int count)
         {
             int samplesCount = count / Format.BlockAlign;
 
-            if (samplesCount * Format.BlockAlign != count)
+            if (wav && samplesCount * Format.BlockAlign != count)
                 throw new Exception("Number of bytes to write " + count + " is not a multiple of block align " + Format.BlockAlign);
             bytesWritten += count;
             writer.Write(nextSamples, 0, count);
@@ -45,7 +49,8 @@ namespace ProbeExtractor
         /// </summary>
         public void Close()
         {
-            WriteWavHeader();
+            if (wav)
+                WriteWavHeader();
             writer.Close();
             writer = null;
         }
