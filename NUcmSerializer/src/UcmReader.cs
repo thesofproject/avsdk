@@ -32,6 +32,7 @@ namespace NUcmSerializer
         readonly Encoding encoding;
 
         bool disposed;
+        int lineNumber;
 
         public UcmReader(Stream stream, Encoding encoding)
         {
@@ -40,6 +41,7 @@ namespace NUcmSerializer
                 reader = new StreamReader(stream);
             else
                 reader = new StreamReader(stream, encoding);
+            lineNumber = 0;
         }
 
         public UcmReader(Stream stream)
@@ -81,6 +83,7 @@ namespace NUcmSerializer
 
             while ((line = reader.ReadLine()) != null)
             {
+                lineNumber++;
                 line = line.Trim();
                 if (line.Equals(string.Empty))
                     continue;
@@ -132,6 +135,8 @@ namespace NUcmSerializer
                     break;
             }
 
+            if (type == TokenType.None)
+                throw new InvalidDataException($"unknown token type at line {lineNumber}");
             return new TokenInfo(type, match);
         }
 
