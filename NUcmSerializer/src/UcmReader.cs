@@ -182,6 +182,15 @@ namespace NUcmSerializer
             {
                 string ns = typeof(Section).Namespace;
                 type = Type.GetType($"{ns}.{token.Name}");
+
+                if (type == null)
+                {
+                    Type tmp = Type.GetType($"{ns}.{token.Name}", false, true);
+                    UcmSectionAttribute attr = tmp.GetCustomAttribute<UcmSectionAttribute>();
+
+                    if (attr != null && attr.Name.Equals(token.Name))
+                        type = tmp;
+                }
             }
             else if (type.IsArray)
             {
