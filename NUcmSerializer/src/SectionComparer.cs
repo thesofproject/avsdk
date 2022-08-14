@@ -22,7 +22,7 @@ namespace NUcmSerializer
                 return false;
 
             return x.GetType() == y.GetType() &&
-                (bool)x.Identifier?.Equals(y.Identifier);
+                   string.Equals(x.Identifier, y.Identifier);
         }
 
         public override int GetHashCode(Section obj)
