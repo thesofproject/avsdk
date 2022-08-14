@@ -27,7 +27,14 @@ namespace NUcmSerializer
 
         public override int GetHashCode(Section obj)
         {
-            return obj.GetType().GetHashCode() ^ (int)obj.Identifier?.GetHashCode();
+            if (obj == null)
+                return 0;
+
+            int hash = obj.GetType().GetHashCode();
+
+            if (obj.Identifier == null)
+                return hash;
+            return hash ^ obj.Identifier.GetHashCode();
         }
     }
 }
