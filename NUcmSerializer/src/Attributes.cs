@@ -68,8 +68,16 @@ namespace NUcmSerializer
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Property)]
     public class UcmSectionAttribute : UcmNamedTagAttribute
     {
-        public UcmSectionAttribute(string name)
+        public string Identifier { get; set; }
+
+        public UcmSectionAttribute(string name, string identifier)
             : base(name)
+        {
+            Identifier = identifier;
+        }
+
+        public UcmSectionAttribute(string name)
+            : this(name, null)
         {
         }
 
