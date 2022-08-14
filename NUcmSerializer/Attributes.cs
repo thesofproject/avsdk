@@ -3,7 +3,7 @@
 //
 // Author: Cezary Rojewski <cezary.rojewski@intel.com>
 //
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0 OR MIT
 //
 
 using System;
