@@ -90,10 +90,10 @@ namespace NUcmSerializer
         public UcmWriter(Stream stream, Encoding encoding)
         {
             this.encoding = encoding;
-            if (encoding != null)
-                writer = new StreamWriter(stream, encoding);
-            else
+            if (encoding == null)
                 writer = new StreamWriter(stream);
+            else
+                writer = new StreamWriter(stream, encoding);
             stack = new TokenInfo[8];
             top = 0;
             indentChar = ' ';

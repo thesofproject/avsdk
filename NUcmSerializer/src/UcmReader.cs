@@ -36,10 +36,10 @@ namespace NUcmSerializer
         public UcmReader(Stream stream, Encoding encoding)
         {
             this.encoding = encoding;
-            if (encoding != null)
-                reader = new StreamReader(stream, encoding);
-            else
+            if (encoding == null)
                 reader = new StreamReader(stream);
+            else
+                reader = new StreamReader(stream, encoding);
         }
 
         public UcmReader(Stream stream)
