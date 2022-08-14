@@ -158,6 +158,15 @@ namespace NUcmSerializer
                 var attr = prop.GetCustomAttribute<UcmNamedTagAttribute>();
                 if (attr == null || attr.Name == null)
                     continue;
+
+                var sectionAttr = attr as UcmSectionAttribute;
+                // if section name is fully specified, verify token.Identifier
+                if (sectionAttr != null && sectionAttr.Identifier != null)
+                {
+                    if (!sectionAttr.Identifier.Equals(token.Identifier))
+                        continue;
+                }
+
                 if (attr.Name.Equals(token.Name)) // accounts also for section-inlined arrays
                     return prop;
             }
