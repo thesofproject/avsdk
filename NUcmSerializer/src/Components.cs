@@ -993,9 +993,9 @@ namespace NUcmSerializer
         [UcmElement("id")]
         public uint ID { get; set; }
 
-        [UcmSection("playback")]
+        [UcmElement("playback")]
         public uint? SupportsPlayback { get; set; }
-        [UcmSection("capture")]
+        [UcmElement("capture")]
         public uint? SupportsCapture { get; set; }
         [UcmSection("pcm", "playback")]
         public PCMStream Playback { get; set; }
