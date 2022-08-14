@@ -812,9 +812,9 @@ namespace NUcmSerializer
 
         [UcmSection("dai")]
         public FE_DAI DAI { get; set; }
-        [UcmSection("pcm")]
+        [UcmSection("pcm", "playback")]
         public PCMStream Playback { get; set; }
-        [UcmSection("pcm")]
+        [UcmSection("pcm", "capture")]
         public PCMStream Capture { get; set; }
         [UcmSection("compress")]
         public bool? Compress { get; set; }
@@ -997,9 +997,9 @@ namespace NUcmSerializer
         public uint? SupportsPlayback { get; set; }
         [UcmSection("capture")]
         public uint? SupportsCapture { get; set; }
-        [UcmSection("pcm")]
+        [UcmSection("pcm", "playback")]
         public PCMStream Playback { get; set; }
-        [UcmSection("pcm")]
+        [UcmSection("pcm", "capture")]
         public PCMStream Capture { get; set; }
 
         [UcmElement("symmetric_rates")]
