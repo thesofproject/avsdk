@@ -816,7 +816,7 @@ namespace NUcmSerializer
         public PCMStream Playback { get; set; }
         [UcmSection("pcm", "capture")]
         public PCMStream Capture { get; set; }
-        [UcmSection("compress")]
+        [UcmElement("compress")]
         public bool? Compress { get; set; }
 
         [UcmElement("symmetric_rates")]
