@@ -701,6 +701,15 @@ namespace NUcmSerializer
             {
                 return string.Join(", ", Formats);
             }
+
+            set
+            {
+                string[] substrs = value.Split(new[] { ',' });
+
+                Formats.Clear();
+                foreach (var s in substrs)
+                    Formats.Add((PCM_FORMAT)Enum.Parse(typeof(PCM_FORMAT), s));
+            }
         }
 
         [UcmElement("rates")]
@@ -710,6 +719,19 @@ namespace NUcmSerializer
             {
                 var rates = Rates.Select(r => r.ToString().TrimStart('_'));
                 return string.Join(", ", rates);
+            }
+
+            set
+            {
+                string[] substrs = value.Split(new[] { ',' });
+
+                Rates.Clear();
+                foreach (var s in substrs)
+                {
+                    if (char.IsDigit(s[0]))
+                        s.Insert(0, "_");
+                    Rates.Add((PCM_RATE)Enum.Parse(typeof(PCM_RATE), s));
+                }
             }
         }
 
