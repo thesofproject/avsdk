@@ -20,15 +20,20 @@ namespace NUcmSerializer
             // TODO: check semantics of type to be serialized/ deserialized
         }
 
-        public void Serialize(Stream stream, IEnumerable<Section> topology)
+        public void Serialize(Stream stream, IEnumerable<Section> sections)
         {
-            if (topology == null)
-                throw new ArgumentNullException(nameof(topology));
+            if (sections == null)
+                throw new ArgumentNullException("sections");
 
             var writer = new UcmWriter(stream, null);
 
-            foreach (var section in topology)
+            foreach (var section in sections)
+            {
+                if (section == null)
+                    throw new ArgumentNullException("section");
                 writer.WriteToken(section, null);
+            }
+
             writer.Flush();
             writer.Dispose();
         }
