@@ -30,8 +30,8 @@ struct log_entry1_5 {
 	union {
 		uint16_t val;
 		struct {
-			uint16_t lib : 4;
 			uint16_t id : 12;
+			uint16_t lib : 4;
 		};
 	} module;
 	uint64_t timestamp;
