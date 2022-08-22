@@ -75,7 +75,7 @@ again:
 
 	char *buf = new char[BUF_LEN];
 	ssize_t len, n = 0;
-		
+
 	len = read(fd, buf, BUF_LEN);
 
 	while (n < len) {
