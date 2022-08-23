@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "avstplg", "src\avstplg.csproj", "{62F5D5E2-5B67-4FA8-AFAE-933D1445F945}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "avstplg", "src\avstplg_NETFramework.csproj", "{62F5D5E2-5B67-4FA8-AFAE-933D1445F945}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
