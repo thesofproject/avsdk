@@ -94,7 +94,7 @@ namespace avstplg
                 return 0;
             }
 
-            var dictionary = ParseArguments(args);
+            Dictionary<string, string> dictionary = ParseArguments(args);
             if (!dictionary.ContainsKey("input") ||
                 !dictionary.ContainsKey("output"))
             {
@@ -113,7 +113,7 @@ namespace avstplg
                 }
 
                 var serializer = new UcmSerializer();
-                var sections = SectionProvider.GetTopologySections(topology);
+                IEnumerable<Section> sections = SectionProvider.GetTopologySections(topology);
                 using (var stream = new FileStream(dictionary["output"], FileMode.Create))
                 {
                     serializer.Serialize(stream, sections);

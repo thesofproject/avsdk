@@ -26,10 +26,10 @@ namespace avstplg
         internal static uint[] ToUInts32(this string value)
         {
             var result = new List<uint>();
-            var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+            IEnumerable<string> substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim());
 
-            foreach (var substr in substrs)
+            foreach (string substr in substrs)
             {
                 if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     uint.TryParse(substr.Substring(2), NumberStyles.HexNumber,
