@@ -12,23 +12,23 @@ namespace avstplg
     {
         struct Option
         {
-            internal string Short;
-            internal string Long;
+            internal string shortName;
+            internal string longName;
 
             internal Option(string s, string l)
             {
-                Short = s;
-                Long = l;
+                shortName = s;
+                longName = l;
             }
 
             internal bool Matches(string arg)
             {
-                return arg.Equals(Short) || arg.Equals(Long);
+                return arg.Equals(shortName) || arg.Equals(longName);
             }
 
             public override string ToString()
             {
-                return $"{Short}, {Long}";
+                return $"{shortName}, {longName}";
             }
         }
 
