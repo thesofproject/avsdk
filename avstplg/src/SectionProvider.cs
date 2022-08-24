@@ -1,7 +1,7 @@
-﻿using NUcmSerializer;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUcmSerializer;
 
 namespace avstplg
 {
@@ -238,7 +238,7 @@ namespace avstplg
 
             // module-type specific tuples
             if (module.CprOutAudioFormatId.HasValue)
-            wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
             if (module.CprBlobFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_BLOB_FMT_ID_U32, module.CprBlobFormatId.Value));
             if (module.CprFeatureMask.HasValue)
@@ -803,7 +803,7 @@ namespace avstplg
             control.Max = 0x100000;
             control.Ops = new Ops("ctl") { Info = TPLG_CTL.BYTES };
             control.ExtOps = new Ops("ctl") { Put = 256 };
-            control.Access = new []
+            control.Access = new[]
             {
                 CTL_ELEM_ACCESS.TLV_WRITE,
                 CTL_ELEM_ACCESS.TLV_CALLBACK,
