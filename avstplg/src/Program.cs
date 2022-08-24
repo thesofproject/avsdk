@@ -32,32 +32,31 @@ namespace avstplg
             }
         }
 
-        static Option Input = new Option("-c", "--compile");
-        static Option Output = new Option("-o", "--output");
-        static Option Help = new Option("-h", "--help");
-        static Option Version = new Option("-v", "--version");
+        static readonly Option s_input = new Option("-c", "--compile");
+        static readonly Option s_output = new Option("-o", "--output");
+        static readonly Option s_help = new Option("-h", "--help");
+        static readonly Option s_version = new Option("-v", "--version");
 
-        static readonly string appName = AppDomain.CurrentDomain.FriendlyName;
-        static readonly Dictionary<string, Option> required =
-            new Dictionary<string, Option>
+        static readonly string s_appName = AppDomain.CurrentDomain.FriendlyName;
+        static readonly Dictionary<string, Option> s_requiredOptions = new Dictionary<string, Option>()
         {
-            { "input", Input },
-            { "output", Output },
+            { "input", s_input },
+            { "output", s_output },
         };
 
         static void ShowShortHelp()
         {
-            Console.WriteLine($"Try {appName} --help for more information.");
+            Console.WriteLine($"Try {s_appName} --help for more information.");
         }
 
         static void ShowHelp()
         {
-            Console.WriteLine($"Usage: {appName} -c [INPUT] -o [OUTPUT]");
+            Console.WriteLine($"Usage: {s_appName} -c [INPUT] -o [OUTPUT]");
             Console.WriteLine();
-            Console.WriteLine($"  {Input} FILE\tPath to XML document to convert");
-            Console.WriteLine($"  {Output} FILE\tPath to UCM file to create");
-            Console.WriteLine($"  {Help}\t\tShow this message and exit");
-            Console.WriteLine($"  {Version}\t\tOutput version information and exit");
+            Console.WriteLine($"  {s_input} FILE\tPath to XML document to convert");
+            Console.WriteLine($"  {s_output} FILE\tPath to UCM file to create");
+            Console.WriteLine($"  {s_help}\t\tShow this message and exit");
+            Console.WriteLine($"  {s_version}\t\tOutput version information and exit");
         }
 
         static Dictionary<string, string> ParseArguments(string[] args)
@@ -67,14 +66,14 @@ namespace avstplg
 
             for (int i = 0; i <= last; i += 2)
             {
-                string key = required.FirstOrDefault(
+                string key = s_requiredOptions.FirstOrDefault(
                     p => p.Value.Matches(args[i])).Key;
 
                 if (key == null || result.ContainsKey(key))
                     continue;
 
                 result[key] = args[i + 1];
-                if (result.Keys.Count == required.Count)
+                if (result.Keys.Count == s_requiredOptions.Count)
                     break;
             }
 
@@ -83,12 +82,12 @@ namespace avstplg
 
         static int Main(string[] args)
         {
-            if (args.Any(a => Help.Matches(a)))
+            if (args.Any(a => s_help.Matches(a)))
             {
                 ShowHelp();
                 return 0;
             }
-            else if (args.Any(a => Version.Matches(a)))
+            else if (args.Any(a => s_version.Matches(a)))
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 Console.WriteLine($"Intel AVS topology tool, version {version}");
@@ -122,7 +121,7 @@ namespace avstplg
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{appName} failed. Message: {ex.Message}");
+                Console.WriteLine($"{s_appName} failed. Message: {ex.Message}");
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine();
