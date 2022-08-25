@@ -1,7 +1,7 @@
 #Solution configuration, use either "Debug" or "Release"
 CONFIGURATION	= Debug
 ASSEMBLY_NAME	= ProbeExtractor
-SRCDIR	       := .
+SRCDIR	       := src
 OUTDIR	       := $(SRCDIR)/bin/$(CONFIGURATION)
 MSBUILD_FLAGS	= /m
 
