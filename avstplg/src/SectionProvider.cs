@@ -952,7 +952,7 @@ namespace avstplg
             for (int i = 0; i < topology.Graphs.Length; i++)
                 sections.Add(GetDAPMGraphSection(topology.Graphs[i]));
 
-            for (int i = 0; i < topology.Kcontrols?.Length; i++)
+            for (int i = 0; i < topology.Kcontrols.Length; i++)
                 sections.AddRange(GetKcontrolSections(topology.Kcontrols[i]));
 
             return sections;
