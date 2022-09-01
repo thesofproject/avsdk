@@ -280,14 +280,13 @@ namespace avstplg
 
             if (module.UpDownMixCoeff != null)
             {
-                if (module.UpDownMixCoeff.Length > 8)
+                int max = (int)(AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_7_S32 - AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32) + 1;
+                if (module.UpDownMixCoeff.Length > max)
                     throw new InvalidOperationException("Too many coefficients passed to UpDownMix");
-                for (int i = (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32; i <= (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_7_S32; i++)
-                {
-                    int j = i - (int)AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32;
-                    if (j <= module.UpDownMixCoeff.Length)
-                        wordTuples.Add(GetTuple(i, (uint)module.UpDownMixCoeff[j]));
-                }
+
+                AVS_TKN_MODCFG e = AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32;
+                for (int i = 0; i < module.UpDownMixCoeff.Length; i++, e++)
+                    wordTuples.Add(GetTuple(e, (uint)module.UpDownMixCoeff[i]));
             }
             if (module.UpDownMixChanMap.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.UPDOWN_MIX_CHAN_MAP_U32, module.UpDownMixChanMap.Value));
