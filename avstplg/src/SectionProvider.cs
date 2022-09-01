@@ -803,8 +803,10 @@ namespace avstplg
         public static Section GetDAPMGraphSection(DAPMGraph graph)
         {
             var section = new SectionGraph(graph.Name);
-            section.Lines = graph.Routes.Select(
-                r => $"{r.Sink}, {r.Control}, {r.Source}").ToArray();
+
+            if (graph.Routes != null)
+                section.Lines = graph.Routes.Select(
+                    r => $"{r.Sink}, {r.Control}, {r.Source}").ToArray();
 
             return section;
         }
