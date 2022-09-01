@@ -821,7 +821,7 @@ namespace avstplg
                 GetTuple(AVS_TKN_KCONTROL.ID_U32, kctrl.Id),
             };
 
-            var section = new SectionVendorTuples($"kctrl_{kctrl.Name}_tokens");
+            var section = new SectionVendorTuples($"kctrl_{kctrl.Name}_tuples");
             section.Tokens = "avs_kcontrol_tokens";
             section.Tuples = new VendorTuples[] { words };
             sections.Add(section);
