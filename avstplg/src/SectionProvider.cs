@@ -747,15 +747,26 @@ namespace avstplg
 
         public static SectionPCMCapabilities GetPCMCapabilitiesSection(PCMCapabilities caps, string identifier)
         {
-            uint[] formats = caps.Formats.ToUInts32();
-            uint[] rates = caps.Rates.ToUInts32();
-            uint[] channels = caps.Channels.ToUInts32();
-
             var section = new SectionPCMCapabilities(identifier);
-            section.Formats.UnionWith(formats.Select(f => f.ToFormat()));
-            section.Rates.UnionWith(rates.Select(s => s.ToRate()));
-            section.ChannelsMax = channels.Max();
-            section.ChannelsMin = channels.Min();
+
+            if (caps.Formats != null)
+            {
+                uint[] formats = caps.Formats.ToUInts32();
+                section.Formats.UnionWith(formats.Select(f => f.ToFormat()));
+            }
+
+            if (caps.Rates != null)
+            {
+                uint[] rates = caps.Rates.ToUInts32();
+                section.Rates.UnionWith(rates.Select(s => s.ToRate()));
+            }
+
+            if (caps.Channels != null)
+            {
+                uint[] channels = caps.Channels.ToUInts32();
+                section.ChannelsMax = channels.Max();
+                section.ChannelsMin = channels.Min();
+            }
 
             return section;
         }
