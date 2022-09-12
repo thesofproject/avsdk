@@ -35,14 +35,13 @@ namespace nhltdecode
                     i++;
                     decode = true;
                 }
-                else if ((args[i].Equals("-o") || args[i].Equals("--output")) && (i + 1) < args.Length)
-                {
-                    output = args[i + 1];
-                    i++;
-                }
                 else if (args[i].Equals("-b") || args[i].Equals("--blob"))
                 {
                     parseBlob = true;
+                }
+                else
+                {
+                    output = args[i];
                 }
             }
 
@@ -99,11 +98,10 @@ namespace nhltdecode
 
         static private void PrintHelp()
         {
-            Console.WriteLine("nhltdecode");
+            Console.WriteLine("nhltdecode [options] OUTPUT");
             Console.WriteLine("-h, --help              help");
             Console.WriteLine("-c, --compile FILE      compile XML file");
             Console.WriteLine("-d, --decode FILE       decode NHLT binary file");
-            Console.WriteLine("-o, --output FILE       set output file");
             Console.WriteLine("-b, --blob              parse blob while decoding binary");
         }
     }
