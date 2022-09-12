@@ -1,8 +1,7 @@
-using System;
 using System.CommandLine;
+using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
-using System.IO;
 
 namespace nhltdecode
 {
@@ -87,15 +86,6 @@ namespace nhltdecode
 
             table.WriteToBinary(writer);
             writer.Close();
-        }
-
-        static private void PrintHelp()
-        {
-            Console.WriteLine("nhltdecode [options] OUTPUT");
-            Console.WriteLine("-h, --help              help");
-            Console.WriteLine("-c, --compile FILE      compile XML file");
-            Console.WriteLine("-d, --decode FILE       decode NHLT binary file");
-            Console.WriteLine("-b, --blob              parse blob while decoding binary");
         }
     }
 }
