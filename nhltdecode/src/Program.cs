@@ -96,6 +96,49 @@ namespace nhltdecode
             }
         }
 
+        private static void Decode(string input, string output, bool parseBlob)
+        {
+            var reader = new BinaryReader(new FileStream(input, FileMode.Open, FileAccess.Read),
+                                          System.Text.Encoding.ASCII);
+
+            NHLT table = NHLT.ReadFromBinary(reader);
+            reader.Close();
+            NhltXml xtable = NhltXml.FromNative(table);
+
+            if (parseBlob)
+                foreach (var endpoint in xtable.EndpointDescriptors)
+                    foreach (var format in endpoint.FormatsConfiguration)
+                        format.FormatConfiguration.ParseBlob((LINK_TYPE)endpoint.LinkType);
+
+            var xs = new XmlSerializer(typeof(NhltXml));
+            TextWriter writer = new StreamWriter(output);
+
+            xs.Serialize(writer, xtable);
+
+            writer.Close();
+        }
+
+        private static void Compile(string input, string output)
+        {
+            var xs = new XmlSerializer(typeof(NhltXml));
+
+            // To preserve whitespaces in header
+            XmlReaderSettings settings = new XmlReaderSettings()
+            {
+                IgnoreWhitespace = false,
+            };
+            var reader = XmlReader.Create(new StreamReader(input), settings);
+
+            var xtable = (NhltXml)xs.Deserialize(reader);
+            reader.Close();
+
+            var writer = new BinaryWriter(new FileStream(output, FileMode.Create));
+            NHLT table = xtable.ToNative();
+
+            table.WriteToBinary(writer);
+            writer.Close();
+        }
+
         static private void PrintHelp()
         {
             Console.WriteLine("nhltdecode [options] OUTPUT");
