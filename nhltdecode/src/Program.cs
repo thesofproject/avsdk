@@ -1,4 +1,5 @@
 using System;
+using System.CommandLine;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
@@ -9,91 +10,40 @@ namespace nhltdecode
     {
         static void Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                PrintHelp();
-                return;
-            }
+            var rootCmd = new RootCommand();
 
-            string input = "", output = "";
-            bool decode = false, parseBlob = false;
-            for (int i = 0; i < args.Length; i++)
+            var compileOption = new Option<FileInfo>("--compile", "compile XML file") { ArgumentHelpName = "file" };
+            compileOption.AddAlias("-c");
+            rootCmd.AddOption(compileOption);
+
+            var decodeOption = new Option<FileInfo>("--decode", "decode NHLT binary file") { ArgumentHelpName = "file" };
+            decodeOption.AddAlias("-d");
+            rootCmd.AddOption(decodeOption);
+
+            var blobOption = new Option<bool>("--blob", "parse blob while decoding binary");
+            blobOption.AddAlias("-b");
+            rootCmd.AddOption(blobOption);
+
+            var outputArgument = new Argument<FileInfo>("output", "output file");
+            rootCmd.AddArgument(outputArgument);
+
+            rootCmd.AddValidator((result) =>
             {
-                if (args[i].Equals("-h") || args[i].Equals("--help"))
+                if (!((result.GetValueForOption(compileOption) == null) ^ (result.GetValueForOption(decodeOption) == null)))
                 {
-                    PrintHelp();
-                    return;
+                    result.ErrorMessage = "You have to provide either --compile or --decode";
                 }
-                if ((args[i].Equals("-c") || args[i].Equals("--compile")) && (i + 1) < args.Length)
-                {
-                    input = args[i + 1];
-                    i++;
-                }
-                else if ((args[i].Equals("-d") || args[i].Equals("--decode")) && (i + 1) < args.Length)
-                {
-                    input = args[i + 1];
-                    i++;
-                    decode = true;
-                }
-                else if (args[i].Equals("-b") || args[i].Equals("--blob"))
-                {
-                    parseBlob = true;
-                }
+            });
+
+            rootCmd.SetHandler((compile, decode, parseBlob, output) =>
+            {
+                if (decode != null)
+                    Decode(decode.FullName, output.FullName, parseBlob);
                 else
-                {
-                    output = args[i];
-                }
-            }
+                    Compile(compile.FullName, output.FullName);
+            }, compileOption, decodeOption, blobOption, outputArgument);
 
-            if (input.Length == 0 || output.Length == 0)
-            {
-                PrintHelp();
-                Console.WriteLine("Please specify input and output files");
-                return;
-            }
-
-            if (decode)
-            {
-                var reader = new BinaryReader(new FileStream(input, FileMode.Open, FileAccess.Read),
-                                              System.Text.Encoding.ASCII);
-
-                var table = NHLT.ReadFromBinary(reader);
-                reader.Close();
-                var xtable = NhltXml.FromNative(table);
-
-                if (parseBlob)
-                    foreach (var endpoint in xtable.EndpointDescriptors)
-                        foreach (var format in endpoint.FormatsConfiguration)
-                            format.FormatConfiguration.ParseBlob((LINK_TYPE)endpoint.LinkType);
-
-                var xs = new XmlSerializer(typeof(NhltXml));
-                TextWriter writer = new StreamWriter(output);
-
-                xs.Serialize(writer, xtable);
-
-                writer.Close();
-            }
-            else
-            {
-                var xtable = new NhltXml();
-                var xs = new XmlSerializer(typeof(NhltXml));
-
-                // To preserve whitespaces in header
-                XmlReaderSettings settings = new XmlReaderSettings()
-                {
-                    IgnoreWhitespace = false
-                };
-                var reader = XmlReader.Create(new StreamReader(input), settings);
-
-                xtable = (NhltXml)xs.Deserialize(reader);
-                reader.Close();
-
-                var writer = new BinaryWriter(new FileStream(output, FileMode.Create));
-                NHLT table = xtable.ToNative();
-
-                table.WriteToBinary(writer);
-                writer.Close();
-            }
+            rootCmd.Invoke(args);
         }
 
         private static void Decode(string input, string output, bool parseBlob)
