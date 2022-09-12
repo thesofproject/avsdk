@@ -60,7 +60,12 @@ namespace nhltdecode
                         format.FormatConfiguration.ParseBlob((LINK_TYPE)endpoint.LinkType);
 
             var xs = new XmlSerializer(typeof(NhltXml));
-            TextWriter writer = new StreamWriter(output);
+
+            var settings = new XmlWriterSettings()
+            {
+                Indent = true,
+            };
+            var writer = XmlWriter.Create(new StreamWriter(output), settings);
 
             xs.Serialize(writer, xtable);
 
