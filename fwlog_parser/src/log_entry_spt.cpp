@@ -37,7 +37,7 @@ static void init_literal(struct log_literal1_5 &literal, const std::string &reco
 	literal.filename = tokens[2];
 	literal.provider = tokens[3];
 	literal.loglevel = tokens[4];
-	literal.message = tokens[5];
+	literal.message = tokens[5] + "\n";
 	literal.param1 = tokens[6];
 	literal.param2 = tokens[7];
 	literal.param3 = tokens[8];
@@ -60,57 +60,41 @@ void build_provider(std::map<uint64_t, struct log_literal1_5> &provider,
 	csv.close();
 }
 
-static int print_hex_dwords(char *buf, size_t size, uint32_t *data, int count, int rowsize = 4)
-{
-	int remaining = count;
-	int written = 0;
-
-	for (int i = 0; i < count; i += rowsize) {
-		int ret, n = std::min(remaining, rowsize);
-
-		for (int j = n - 1; j; j--) {
-			ret = snprintf(buf + written, size - written, " %08X", *data++);
-			if (ret < 0)
-				return ret;
-			written += ret;
-		}
-
-		ret = snprintf(buf + written, size - written, " %08X\n", *data++);
-		if (ret < 0)
-			return ret;
-		written += ret;
-		remaining -= n;
-	}
-
-	return written;
-}
-
 int write_entry(std::ostream &out, struct log_literal1_5 *literal,
 		const log_entry_spt &entry, uint32_t *data)
 {
 	static char buf[512];
 	int ret;
 
-	ret = snprintf(buf, sizeof(buf), "%lld: %s(%d): res[%x,%d] %s %s\n",
-		       (unsigned long long)entry.data->timestamp,
-		       literal->filename.c_str(), literal->key.line_num,
-		       entry.data->module.id, entry.data->instance_id,
-		       literal->loglevel.c_str(), literal->message.c_str());
+	ret = snprintf(buf, sizeof(buf), "%lld: %d,%d %s(%d): %s ",
+		       (unsigned long long)entry.data->timestamp, entry.data->module.val,
+		       entry.data->instance_id, literal->filename.c_str(), literal->key.line_num,
+		       literal->loglevel.c_str());
 	if (ret < 0)
 		return ret;
-	out << buf;
 
-	ret = snprintf(buf, sizeof(buf), "%lld: Payload (\"%s\", \"%s\", \"%s\", \"%s\"):\n",
-		       (unsigned long long)entry.data->timestamp,
-		       literal->param1.c_str(), literal->param2.c_str(),
-		       literal->param3.c_str(), literal->param4.c_str());
+	switch (entry.data->entry_length) {
+	case 0:
+		ret = snprintf(buf + ret, sizeof(buf) - ret, literal->message.c_str(), data[0]);
+		break;
+	case 1:
+		ret = snprintf(buf + ret, sizeof(buf) - ret, literal->message.c_str(), data[0],
+			       data[1]);
+		break;
+	case 2:
+		ret = snprintf(buf + ret, sizeof(buf) - ret, literal->message.c_str(), data[0],
+			       data[1], data[2]);
+		break;
+	case 3:
+		ret = snprintf(buf + ret, sizeof(buf) - ret, literal->message.c_str(), data[0],
+			       data[1], data[2], data[3]);
+		break;
+	default:
+		throw std::invalid_argument("Unexpected number of payload dwords");
+	}
+
 	if (ret < 0)
 		return ret;
-	out << buf;
-
-	ret = print_hex_dwords(buf, sizeof(buf), data, entry.data->entry_length + 1);
-	if (ret < 0)
-		return ret;;
 	out << buf;
 
 	return 0;
