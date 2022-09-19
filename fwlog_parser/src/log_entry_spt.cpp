@@ -56,8 +56,6 @@ void build_provider(std::map<uint64_t, struct log_literal1_5> &provider,
 		init_literal(literal, line);
 		provider.emplace(literal.key.entry_id, literal);
 	}
-
-	csv.close();
 }
 
 int write_entry(std::ostream &out, struct log_literal1_5 *literal,

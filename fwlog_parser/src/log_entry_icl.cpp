@@ -119,8 +119,6 @@ void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
 		elf_init_literal(elf, literal, &*it, shdr, &funcstrs);
 		provider.insert({literal.key.entry_id, literal});
 	}
-
-	elf.close();
 }
 
 int write_entry(std::ostream &out, struct log_literal2_0 *literal,

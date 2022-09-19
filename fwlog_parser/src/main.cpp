@@ -123,7 +123,6 @@ static void do_work(std::vector<detailed_path> &paths,
 
 	if (!follow) {
 		process_logdump<LiteralT, EntryT>(infile, out, dict);
-		infile.close();
 		return;
 	}
 
@@ -153,7 +152,6 @@ static void do_work(std::vector<detailed_path> &paths,
 	}
 
 	listener.unsubscribe();
-	infile.close();
 }
 
 int main(int argc, char* argv[])
@@ -215,10 +213,6 @@ int main(int argc, char* argv[])
 			do_work<struct log_literal2_0, log_entry_icl>(symbols, inpath, *out,
 								      follow);
 		}
-
-		if (outfile.is_open())
-			outfile.close();
-
 	} catch (std::exception &e) {
 		std::cout << e.what() << "\n";
 	}
