@@ -29,7 +29,7 @@ struct log_entry1_5 {
 
 	uint16_t instance_id;
 	union {
-		uint16_t val;
+		uint16_t type;
 		struct {
 			uint16_t id : 12;
 			uint16_t lib : 4;
