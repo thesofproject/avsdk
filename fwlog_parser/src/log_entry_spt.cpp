@@ -66,7 +66,7 @@ int write_entry(std::ostream &out, struct log_literal1_5 *literal,
 	static char buf[512];
 	int ret;
 
-	ret = snprintf(buf, sizeof(buf), "%lld: %d %d,%d %s(%d): %s ",
+	ret = snprintf(buf, sizeof(buf), "%llu: %u %u,%u %s(%u): %s ",
 		       (unsigned long long)entry.data->timestamp, entry.data->core_id,
 		       entry.data->module.type, entry.data->instance_id, literal->filename.c_str(),
 		       literal->key.line_num, literal->loglevel.c_str());

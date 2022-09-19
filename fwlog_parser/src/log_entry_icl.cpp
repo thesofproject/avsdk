@@ -130,7 +130,7 @@ int write_entry(std::ostream &out, struct log_literal2_0 *literal,
 	char buf[512];
 	int ret;
 
-	ret = snprintf(buf, sizeof(buf), "%lld: %s(%d):\n",
+	ret = snprintf(buf, sizeof(buf), "%llu: %s(%u):\n",
 		       (unsigned long long)entry.data->timestamp,
 		       literal->filename.data(), literal->hdr.line);
 	if (ret < 0)
