@@ -16,14 +16,20 @@ static void init_literal(struct log_literal1_5 &literal, const std::string &reco
 	// record is made of at least 10 elements, each separated with ','
 	boost::split(tokens, record, boost::is_any_of(","));
 	if (tokens.size() < LOG_LITERAL_TOKEN_COUNT)
-		throw std::invalid_argument("invalid record: " + record);
+		throw std::invalid_argument("invalid record: \"" + record + "\"");
 
-	// remove '"' from the front and at the end
+	// remove '"'s from the front and at the end, and trim
 	for (auto it = tokens.begin(); it != tokens.end(); ++it) {
 		std::string &s = *it;
 
-		s.erase(0, 1);
-		s.pop_back();
+		boost::trim(s);
+		if (s.length() < 2)
+			continue;
+		while (s.front() == '\"' && s.back() == '\"') {
+			s.erase(0, 1);
+			s.pop_back();
+			boost::trim(s);
+		}
 	}
 
 	literal.key.file_id = atoi(tokens[0].c_str());
