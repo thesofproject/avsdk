@@ -5,6 +5,13 @@
 
 class ifileupdate_listener {
 public:
+	ifileupdate_listener(const ifileupdate_listener &l) = delete;
+	ifileupdate_listener &operator=(ifileupdate_listener &l) = delete;
+
+	ifileupdate_listener()
+	{
+	}
+
 	virtual ~ifileupdate_listener()
 	{
 	}
