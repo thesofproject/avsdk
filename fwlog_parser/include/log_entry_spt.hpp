@@ -23,7 +23,8 @@ struct log_literal1_5 {
 struct log_entry1_5 {
 	uint32_t entry_length : 2; // in DWORDs
 	uint32_t line_num : 14;
-	uint32_t file_id : 15;
+	uint32_t file_id : 13;
+	uint32_t core_id : 2;
 	uint32_t log_type : 1;
 
 	uint16_t instance_id;
