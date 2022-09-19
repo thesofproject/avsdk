@@ -17,7 +17,7 @@ static int elf_find_section(std::vector<Elf32_Shdr> &sections,
 	// searching for complete name so calculating its lenght is valid
 	size_t len = strlen(name);
 
-	for (int i = 0; i < sections.size(); i++)
+	for (size_t i = 0; i < sections.size(); i++)
 		if (!strings.compare(sections[i].name, len, name))
 			return i;
 	return -1;
