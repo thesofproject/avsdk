@@ -156,38 +156,39 @@ static void do_work(std::vector<detailed_path> &paths,
 
 int main(int argc, char* argv[])
 {
-	options_description desc("Program options");
-	variables_map vm;
-
-	desc.add_options()
-		("help", "produce a help screen")
-		("version,v", "print the version number")
-		("input,i", value<std::string>(),
-			"fw trace binary file to parse")
-		("output,o", value<std::string>(),
-			"file to dump parsed text into")
-		("csv", value< std::vector<detailed_path>>(),
-			"csv symbol cache (in <path>:<lib_id> format)")
-		("elf", value< std::vector<detailed_path>>(),
-			"elf symbol cache (in <path>:<lib_id> format)")
-		("follow,f", "monitor the input file")
-		;
+	options_description desc("Options");
 
 	try {
+		desc.add_options()
+			("help", "Display this information")
+			("version,v", "Print the version number")
+			("input,i", value<std::string>()->required(),
+			 "Firmware trace binary file to parse")
+			("output,o", value<std::string>(),
+			 "File to dump parsed text into")
+			("csv", value<std::vector<detailed_path>>(),
+			 "CSV symbol cache (in <path>:<lib_id> format)")
+			("elf", value<std::vector<detailed_path>>(),
+			 "ELF symbol cache (in <path>:<lib_id> format)")
+			("follow,f", "Monitor the input file")
+		;
+
+		variables_map vm;
 		store(parse_command_line(argc, argv, desc), vm);
 
+		if (vm.count("help")) {
+			std::cout << "Usage: avsparse_fwlog [options] [--csv|elf file]\n";
+			std::cout << desc;
+			return 0;
+		}
 		if (!vm.count("csv") && !vm.count("elf")) {
-			std::cout << "Usage: avsparse_fwlog [options]\n";
+			std::cout << "Either --csv or --elf must be provided.";
+			std::cout << "\n\nUsage: avsparse_fwlog [options] [--csv|elf file]\n";
 			std::cout << desc;
-			return 0;
+			return 1;
 		}
 
-		if (!vm.count("input")) {
-			std::cout << "Usage: avsparse_fwlog [options]\n";
-			std::cout << desc;
-			return 0;
-		}
-
+		notify(vm);
 		conflicting_options(vm, "csv", "elf");
 
 		std::ofstream outfile;
@@ -213,8 +214,14 @@ int main(int argc, char* argv[])
 			do_work<struct log_literal2_0, log_entry_icl>(symbols, inpath, *out,
 								      follow);
 		}
+	} catch (error &poe) {
+		std::cout << poe.what();
+		std::cout << "\n\nUsage: avsparse_fwlog [options] [--csv|elf file]\n";
+		std::cout << desc;
+		return 1;
 	} catch (std::exception &e) {
-		std::cout << e.what() << "\n";
+		std::cout << "\n" <<  e.what() << "\n";
+		return 1;
 	}
 
 	return 0;
