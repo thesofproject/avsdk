@@ -78,7 +78,7 @@ static void elf_init_literal(std::istream &elf, struct log_literal2_0 &literal,
 }
 
 void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
-		    const std::string inpath)
+		    const std::string &inpath)
 {
 	std::ifstream elf(inpath, std::fstream::binary);
 

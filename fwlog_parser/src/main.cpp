@@ -13,7 +13,7 @@ using namespace boost::program_options;
 
 class detailed_path {
 public:
-	detailed_path(std::string p, int id)
+	detailed_path(const std::string &p, int id)
 		: path(p), lib_id(id)
 	{
 	}

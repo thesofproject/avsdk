@@ -92,7 +92,7 @@ public:
 };
 
 void build_provider(std::map<uint64_t, struct log_literal1_5> &provider,
-		    const std::string inpath);
+		    const std::string &inpath);
 
 int write_entry(std::ostream &out, struct log_literal1_5 *literal,
 		const log_entry_spt &entry, uint32_t *data);

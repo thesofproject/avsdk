@@ -80,7 +80,7 @@ public:
 };
 
 void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
-		    const std::string inpath);
+		    const std::string &inpath);
 
 int write_entry(std::ostream &out, struct log_literal2_0 *literal,
 		const log_entry_icl &entry, uint32_t *data);

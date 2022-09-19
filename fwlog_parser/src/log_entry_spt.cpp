@@ -45,7 +45,7 @@ static void init_literal(struct log_literal1_5 &literal, const std::string &reco
 }
 
 void build_provider(std::map<uint64_t, struct log_literal1_5> &provider,
-		    const std::string inpath)
+		    const std::string &inpath)
 {
 	std::ifstream csv(inpath);
 	std::string line;
