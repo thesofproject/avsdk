@@ -128,11 +128,11 @@ static void do_work(std::vector<detailed_path> &paths,
 	}
 
 	fileupdate_listener listener;
-	int prevpos;
-
 	listener.subscribe(inpath);
 
 	while (1) {
+		int prevpos;
+
 		process_logdump<LiteralT, EntryT>(infile, out, dict);
 		prevpos = infile.tellg();
 		out.flush();
