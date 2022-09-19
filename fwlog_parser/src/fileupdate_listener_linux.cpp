@@ -26,7 +26,7 @@ fileupdate_listener_linux::fileupdate_listener_linux()
 
 fileupdate_listener_linux::~fileupdate_listener_linux()
 {
-	unsubscribe();
+	__unsubscribe();
 
 	int ret = close(fd);
 	if (ret)
@@ -50,7 +50,7 @@ bool fileupdate_listener_linux::subscribe(const std::string &fullpath)
 	return true;
 }
 
-void fileupdate_listener_linux::unsubscribe()
+void fileupdate_listener_linux::__unsubscribe()
 {
 	if (wd < 0)
 		return; // nothing to do

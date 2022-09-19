@@ -19,7 +19,7 @@ fileupdate_listener_win::fileupdate_listener_win()
 
 fileupdate_listener_win::~fileupdate_listener_win()
 {
-	unsubscribe();
+	__unsubscribe();
 	delete buffer;
 }
 
@@ -90,7 +90,7 @@ bool fileupdate_listener_win::subscribe(const std::string &fullpath)
 	return true;
 }
 
-void fileupdate_listener_win::unsubscribe()
+void fileupdate_listener_win::__unsubscribe()
 {
 	if (hFile == INVALID_HANDLE_VALUE)
 		return; // nothing to do

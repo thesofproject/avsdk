@@ -19,13 +19,18 @@ public:
 	virtual ~fileupdate_listener_win();
 
 	virtual bool subscribe(const std::string &fullpath) override;
-	virtual void unsubscribe() override;
+	virtual void unsubscribe() override
+	{
+		__unsubscribe();
+	}
+
 	virtual int wait_for_signal() override;
 
 private:
 	static void CALLBACK completion_callback(DWORD dwErrorCode,
 						 DWORD dwNumberOfBytesTransfered,
 						 LPOVERLAPPED lpOverlapped);
+	void __unsubscribe();
 
 	void *hFile;
 	void *hEvent;
