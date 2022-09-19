@@ -30,7 +30,8 @@ void CALLBACK fileupdate_listener_win::completion_callback(DWORD dwErrorCode,
 	if (dwErrorCode || !dwNumberOfBytesTransfered)
 		return;
 
-	fileupdate_listener_win *listener = (fileupdate_listener_win *)lpOverlapped->hEvent;
+	fileupdate_listener_win *listener =
+		reinterpret_cast<fileupdate_listener_win *>(lpOverlapped->hEvent);
 	PFILE_NOTIFY_INFORMATION info;
 	unsigned char *data = listener->buffer;
 
