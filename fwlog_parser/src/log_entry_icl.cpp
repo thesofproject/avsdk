@@ -19,7 +19,7 @@ static int elf_find_section(std::vector<Elf32_Shdr> &sections,
 
 	for (size_t i = 0; i < sections.size(); i++)
 		if (!strings.compare(sections[i].name, len, name))
-			return i;
+			return static_cast<int>(i);
 	return -1;
 }
 
