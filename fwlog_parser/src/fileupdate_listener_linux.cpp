@@ -2,6 +2,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include <errno.h>
@@ -73,7 +74,8 @@ again:
 	if (!FD_ISSET(fd, &readfds))
 		goto again; // no events to process
 
-	char *buf = new char[BUF_LEN];
+	std::unique_ptr<char[]> bufptr(new char[BUF_LEN]);
+	char *buf = bufptr.get();
 	ssize_t len, n = 0;
 
 	len = read(fd, buf, BUF_LEN);
