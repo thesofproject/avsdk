@@ -1,4 +1,4 @@
-#if defined(_WIN32) || defined (__CYGWIN__)
+#if defined(_WIN32) || defined(__CYGWIN__)
 
 #ifndef AVS_FILEUPDATE_LISTENER_WIN_HPP
 #define AVS_FILEUPDATE_LISTENER_WIN_HPP
@@ -6,7 +6,11 @@
 #ifndef UNICODE
 #define UNICODE
 #endif
+
+#if defined(_WIN32) && !defined(NOMINMAX)
 #define NOMINMAX // fix min/max redefinition from windows.h
+#endif
+
 #include <windows.h>
 #undef NOMINMAX
 
@@ -41,4 +45,4 @@ private:
 
 #endif // AVS_FILEUPDATE_LISTENER_WIN_HPP
 
-#endif // _WIN32
+#endif // _WIN32 || __CYGWIN__
