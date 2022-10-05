@@ -647,6 +647,8 @@ namespace itt
         {
             if (module.Type.Equals(ModuleNames.Copier))
             {
+                // Capture paths are expected to be always connected directly,
+		// and without any kcontrol switches involved.
                 if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
                     && path.Direction != Direction.CAPTURE)
                     return SKL_PIPE_CONN_TYPE.FE;
