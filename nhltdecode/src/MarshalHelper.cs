@@ -1,4 +1,13 @@
-﻿using System.IO;
+﻿//
+// Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+//
+// Authors: Piotr Maziarz <piotrx.maziarz@linux.intel.com>
+//          Cezary Rojewski <cezary.rojewski@intel.com>
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace nhltdecode
