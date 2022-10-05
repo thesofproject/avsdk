@@ -1,4 +1,12 @@
-﻿using System;
+﻿//
+// Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+//
+// Author: Cezary Rojewski <cezary.rojewski@intel.com>
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+using System;
 using System.Xml.Serialization;
 
 namespace avstplg
