@@ -1,3 +1,11 @@
+//
+// Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+//
+// Author: Piotr Maziarz <piotrx.maziarz@linux.intel.com>
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
 using System;
 using System.Collections.Generic;
 using System.IO;
