@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9D574AE2-D730-497D-9708-740F1061DE8F}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ProbeExtractor</RootNamespace>
-    <AssemblyName>ProbeExtractor</AssemblyName>
+    <RootNamespace>probe2wav</RootNamespace>
+    <AssemblyName>probe2wav</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

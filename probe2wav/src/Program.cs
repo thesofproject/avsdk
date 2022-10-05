@@ -1,6 +1,6 @@
 using System;
 
-namespace ProbeExtractor
+namespace probe2wav
 {
     class Program
     {
@@ -44,7 +44,7 @@ namespace ProbeExtractor
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ProbeExtractor failed. Message: {ex.Message}");
+                Console.WriteLine($"probe2wav failed. Message: {ex.Message}");
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine();
@@ -63,8 +63,8 @@ namespace ProbeExtractor
 
         static private void PrintHelp()
         {
-            Console.WriteLine("ProbeExtractor");
-            Console.WriteLine("Usage: ProbeExtractor [Options][File]");
+            Console.WriteLine("probe2wav");
+            Console.WriteLine("Usage: probe2wav [Options][File]");
             Console.WriteLine("Options:");
             Console.WriteLine("-h, --help         help");
             Console.WriteLine("-v, --verbose      show verbose output");

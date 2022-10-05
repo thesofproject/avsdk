@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace ProbeExtractor
+namespace probe2wav
 {
     public class ProbeWriter
     {

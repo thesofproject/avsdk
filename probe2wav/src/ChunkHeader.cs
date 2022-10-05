@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
 
-namespace ProbeExtractor
+namespace probe2wav
 {
     internal static class Constants
     {

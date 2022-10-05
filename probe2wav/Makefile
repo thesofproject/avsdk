@@ -1,6 +1,6 @@
 #Solution configuration, use either "Debug" or "Release"
 CONFIGURATION	= Debug
-ASSEMBLY_NAME	= ProbeExtractor
+ASSEMBLY_NAME	= probe2wav
 SOLUTION_NAME  := $(ASSEMBLY_NAME)_NETFramework.sln
 SRCDIR	       := src
 OUTDIR	       := $(SRCDIR)/bin/$(CONFIGURATION)
