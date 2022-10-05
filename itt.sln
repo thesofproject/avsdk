@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itt", "itt.csproj", "{A3E1FBA9-6B04-4353-967B-6954D294EB25}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itt", "src\itt.csproj", "{A3E1FBA9-6B04-4353-967B-6954D294EB25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

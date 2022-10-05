@@ -1,7 +1,8 @@
 #Solution configuration, use either "Debug" or "Release"
 CONFIGURATION = Debug
 ASSEMBLY_NAME = itt
-OUTPUT_PATH   = bin/$(CONFIGURATION)
+SRCDIR	       := src
+OUTPUT_PATH   = $(SRCDIR)/bin/$(CONFIGURATION)
 MSBUILD_FLAGS = /m
 
 all: build
