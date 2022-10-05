@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+ *
+ * Author: Cezary Rojewski <cezary.rojewski@intel.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #if defined(__linux__)
 
 #ifndef AVS_FILEUPDATE_LISTENER_LINUX_HPP

@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+ *
+ * Author: Cezary Rojewski <cezary.rojewski@intel.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #if defined(_WIN32) || defined (__CYGWIN__)
 
 #include <boost/filesystem/path.hpp>

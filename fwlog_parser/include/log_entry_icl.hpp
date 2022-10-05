@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+ *
+ * Author: Cezary Rojewski <cezary.rojewski@intel.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef AVS_LOG_ENTRY_ICL_HPP
 #define AVS_LOG_ENTRY_ICL_HPP
 
