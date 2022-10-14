@@ -6,12 +6,12 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-using NUcmSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using NUcmSerializer;
 
 namespace itt
 {
@@ -55,7 +55,7 @@ namespace itt
                     break;
                 default:
                     result = $"{path} {GetModuleShortName(module)} {instance}";
-		    break;
+                    break;
             }
 
             return result;
@@ -88,10 +88,10 @@ namespace itt
 
         public static uint GetDirPinCount(PinDir dir, int index)
         {
-                // The same token is used for both direction of pin and
-                // pin count value. First 4 bits denote direction with the
-                // rest storing the count (index).
-                return ((uint)dir & 0xF) | ((uint)index << 4);
+            // The same token is used for both direction of pin and
+            // pin count value. First 4 bits denote direction with the
+            // rest storing the count (index).
+            return ((uint)dir & 0xF) | ((uint)index << 4);
         }
 
         static ModuleType GetTemplate(ModuleType[] templates, string type)
@@ -632,7 +632,7 @@ namespace itt
             if (module.Type.Equals(ModuleNames.Copier))
             {
                 // Capture paths are expected to be always connected directly,
-		// and without any kcontrol switches involved.
+                // and without any kcontrol switches involved.
                 if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
                     && path.Direction != Direction.CAPTURE)
                     return SKL_PIPE_CONN_TYPE.FE;

@@ -6,10 +6,10 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-using NUcmSerializer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUcmSerializer;
 
 namespace itt
 {
@@ -73,7 +73,7 @@ namespace itt
 
         public static SectionData GetPrivateData(this Section section)
         {
-            return new SectionData() { Identifier = section.Identifier, Tuples = new[] { section.Identifier }};
+            return new SectionData() { Identifier = section.Identifier, Tuples = new[] { section.Identifier } };
         }
     }
 }

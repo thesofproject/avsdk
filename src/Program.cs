@@ -6,13 +6,13 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-using NUcmSerializer;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
+using NUcmSerializer;
 
 namespace itt
 {
@@ -60,7 +60,7 @@ namespace itt
                 ShowHelp();
                 return 0;
             }
-            else if(args.Any(a => Version.Matches(a)))
+            else if (args.Any(a => Version.Matches(a)))
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 Console.WriteLine($"Intel Topology Tool, version {version}");
