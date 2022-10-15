@@ -25,37 +25,37 @@ namespace itt
 
         internal FirmwareInfo[] GetManifestData()
         {
-            SubsystemType sub = SubsystemType?.SingleOrDefault(e =>
-                e.ManifestData != null);
+            SubsystemType sub = SubsystemType?.SingleOrDefault(e => e.ManifestData != null);
+
             return sub?.ManifestData;
         }
 
         internal FirmwareConfig GetFirmwareConfig()
         {
-            SubsystemType sub = SubsystemType?.SingleOrDefault(e =>
-                e.FirmwareConfig != null);
+            SubsystemType sub = SubsystemType?.SingleOrDefault(e => e.FirmwareConfig != null);
+
             return sub?.FirmwareConfig;
         }
 
         internal ModuleType[] GetModuleTypes()
         {
-            SubsystemType sub = SubsystemType?.SingleOrDefault(e =>
-                e.ModuleTypes != null);
+            SubsystemType sub = SubsystemType?.SingleOrDefault(e => e.ModuleTypes != null);
+
             return sub?.ModuleTypes;
         }
 
         internal Paths GetPaths()
         {
-            SubsystemType sub = SubsystemType?.SingleOrDefault(e =>
-                e.Paths != null && e.Paths.Path != null);
+            SubsystemType sub = SubsystemType?.SingleOrDefault(e => e.Paths != null &&
+                                                                    e.Paths.Path != null);
+
             return sub?.Paths;
         }
 
         internal PathConnectors GetPathConnectors()
         {
-            SubsystemType sub = SubsystemType?.SingleOrDefault(e =>
-                e.PathConnectors != null &&
-                e.PathConnectors.PathConnector != null);
+            SubsystemType sub = SubsystemType?.SingleOrDefault(e => e.PathConnectors != null &&
+                                                                    e.PathConnectors.PathConnector != null);
             return sub?.PathConnectors;
         }
     }

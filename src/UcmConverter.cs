@@ -141,19 +141,26 @@ namespace itt
             {
                 GetTuple(SKL_TKN.STR_LIB_NAME, info.BinaryName)
             };
+
             return strings;
         }
 
         public static IEnumerable<Section> GetFirmwareInfosSections(FirmwareInfo[] infos)
         {
             var result = new List<Section>();
+
             if (infos == null)
                 return result;
+
             var section = new SectionSkylakeTuples("lib_data");
             var tuples = new List<VendorTuples>();
 
             var words = new VendorTuples<uint>("lib_count");
-            words.Tuples = new[] { GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)infos.Length) };
+            words.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U32_LIB_COUNT, (uint)infos.Length)
+            };
+
             tuples.Add(words);
 
             for (int i = 0; i < infos.Length; i++)
@@ -302,6 +309,7 @@ namespace itt
         public static IEnumerable<Section> GetFirmwareConfigSections(FirmwareConfig config)
         {
             var result = new List<Section>();
+
             if (config == null)
                 return result;
 
@@ -315,8 +323,7 @@ namespace itt
                 words.Tuples = new[]
                 {
                     GetTuple(SKL_TKN.U32_DMA_TYPE, 4u),
-                    GetTuple(SKL_TKN.U32_DMA_SIZE, (uint)(length *
-                            Marshal.SizeOf(typeof(DMABufferConfig))))
+                    GetTuple(SKL_TKN.U32_DMA_SIZE, (uint)(length * Marshal.SizeOf(typeof(DMABufferConfig))))
                 };
 
                 tuples.Add(words);
@@ -458,7 +465,11 @@ namespace itt
             var result = new List<VendorTuples>();
 
             var uuids = new VendorTuples<Guid>($"mod_{id}");
-            uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.Uuid) };
+            uuids.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.UUID, template.Uuid)
+            };
+
             result.Add(uuids);
 
             var bytes = new VendorTuples<byte>($"u8_mod_type_{id}");
@@ -485,13 +496,19 @@ namespace itt
         public static IEnumerable<Section> GetModuleTypesSections(ModuleType[] templates)
         {
             var result = new List<Section>();
+
             if (templates == null)
                 return result;
+
             var section = new SectionSkylakeTuples("mod_type_data");
             var tuples = new List<VendorTuples>();
 
             var bytes = new VendorTuples<byte>("u8_num_mod");
-            bytes.Tuples = new[] { GetTuple(SKL_TKN.U8_NUM_MOD, (byte)templates.Length) };
+            bytes.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.U8_NUM_MOD, (byte)templates.Length)
+            };
+
             tuples.Add(bytes);
 
             for (int i = 0; i < templates.Length; i++)
@@ -588,6 +605,7 @@ namespace itt
             };
 
             result.Add(words);
+
             var formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
             for (int i = 0; i < formats.Length; i++)
                 result.AddRange(GetPcmFormatTuples(formats[i], id));
@@ -595,8 +613,9 @@ namespace itt
             for (int i = 0; i < formats.Length; i++)
                 result.AddRange(GetPcmFormatTuples(formats[i], id));
 
-            ModuleParams param = config.ModuleParams.FirstOrDefault(
-                p => p.Module.Equals(module.Type) && p.Instance == module.Instance);
+            ModuleParams param =
+                config.ModuleParams.FirstOrDefault(p => p.Module.Equals(module.Type) &&
+                                                        p.Instance == module.Instance);
             if (param != null)
                 result.AddRange(GetModuleParamsTuples(param, id));
 
@@ -617,8 +636,8 @@ namespace itt
         {
             if (module.Type.Equals(ModuleNames.Copier))
             {
-                if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
-                    && path.Direction != Direction.CAPTURE)
+                if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA) &&
+                    path.Direction != Direction.CAPTURE)
                     return SKL_PIPE_CONN_TYPE.FE;
                 else if (path.ConnType == ConnType.LINK_DMA)
                     return SKL_PIPE_CONN_TYPE.BE;
@@ -633,8 +652,8 @@ namespace itt
             {
                 // Capture paths are expected to be always connected directly,
                 // and without any kcontrol switches involved.
-                if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
-                    && path.Direction != Direction.CAPTURE)
+                if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA) &&
+                    path.Direction != Direction.CAPTURE)
                     return SKL_PIPE_CONN_TYPE.FE;
                 else if (path.ConnType == ConnType.LINK_DMA)
                     return SKL_PIPE_CONN_TYPE.BE;
@@ -644,10 +663,11 @@ namespace itt
         }
 
         static IEnumerable<VendorTuples> GetPinDirTuples(ModuleType[] templates, PinDir dir, uint pinCount,
-            IEnumerable<Tuple<FromTo, FromTo>> pairs)
+                                                         IEnumerable<Tuple<FromTo, FromTo>> pairs)
         {
             int anyCount = pairs.Count(p => p.Item1.Interface == InterfaceName.ANY);
             bool dynamic = anyCount == pairs.Count();
+
             if (!dynamic && anyCount > 0)
                 throw new InvalidOperationException("static and dynamic pins cannot coexist");
 
@@ -658,10 +678,11 @@ namespace itt
             {
                 uint moduleId = 0, instanceId = 0;
                 Guid uuid = Guid.Empty;
+
                 if (!dynamic)
                 {
-                    Tuple<FromTo, FromTo> pair = pairs.FirstOrDefault(
-                        p => (uint)p.Item1.Interface % Constants.MAX_QUEUE == i);
+                    Tuple<FromTo, FromTo> pair = pairs.FirstOrDefault(p => (uint)p.Item1.Interface %
+                                                                           Constants.MAX_QUEUE == i);
                     if (pair != null)
                     {
                         ModuleType template = GetTemplate(templates, pair.Item2.Module);
@@ -684,14 +705,19 @@ namespace itt
                     continue;
 
                 var uuids = new VendorTuples<Guid>($"{str}_pin_{i}");
-                uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, uuid) };
+                uuids.Tuples = new[]
+                {
+                    GetTuple(SKL_TKN.UUID, uuid)
+                };
+
                 result.Add(uuids);
             }
 
             return result;
         }
 
-        static IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, PathConnector[] connectors, Module module, Path path, PinDir dir)
+        static IEnumerable<VendorTuples> GetModuleTuples(ModuleType[] templates, PathConnector[] connectors,
+                                                         Module module, Path path, PinDir dir)
         {
             ModuleType template = GetTemplate(templates, module.Type);
             IEnumerable<Tuple<FromTo, FromTo>> pairs;
@@ -704,9 +730,8 @@ namespace itt
                 pairs = path.Links.Select(l => Tuple.Create(l.To, l.From));
                 if (connectors != null)
                 {
-                    var query = connectors
-                        .Where(c => c.Output[0].PathName.Equals(path.Name))
-                        .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
+                    var query = connectors.Where(c => c.Output[0].PathName.Equals(path.Name))
+                                          .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
 
                     pairs = pairs.Concat(query);
                 }
@@ -718,21 +743,20 @@ namespace itt
                 pairs = path.Links.Select(l => Tuple.Create(l.From, l.To));
                 if (connectors != null)
                 {
-                    var query = connectors
-                        .Where(c => c.Input[0].PathName.Equals(path.Name))
-                        .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
+                    var query = connectors.Where(c => c.Input[0].PathName.Equals(path.Name))
+                                          .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
 
                     pairs = pairs.Concat(query);
                 }
             }
 
-            pairs = pairs.Where(
-                p => p.Item1.Module.Equals(module.Type) &&
-                     p.Item1.Instance == module.Instance);
+            pairs = pairs.Where(p => p.Item1.Module.Equals(module.Type) &&
+                                     p.Item1.Instance == module.Instance);
             return GetPinDirTuples(templates, dir, pinCount, pairs);
         }
 
-        static IEnumerable<Section> GetModuleSections(ModuleType[] templates, PathConnector[] connectors, Module module, Path path)
+        static IEnumerable<Section> GetModuleSections(ModuleType[] templates, PathConnector[] connectors, Module module,
+                                                      Path path)
         {
             ModuleType template = GetTemplate(templates, module.Type);
             var inTuples = GetModuleTuples(templates, connectors, module, path, PinDir.IN);
@@ -740,7 +764,10 @@ namespace itt
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
-            uuids.Tuples = new[] { GetTuple(SKL_TKN.UUID, template.Uuid) };
+            uuids.Tuples = new[]
+            {
+                GetTuple(SKL_TKN.UUID, template.Uuid)
+            };
 
             tuples.Add(uuids);
             var bytes = new VendorTuples<byte>("u8_data");
@@ -823,11 +850,13 @@ namespace itt
         static uint? GetEventType(Path path, Module module)
         {
             uint? result = (uint)SKL_EVENT_TYPE.PGA;
+
             if (module.ModulePosition == ModulePosition.SOURCE)
                 if (path.Order == 0)
                     result = (uint)SKL_EVENT_TYPE.VMIXER;
                 else
                     result = (uint)SKL_EVENT_TYPE.MIXER;
+
             return result;
         }
 
@@ -838,8 +867,7 @@ namespace itt
                     return Constants.VMIX;
                 else
                     return Constants.MIX;
-            else if (module.ModulePosition == ModulePosition.SINK &&
-                    path.Order != 7 && path.ConnType != ConnType.NONE)
+            else if (module.ModulePosition == ModulePosition.SINK && path.Order != 7 && path.ConnType != ConnType.NONE)
                 return Constants.PGAL;
             return null;
         }
@@ -847,40 +875,34 @@ namespace itt
         static uint? GetSubseq(Path path, Module module)
         {
             SKL_MODULE_TYPE type = module.Type.GetModuleType();
-            if (type != SKL_MODULE_TYPE.COPIER &&
-                type != SKL_MODULE_TYPE.MIXER)
+
+            if (type != SKL_MODULE_TYPE.COPIER && type != SKL_MODULE_TYPE.MIXER)
                 return null;
 
             uint? subseq = 0;
             bool isSource = (module.ModulePosition == ModulePosition.SOURCE);
             // FE pipeline
-            if (path.ConnType == ConnType.HOST_DMA ||
-                path.ConnType == ConnType.HDMI_HOST_DMA)
+            if (path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA)
             {
                 if (path.Order == 0)
-                    subseq = isSource ? HDA_DAPM_SUBSEQ.FE_SRC_MIX
-                                      : HDA_DAPM_SUBSEQ.FE_SRC_PGA;
+                    subseq = isSource ? HDA_DAPM_SUBSEQ.FE_SRC_MIX : HDA_DAPM_SUBSEQ.FE_SRC_PGA;
                 else if (path.Order == 7)
-                    subseq = isSource ? HDA_DAPM_SUBSEQ.FE_SINK_MIX
-                                      : HDA_DAPM_SUBSEQ.FE_SINK_PGA;
+                    subseq = isSource ? HDA_DAPM_SUBSEQ.FE_SINK_MIX : HDA_DAPM_SUBSEQ.FE_SINK_PGA;
             }
             // BE pipeline
             else if (path.ConnType == ConnType.LINK_DMA)
             {
                 // First pipeline
                 if (path.Order == 0)
-                    subseq = isSource ? HDA_DAPM_SUBSEQ.BE_SRC_MIX
-                                      : HDA_DAPM_SUBSEQ.BE_SRC_PGA;
+                    subseq = isSource ? HDA_DAPM_SUBSEQ.BE_SRC_MIX : HDA_DAPM_SUBSEQ.BE_SRC_PGA;
                 // Last pipeline
                 else if (path.Order == 7)
-                    subseq = isSource ? HDA_DAPM_SUBSEQ.BE_SINK_MIX
-                                      : HDA_DAPM_SUBSEQ.BE_SINK_PGA;
+                    subseq = isSource ? HDA_DAPM_SUBSEQ.BE_SINK_MIX : HDA_DAPM_SUBSEQ.BE_SINK_PGA;
             }
             // Intermediate pipeline
             else
             {
-                subseq = isSource ? HDA_DAPM_SUBSEQ.INTERMEDIATE_MIX
-                                  : HDA_DAPM_SUBSEQ.INTERMEDIATE_PGA;
+                subseq = isSource ? HDA_DAPM_SUBSEQ.INTERMEDIATE_MIX : HDA_DAPM_SUBSEQ.INTERMEDIATE_PGA;
             }
 
             return (subseq > 0) ? subseq : null;
@@ -915,11 +937,8 @@ namespace itt
             return result;
         }
 
-        static SectionControlMixer GetMixerControl(string name,
-            int max, uint get, uint put,
-            int reg = Constants.NOPM,
-            int rreg = Constants.NOPM,
-            uint info = TPLG_CTL.VOLSW)
+        static SectionControlMixer GetMixerControl(string name, int max, uint get, uint put, int reg = Constants.NOPM,
+                                                   int rreg = Constants.NOPM, uint info = TPLG_CTL.VOLSW)
         {
             var control = new SectionControlMixer(name);
             control.Index = 0;
@@ -941,28 +960,22 @@ namespace itt
 
             if (module.Type.Equals(ModuleNames.Gain))
             {
-                result.Add(GetMixerControl("Ramp Duration",
-                    Constants.GAIN_TC_MAX,
-                    Constants.SKL_CTL_RAMP_DURATION,
-                    Constants.SKL_CTL_RAMP_DURATION));
+                result.Add(GetMixerControl("Ramp Duration", Constants.GAIN_TC_MAX, Constants.SKL_CTL_RAMP_DURATION,
+                                           Constants.SKL_CTL_RAMP_DURATION));
 
-                result.Add(GetMixerControl("Ramp Type",
-                    Constants.GAIN_RT_MAX,
-                    Constants.SKL_CTL_RAMP_TYPE,
-                    Constants.SKL_CTL_RAMP_TYPE));
+                result.Add(GetMixerControl("Ramp Type", Constants.GAIN_RT_MAX, Constants.SKL_CTL_RAMP_TYPE,
+                                           Constants.SKL_CTL_RAMP_TYPE));
 
-                result.Add(GetMixerControl("Volume",
-                    Constants.GAIN_MAX_INDEX,
-                    Constants.SKL_CTL_VOLUME,
-                    Constants.SKL_CTL_VOLUME,
-                    Constants.NOPM + 1, Constants.NOPM + 2,
-                    Constants.SKL_CTL_VOLUME));
+                result.Add(GetMixerControl("Volume", Constants.GAIN_MAX_INDEX, Constants.SKL_CTL_VOLUME,
+                                           Constants.SKL_CTL_VOLUME, Constants.NOPM + 1, Constants.NOPM + 2,
+                                           Constants.SKL_CTL_VOLUME));
             }
 
             return result;
         }
 
-        static IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, PathConnector[] connectors, Path path, Module module)
+        static IEnumerable<Section> GetPathModuleSections(ModuleType[] templates, PathConnector[] connectors, Path path,
+                                                          Module module)
         {
             var result = new List<Section>();
 
@@ -982,24 +995,23 @@ namespace itt
             result.AddRange(GetBytesControls(templates, module));
 
             IEnumerable<string> ids = result.OfType<SectionControlBytes>()
-                .Select(c => c.Identifier);
+                                            .Select(c => c.Identifier);
             if (ids.Any())
                 widget.Bytes = ids.ToArray();
 
             ids = result.OfType<SectionControlMixer>()
-                .Select(c => c.Identifier);
+                        .Select(c => c.Identifier);
             // Append mixers from path connectors
             if (connectors != null)
             {
-                IEnumerable<PathConnector> query = connectors.Where(
-                    c => c.Type == LinkType.MIXER && c.Output.Any(
-                        o => o.PathName.Equals(path.Name) &&
-                             o.Module.Equals(module.Type) &&
-                             o.Instance == module.Instance));
+                IEnumerable<PathConnector> query =
+                    connectors.Where(c => c.Type == LinkType.MIXER &&
+                                          c.Output.Any(o => o.PathName.Equals(path.Name) &&
+                                                            o.Module.Equals(module.Type) &&
+                                                            o.Instance == module.Instance));
 
                 IEnumerable<InputOutput> inputs = query.SelectMany(c => c.Input);
-                ids = ids.Concat(inputs.Select(
-                    i => GetMixerName(i.PathName, i.Module)));
+                ids = ids.Concat(inputs.Select(i => GetMixerName(i.PathName, i.Module)));
             }
 
             if (ids.Any())
@@ -1011,12 +1023,14 @@ namespace itt
         {
             var result = new List<Section>();
             PathConfiguration[] cfgs = path.PathConfigurations.PathConfiguration;
+
             if (cfgs.Length <= 1)
                 return result;
             if (path.ConnType != ConnType.LINK_DMA)
             {
                 PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.OUT : PinDir.IN;
                 IEnumerable<PcmFormat> fmts = cfgs.Select(c => c.PcmFormats.First(f => f.Dir == dir));
+
                 if (fmts.Distinct().Count() <= 1)
                     return result;
             }
@@ -1072,8 +1086,7 @@ namespace itt
             if (path.Port != null)
             {
                 var widget = new SectionWidget(path.Port);
-                widget.Type = (path.Direction == Direction.CAPTURE) ? TPLG_DAPM.AIF_IN
-                                                                    : TPLG_DAPM.AIF_OUT;
+                widget.Type = (path.Direction == Direction.CAPTURE) ? TPLG_DAPM.AIF_IN : TPLG_DAPM.AIF_OUT;
                 widget.NoPm = true;
                 result.Add(widget);
             }
@@ -1123,9 +1136,11 @@ namespace itt
             return new Section[] { control, section };
         }
 
-        public static IEnumerable<Section> GetPathsSections(ModuleType[] templates, PathConnector[] connectors, Path[] paths)
+        public static IEnumerable<Section> GetPathsSections(ModuleType[] templates, PathConnector[] connectors,
+                                                            Path[] paths)
         {
             var result = new List<Section>();
+
             if (paths == null)
                 return result;
 
@@ -1139,28 +1154,22 @@ namespace itt
         public static IEnumerable<Section> GetPathConnectorsSections(PathConnector[] connectors)
         {
             var result = new List<Section>();
+
             if (connectors == null)
                 return result;
 
-            IEnumerable<PathConnector> query = connectors
-                .Where(c => c.Type == LinkType.MIXER);
+            IEnumerable<PathConnector> query = connectors.Where(c => c.Type == LinkType.MIXER);
             foreach (var entry in query)
             {
                 foreach (var input in entry.Input)
-                    result.Add(GetMixerControl(
-                        GetMixerName(input.PathName, input.Module), 1,
-                        TPLG_CTL.DAPM_VOLSW,
-                        TPLG_CTL.DAPM_VOLSW));
+                    result.Add(GetMixerControl(GetMixerName(input.PathName, input.Module), 1, TPLG_CTL.DAPM_VOLSW,
+                                               TPLG_CTL.DAPM_VOLSW));
             }
 
-            query = connectors
-                .Where(c => c.Type == LinkType.SWITCH);
+            query = connectors.Where(c => c.Type == LinkType.SWITCH);
             foreach (var entry in query)
             {
-                SectionControlMixer mixer = GetMixerControl(
-                    "Switch", 1,
-                    TPLG_CTL.DAPM_VOLSW,
-                    TPLG_CTL.DAPM_VOLSW);
+                SectionControlMixer mixer = GetMixerControl("Switch", 1, TPLG_CTL.DAPM_VOLSW, TPLG_CTL.DAPM_VOLSW);
 
                 var widget = new SectionWidget(entry.Name);
                 widget.Index = 0;
@@ -1184,14 +1193,12 @@ namespace itt
                 predicate = (m => m.ModulePosition != ModulePosition.SINK);
             Module source = path.Modules.Module.First(predicate);
 
-            if (path.Direction == Direction.PLAYBACK &&
-                path.Device != null)
+            if (path.Direction == Direction.PLAYBACK && path.Device != null)
             {
                 route.Append(GetWidgetName(path, source));
                 route.Append($", , {path.Device}");
             }
-            else if (path.Direction == Direction.CAPTURE &&
-                path.Port != null)
+            else if (path.Direction == Direction.CAPTURE && path.Port != null)
             {
                 route.Append(GetWidgetName(path, source));
                 route.Append($", , {path.Port}");
@@ -1209,14 +1216,12 @@ namespace itt
                 predicate = (m => m.ModulePosition == ModulePosition.SINK);
             Module sink = path.Modules.Module.Last(predicate);
 
-            if (path.Direction == Direction.PLAYBACK &&
-                path.Port != null)
+            if (path.Direction == Direction.PLAYBACK && path.Port != null)
             {
                 route.Append($"{path.Port}, , ");
                 route.Append(GetWidgetName(path, sink));
             }
-            else if (path.Direction == Direction.CAPTURE &&
-                path.Device != null)
+            else if (path.Direction == Direction.CAPTURE && path.Device != null)
             {
                 route.Append($"{path.Device}, , ");
                 route.Append(GetWidgetName(path, sink));
@@ -1301,12 +1306,10 @@ namespace itt
 
         static SectionPCMCapabilities GetPCMCapabilities(Path path)
         {
-            PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.IN
-                                                                : PinDir.OUT;
+            PinDir dir = (path.Direction == Direction.PLAYBACK) ? PinDir.IN : PinDir.OUT;
             PathConfiguration[] configurations = path.PathConfigurations.PathConfiguration;
-            IEnumerable<PcmFormat> formats = configurations.SelectMany(
-                p => p.PcmFormats.Where(f => f.Dir == dir));
 
+            IEnumerable<PcmFormat> formats = configurations.SelectMany(p => p.PcmFormats.Where(f => f.Dir == dir));
             IEnumerable<PCM_RATE> rates = formats.Select(f => f.SampleRate.ToRate());
             IEnumerable<uint> channels = formats.Select(f => f.ChannelCount).Distinct();
             IEnumerable<uint> bps = formats.Select(f => f.Bps);
@@ -1324,11 +1327,12 @@ namespace itt
         public static IEnumerable<Section> GetPCMSections(Path[] paths)
         {
             var result = new List<Section>();
+
             if (paths == null)
                 return result;
 
-            IEnumerable<Path> fePaths = paths.Where(
-                p => p.Device != null && p.DaiName != null && p.DaiLinkName != null);
+            IEnumerable<Path> fePaths = paths.Where(p => p.Device != null && p.DaiName != null &&
+                                                         p.DaiLinkName != null);
 
             uint i = 0;
             var groups = fePaths.GroupBy(p => p.DaiLinkName).ToArray();
@@ -1377,8 +1381,7 @@ namespace itt
             FirmwareConfig config = topology.GetFirmwareConfig();
             if (config != null)
             {
-                if (config.DMABufferConfigs?.Length > 0 ||
-                    config.AstateTableConfigs?.Length > 0 ||
+                if (config.DMABufferConfigs?.Length > 0 || config.AstateTableConfigs?.Length > 0 ||
                     config.SchedulerConfiguration?.LowLatencySourceConfigs?.Length > 0)
                     num++;
                 if (config.ClockControls?.I2SClockControls != null)
@@ -1395,15 +1398,16 @@ namespace itt
             result.Add(manifest);
             IEnumerable<Section> sections = result.Concat(current);
 
-            var controls = sections.Where(s => s is SectionControl).Cast<SectionControl>();
-            controls = controls.Where(c => c.Data != null);
-            var widgets = sections.Where(s => s is SectionWidget).Cast<SectionWidget>();
-            widgets = widgets.Where(w => w.Data != null);
+            var controls = sections.Where(s => s is SectionControl)
+                                   .Cast<SectionControl>()
+                                   .Where(c => c.Data != null);
+            var widgets = sections.Where(s => s is SectionWidget)
+                                  .Cast<SectionWidget>()
+                                  .Where(w => w.Data != null);
 
             var privs = sections.Where(s => s is SectionData && s.Identifier != null);
-            privs = privs.Where(
-                p => !controls.Any(c => c.Data.Equals(p.Identifier)) &&
-                     !widgets.Any(w => w.Data.Contains(p.Identifier)));
+            privs = privs.Where(p => !controls.Any(c => c.Data.Equals(p.Identifier)) &&
+                                     !widgets.Any(w => w.Data.Contains(p.Identifier)));
 
             manifest.Data = privs.Select(p => p.Identifier).ToArray();
             return result;

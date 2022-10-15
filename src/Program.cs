@@ -63,13 +63,13 @@ namespace itt
             else if (args.Any(a => Version.Matches(a)))
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
+
                 Console.WriteLine($"Intel Topology Tool, version {version}");
                 return 0;
             }
 
             var dictionary = ParseArguments(args);
-            if (!dictionary.ContainsKey("input") ||
-                !dictionary.ContainsKey("output"))
+            if (!dictionary.ContainsKey("input") || !dictionary.ContainsKey("output"))
             {
                 Console.WriteLine($"Please specify -c and -o arguments.");
                 ShowShortHelp();
@@ -134,8 +134,7 @@ namespace itt
 
             for (int i = 0; i <= last; i += 2)
             {
-                string key = required.FirstOrDefault(
-                    p => p.Value.Matches(args[i])).Key;
+                string key = required.FirstOrDefault(p => p.Value.Matches(args[i])).Key;
 
                 if (key == null || result.ContainsKey(key))
                     continue;

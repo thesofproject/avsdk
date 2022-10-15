@@ -19,6 +19,7 @@ namespace itt
         internal static string GetName(this SKL_TKN token)
         {
             Type type = token.GetType();
+
             return string.Format("{0}_{1}", type.Name, Enum.GetName(type, token));
         }
 
@@ -125,7 +126,7 @@ namespace itt
         {
             if (value.StartsWith("0x", StringComparison.CurrentCulture))
                 return uint.TryParse(value.Substring(2), NumberStyles.HexNumber,
-                              CultureInfo.CurrentCulture, out result);
+                                     CultureInfo.CurrentCulture, out result);
 
             return uint.TryParse(value, out result);
         }
@@ -142,7 +143,7 @@ namespace itt
         {
             var result = new List<uint>();
             var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => s.Trim());
+                               .Select(s => s.Trim());
 
             uint val;
             foreach (var substr in substrs)
