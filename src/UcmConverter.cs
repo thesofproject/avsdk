@@ -390,8 +390,8 @@ namespace itt
         static IEnumerable<VendorTuples> GetInterfacesTuples(Interfaces ifaces, int mod, int id)
         {
             var result = new List<VendorTuples>();
-            var inputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.IN).ToArray();
-            var outputIfaces = ifaces.Interface.Except(inputIfaces).ToArray();
+            Interface[] inputIfaces = ifaces.Interface.Where(intf => intf.Dir == PinDir.IN).ToArray();
+            Interface[] outputIfaces = ifaces.Interface.Except(inputIfaces).ToArray();
 
             var words = new VendorTuples<uint>($"u32_mod_type_{mod}_intf_{id}");
             words.Tuples = new[]
@@ -606,7 +606,7 @@ namespace itt
 
             result.Add(words);
 
-            var formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
+            PcmFormat[] formats = config.PcmFormats.Where(f => f.Dir == PinDir.IN).ToArray();
             for (int i = 0; i < formats.Length; i++)
                 result.AddRange(GetPcmFormatTuples(formats[i], id));
             formats = config.PcmFormats.Except(formats).ToArray();
@@ -730,8 +730,9 @@ namespace itt
                 pairs = path.Links.Select(l => Tuple.Create(l.To, l.From));
                 if (connectors != null)
                 {
-                    var query = connectors.Where(c => c.Output[0].PathName.Equals(path.Name))
-                                          .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
+                    IEnumerable<Tuple<FromTo, FromTo>> query =
+                        connectors.Where(c => c.Output[0].PathName.Equals(path.Name))
+                                  .Select(c => Tuple.Create<FromTo, FromTo>(c.Output[0], c.Input[0]));
 
                     pairs = pairs.Concat(query);
                 }
@@ -743,8 +744,9 @@ namespace itt
                 pairs = path.Links.Select(l => Tuple.Create(l.From, l.To));
                 if (connectors != null)
                 {
-                    var query = connectors.Where(c => c.Input[0].PathName.Equals(path.Name))
-                                          .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
+                    IEnumerable<Tuple<FromTo, FromTo>> query =
+                        connectors.Where(c => c.Input[0].PathName.Equals(path.Name))
+                                  .Select(c => Tuple.Create<FromTo, FromTo>(c.Input[0], c.Output[0]));
 
                     pairs = pairs.Concat(query);
                 }
@@ -759,8 +761,8 @@ namespace itt
                                                       Path path)
         {
             ModuleType template = GetTemplate(templates, module.Type);
-            var inTuples = GetModuleTuples(templates, connectors, module, path, PinDir.IN);
-            var outTuples = GetModuleTuples(templates, connectors, module, path, PinDir.OUT);
+            IEnumerable<VendorTuples> inTuples = GetModuleTuples(templates, connectors, module, path, PinDir.IN);
+            IEnumerable<VendorTuples> outTuples = GetModuleTuples(templates, connectors, module, path, PinDir.OUT);
 
             var tuples = new List<VendorTuples>();
             var uuids = new VendorTuples<Guid>();
@@ -818,7 +820,7 @@ namespace itt
             };
 
             tuples.Add(words);
-            var configs = GetPathConfigurationsTuples(path.PathConfigurations, module);
+            IEnumerable<VendorTuples> configs = GetPathConfigurationsTuples(path.PathConfigurations, module);
             tuples.AddRange(configs);
             tuples.AddRange(inTuples);
             tuples.AddRange(outTuples);
@@ -932,7 +934,7 @@ namespace itt
             if (prms != null)
             {
                 Ops ops = GetControlBytesExtOps(module.Type);
-                foreach (var param in prms)
+                foreach (Param param in prms)
                     result.AddRange(GetParamSections(param, ops));
             }
 
@@ -1042,7 +1044,7 @@ namespace itt
             var values = new List<string>();
             var value = new StringBuilder();
 
-            foreach (var cfg in cfgs)
+            foreach (PathConfiguration cfg in cfgs)
             {
                 value.Clear();
                 PcmFormat fmt = cfg.PcmFormats.First(f => f.Dir == PinDir.IN);
@@ -1081,7 +1083,7 @@ namespace itt
         {
             var result = new List<Section>();
 
-            foreach (var module in path.Modules.Module)
+            foreach (Module module in path.Modules.Module)
                 result.AddRange(GetPathModuleSections(templates, connectors, path, module));
             result.AddRange(GetPathConfigurationsSections(path));
 
@@ -1146,7 +1148,7 @@ namespace itt
             if (paths == null)
                 return result;
 
-            foreach (var path in paths)
+            foreach (Path path in paths)
                 result.AddRange(GetPathSections(templates, connectors, path));
 
             result = result.Distinct(new SectionComparer()).ToList();
@@ -1161,15 +1163,15 @@ namespace itt
                 return result;
 
             IEnumerable<PathConnector> query = connectors.Where(c => c.Type == LinkType.MIXER);
-            foreach (var entry in query)
+            foreach (PathConnector entry in query)
             {
-                foreach (var input in entry.Input)
+                foreach (InputOutput input in entry.Input)
                     result.Add(GetMixerControl(GetMixerName(input.PathName, input.Module), 1, TPLG_CTL.DAPM_VOLSW,
                                                TPLG_CTL.DAPM_VOLSW));
             }
 
             query = connectors.Where(c => c.Type == LinkType.SWITCH);
-            foreach (var entry in query)
+            foreach (PathConnector entry in query)
             {
                 SectionControlMixer mixer = GetMixerControl("Switch", 1, TPLG_CTL.DAPM_VOLSW, TPLG_CTL.DAPM_VOLSW);
 
@@ -1241,7 +1243,7 @@ namespace itt
             if (!string.IsNullOrEmpty(route))
                 result.Add(route);
 
-            foreach (var link in path.Links)
+            foreach (Link link in path.Links)
             {
                 routes.Clear();
                 routes.Append(GetWidgetName(path, link.To));
@@ -1262,9 +1264,9 @@ namespace itt
             var result = new List<string>();
             var route = new StringBuilder();
 
-            foreach (var input in connector.Input)
+            foreach (InputOutput input in connector.Input)
             {
-                foreach (var output in connector.Output)
+                foreach (InputOutput output in connector.Output)
                 {
                     route.Clear();
                     route.Append(GetWidgetName(output));
@@ -1296,10 +1298,10 @@ namespace itt
             var routes = new List<string>();
 
             if (paths != null)
-                foreach (var path in paths)
+                foreach (Path path in paths)
                     routes.AddRange(GetPathRoutes(path));
             if (connectors != null)
-                foreach (var connector in connectors)
+                foreach (PathConnector connector in connectors)
                     routes.AddRange(GetConnectorRoutes(connector));
 
             graph.Lines = routes.ToArray();
@@ -1337,8 +1339,8 @@ namespace itt
                                                          p.DaiLinkName != null);
 
             uint i = 0;
-            var groups = fePaths.GroupBy(p => p.DaiLinkName).ToArray();
-            foreach (var group in groups)
+            IGrouping<string, Path>[] groups = fePaths.GroupBy(p => p.DaiLinkName).ToArray();
+            foreach (IGrouping<string, Path> group in groups)
             {
                 var section = new SectionPCM(group.Key);
                 section.DAI = new FE_DAI(group.First().DaiName) { ID = i++ };
@@ -1400,14 +1402,14 @@ namespace itt
             result.Add(manifest);
             IEnumerable<Section> sections = result.Concat(current);
 
-            var controls = sections.Where(s => s is SectionControl)
-                                   .Cast<SectionControl>()
-                                   .Where(c => c.Data != null);
-            var widgets = sections.Where(s => s is SectionWidget)
-                                  .Cast<SectionWidget>()
-                                  .Where(w => w.Data != null);
+            IEnumerable<SectionControl> controls = sections.Where(s => s is SectionControl)
+                                                           .Cast<SectionControl>()
+                                                           .Where(c => c.Data != null);
+            IEnumerable<SectionWidget> widgets = sections.Where(s => s is SectionWidget)
+                                                         .Cast<SectionWidget>()
+                                                         .Where(w => w.Data != null);
 
-            var privs = sections.Where(s => s is SectionData && s.Identifier != null);
+            IEnumerable<Section> privs = sections.Where(s => s is SectionData && s.Identifier != null);
             privs = privs.Where(p => !controls.Any(c => c.Data.Equals(p.Identifier)) &&
                                      !widgets.Any(w => w.Data.Contains(p.Identifier)));
 

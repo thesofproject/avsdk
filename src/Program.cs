@@ -68,7 +68,7 @@ namespace itt
                 return 0;
             }
 
-            var dictionary = ParseArguments(args);
+            Dictionary<string, string> dictionary = ParseArguments(args);
             if (!dictionary.ContainsKey("input") || !dictionary.ContainsKey("output"))
             {
                 Console.WriteLine($"Please specify -c and -o arguments.");
@@ -86,7 +86,7 @@ namespace itt
                 }
 
                 var serializer = new UcmSerializer();
-                var sections = UcmConverter.GetTopologySections(system);
+                IEnumerable<Section> sections = UcmConverter.GetTopologySections(system);
                 using (var stream = new FileStream(dictionary["output"], FileMode.Create))
                 {
                     serializer.Serialize(stream, sections);

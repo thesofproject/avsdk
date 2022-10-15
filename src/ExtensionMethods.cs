@@ -142,11 +142,11 @@ namespace itt
         internal static uint[] ToUInts32(this string value)
         {
             var result = new List<uint>();
-            var substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
-                               .Select(s => s.Trim());
+            IEnumerable<string> substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                                               .Select(s => s.Trim());
 
             uint val;
-            foreach (var substr in substrs)
+            foreach (string substr in substrs)
                 if (substr.TryUInt32(out val))
                     result.Add(val);
 
