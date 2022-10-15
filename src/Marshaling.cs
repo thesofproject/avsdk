@@ -130,7 +130,7 @@ namespace itt
             }
             set
             {
-                Config |= ((uint)value & 0x3);
+                Config |= (uint)value & 0x3;
             }
         }
         public bool RuntimeApplicable
@@ -141,7 +141,7 @@ namespace itt
             }
             set
             {
-                Config |= ((Convert.ToUInt32(value) & 0x1) << 2);
+                Config |= (Convert.ToUInt32(value) & 0x1) << 2;
             }
         }
         public AccessType AccessType
@@ -152,7 +152,7 @@ namespace itt
             }
             set
             {
-                Config |= (((uint)value & 0x3) << 3);
+                Config |= ((uint)value & 0x3) << 3;
             }
         }
         public bool ValueCacheable
@@ -163,7 +163,7 @@ namespace itt
             }
             set
             {
-                Config |= ((Convert.ToUInt32(value) & 0x1) << 5);
+                Config |= (Convert.ToUInt32(value) & 0x1) << 5;
             }
         }
         public bool NotificationCtrl
@@ -174,7 +174,7 @@ namespace itt
             }
             set
             {
-                Config |= ((Convert.ToUInt32(value) & 0x1) << 6);
+                Config |= (Convert.ToUInt32(value) & 0x1) << 6;
             }
         }
     }
