@@ -639,7 +639,7 @@ namespace itt
                 if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA) &&
                     path.Direction != Direction.CAPTURE)
                     return SKL_PIPE_CONN_TYPE.FE;
-                else if (path.ConnType == ConnType.LINK_DMA)
+                if (path.ConnType == ConnType.LINK_DMA)
                     return SKL_PIPE_CONN_TYPE.BE;
             }
 
@@ -655,7 +655,7 @@ namespace itt
                 if ((path.ConnType == ConnType.HOST_DMA || path.ConnType == ConnType.HDMI_HOST_DMA) &&
                     path.Direction != Direction.CAPTURE)
                     return SKL_PIPE_CONN_TYPE.FE;
-                else if (path.ConnType == ConnType.LINK_DMA)
+                if (path.ConnType == ConnType.LINK_DMA)
                     return SKL_PIPE_CONN_TYPE.BE;
             }
 
@@ -863,11 +863,13 @@ namespace itt
         static DAPM_EVENT? GetEventFlags(Path path, Module module)
         {
             if (module.ModulePosition == ModulePosition.SOURCE)
+            {
                 if (path.Order == 0)
                     return Constants.VMIX;
-                else
-                    return Constants.MIX;
-            else if (module.ModulePosition == ModulePosition.SINK && path.Order != 7 && path.ConnType != ConnType.NONE)
+                return Constants.MIX;
+            }
+
+            if (module.ModulePosition == ModulePosition.SINK && path.Order != 7 && path.ConnType != ConnType.NONE)
                 return Constants.PGAL;
             return null;
         }

@@ -60,7 +60,7 @@ namespace itt
                 ShowHelp();
                 return 0;
             }
-            else if (args.Any(a => Version.Matches(a)))
+            if (args.Any(a => Version.Matches(a)))
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
