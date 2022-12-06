@@ -396,9 +396,6 @@ namespace itt
     [Serializable]
     public enum AccessType
     {
-        // Default for all controls - all access types combined.
-        DEFAULT = 0,
-
         [XmlEnum(Name = "read")] READ = 1,
         [XmlEnum(Name = "write")] WRITE,
         [XmlEnum(Name = "read_write")] READ_WRITE
@@ -695,8 +692,6 @@ namespace itt
         public string Description { get; set; }
         [XmlElement]
         public PathConfiguration[] PathConfiguration { get; set; }
-        [XmlAttribute("access_type")]
-        public AccessType AccessType { get; set; }
     }
 
     [Serializable]
