@@ -1,9 +1,18 @@
 Intel Topology Tool for the skylake sound driver
 ================================================
 
- * [Overview](#overview)
  * [Important](#important)
+ * [Overview](#overview)
  * [Contributing](#contributing)
+
+# Important
+
+The skylake-driver as well as all its collaterals is **deprecated in favour of the
+[avs-driver](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/sound/soc/intel/avs)**.
+It's recommended for end users of newer Linux kernel version to switch to the latter solution. See
+the main branch of this repository for information regarding the
+[avstplg](https://github.com/thesofproject/avsdk#avstplg) tool, which an equivalent of itt, but
+targets the avs-driver.
 
 # Overview
 
@@ -24,15 +33,6 @@ for this tool.
 Connected to:
 [enable HDAudio+DMIC with skylake-driver](https://gist.github.com/crojewsk/4e6382bfb0dbfaaf60513174211f29cb)
 guide.
-
-# Important
-
-The skylake-driver as well as all its collaterals is **deprecated in favour of the
-[avs-driver](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/sound/soc/intel/avs)**.
-It's recommended for end users of newer Linux kernel version to switch to the latter solution. See
-the main branch of this repository for information regarding the
-[avstplg](https://github.com/thesofproject/avsdk#avstplg) tool, which an equivalent of itt, but
-targets the avs-driver.
 
 # Contributing
 
