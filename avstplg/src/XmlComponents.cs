@@ -8,6 +8,7 @@
 
 using System;
 using System.Xml.Serialization;
+using NUcmSerializer;
 
 namespace avstplg
 {
@@ -270,11 +271,33 @@ namespace avstplg
         public DAPMRoute[] Routes;
     }
 
+    public enum KcontrolType : uint
+    {
+        Mixer = TPLG_CTL.VOLSW,
+        Bytes = TPLG_CTL.BYTES,
+        Enum = TPLG_CTL.ENUM,
+    }
+
     public class Kcontrol
     {
+        internal int? max;
+
         [XmlAttribute("id")]
         public uint Id { get; set; }
         public string Name { get; set; }
+        public KcontrolType Type { get; set; }
+        public string Max
+        {
+            get
+            {
+                return max.HasValue ? string.Format("0x{0:X8}", max) : null;
+            }
+            set
+            {
+                if (value != null)
+                    max = value.ToInt32();
+            }
+        }
     }
 
     [XmlRoot]
