@@ -16,6 +16,21 @@ namespace avstplg
 {
     internal static class ExtensionMethods
     {
+        internal static bool TryInt32(this string value, out int result)
+        {
+            if (value.StartsWith("0x", StringComparison.CurrentCulture))
+                return int.TryParse(value.Substring(2), NumberStyles.HexNumber,
+                                    CultureInfo.CurrentCulture, out result);
+
+            return int.TryParse(value, out result);
+        }
+
+        internal static int ToInt32(this string value)
+        {
+            TryInt32(value, out int result);
+            return result;
+        }
+
         internal static bool TryUInt32(this string value, out uint result)
         {
             if (value.StartsWith("0x", StringComparison.CurrentCulture))
