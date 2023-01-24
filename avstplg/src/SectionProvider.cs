@@ -627,10 +627,22 @@ namespace avstplg
             sections.Add(data);
 
             var widget = new SectionWidget(template.WidgetName);
-            widget.Type = TPLG_DAPM.SCHEDULER;
             widget.NoPm = true;
             widget.IgnoreSuspend = template.IgnoreSuspend;
             widget.Data = new string[] { data.Identifier };
+
+            if (template.Kcontrol == null || template.Kcontrol.Name == null)
+            {
+                widget.Type = TPLG_DAPM.SCHEDULER;
+            }
+            else
+            {
+                // ASoC does not create kcontrols for widgets of type SCHEDULER.
+                widget.Type = TPLG_DAPM.PGA;
+                widget.Mixer = new string[] { template.Kcontrol.Name };
+                sections.AddRange(GetKcontrolMixerSections(template.Kcontrol));
+            }
+
             sections.Add(widget);
 
             return sections;

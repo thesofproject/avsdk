@@ -211,6 +211,8 @@ namespace avstplg
         public string WidgetName { get; set; }
         public bool IgnoreSuspend { get; set; }
         public Path[] Paths;
+        [XmlElement("VolumeMixer")]
+        public Kcontrol Kcontrol { get; set; }
     }
 
     public class Condpath
