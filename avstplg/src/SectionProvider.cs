@@ -787,7 +787,46 @@ namespace avstplg
             return section;
         }
 
-        public static IEnumerable<Section> GetKcontrolSections(Kcontrol kctrl)
+        public static IEnumerable<Section> GetKcontrolMixerSections(Kcontrol kctrl)
+        {
+            var sections = new List<Section>();
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_KCONTROL.ID_U32, kctrl.Id),
+            };
+
+            var section = new SectionVendorTuples($"kctrl_{kctrl.Name}_tokens");
+            section.Tokens = "avs_kcontrol_tokens";
+            section.Tuples = new VendorTuples[] { words };
+            sections.Add(section);
+
+            var data = new SectionData($"kctrl_{kctrl.Name}_data");
+            data.Tuples = new[] { section.Identifier };
+            sections.Add(data);
+
+            var control = new SectionControlMixer(kctrl.Name);
+            // TODO: replace hardcodes below with descriptive constants
+            control.Max = kctrl.max;
+            control.Ops = new Ops("ctl")
+            {
+                Get = 257,
+                Put = 257,
+                Info = TPLG_CTL.VOLSW,
+            };
+            control.Access = new[]
+            {
+                CTL_ELEM_ACCESS.READWRITE,
+                CTL_ELEM_ACCESS.VOLATILE,
+            };
+            control.Data = data.Identifier;
+            sections.Add(control);
+
+            return sections;
+        }
+
+        public static IEnumerable<Section> GetKcontrolBytesSections(Kcontrol kctrl)
         {
             var sections = new List<Section>();
 
@@ -820,6 +859,20 @@ namespace avstplg
             sections.Add(control);
 
             return sections;
+        }
+
+        public static IEnumerable<Section> GetKcontrolSections(Kcontrol kctrl)
+        {
+            switch (kctrl.Type)
+            {
+                case KcontrolType.Mixer:
+                    return GetKcontrolMixerSections(kctrl);
+                case KcontrolType.Bytes:
+                    return GetKcontrolBytesSections(kctrl);
+                case KcontrolType.Enum:
+                default:
+                    return Enumerable.Empty<Section>();
+            }
         }
 
         public static IEnumerable<Section> GetTopologySections(Topology topology)
