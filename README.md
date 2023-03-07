@@ -3,6 +3,7 @@ Intel Topology Tool for the skylake sound driver
 
  * [Important](#important)
  * [Overview](#overview)
+   * [Building](#building)
  * [Contributing](#contributing)
 
 # Important
@@ -33,6 +34,19 @@ for this tool.
 Connected to:
 [enable HDAudio+DMIC with skylake-driver](https://gist.github.com/crojewsk/4e6382bfb0dbfaaf60513174211f29cb)
 guide.
+
+## Building
+
+itt is a C# and .NET based tool. Either .NET 6.0+ or .NET Framework 4.6+ can be used to build the
+component. .NET 6.0 and onward is the recommended option as it's available through package manager
+on most major Linux distributions. For additional information visit
+[Install .NET on Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux).\
+.NET Framework is supported on Windows natively while Linux support is provided with
+[Mono](https://www.mono-project.com/download/stable/).
+
+.NET 6.0+ configurations shall be built using `dotnet build` CLI which invokes `msbuild for .NET`
+under the hood. For .NET Framework, a Makefile which is part of every project can be used to compile
+using `msbuild for Mono`.
 
 # Contributing
 
