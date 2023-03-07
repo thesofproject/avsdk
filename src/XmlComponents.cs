@@ -111,11 +111,8 @@ namespace itt
         [XmlEnum(Name = "CHANNEL_CONFIG_DUAL_MONO")] DUAL_MONO,
         [XmlEnum(Name = "CHANNEL_CONFIG_I2S_DUAL_STEREO_0")] I2S_DUAL_STEREO_0,
         [XmlEnum(Name = "CHANNEL_CONFIG_I2S_DUAL_STEREO_1")] I2S_DUAL_STEREO_1,
-        [XmlEnum(Name = "CHANNEL_CONFIG_4_CHANNEL")] C4_CHANNEL,
-        [XmlEnum(Name = "CHANNEL_CONFIG_7_0")] C7_0,
         [XmlEnum(Name = "CHANNEL_CONFIG_7_1")] C7_1,
-        // No invalid due to inconsistency between INVALID on linux kernel
-        // and 7_0 and 7_1 configurations
+        [XmlEnum(Name = "CHANNEL_CONFIG_INVALID")] INVALID,
     };
 
     public class AudioFormat
