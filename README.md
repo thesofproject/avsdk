@@ -2,7 +2,7 @@ SDK for Intel audio software solutions
 ========================
 
  * [Overview](#overview)
-   * [Building](#)
+   * [Building](#building)
  * [Tools](#tools)
    * [NUcmSerializer](#nucmserializer)
    * [avstplg](#avstplg)
