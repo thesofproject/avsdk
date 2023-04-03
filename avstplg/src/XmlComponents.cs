@@ -115,7 +115,6 @@ namespace avstplg
         public uint? UpDownMixOutChanCfg { get; set; }
         public uint? UpDownMixCoeffSelect { get; set; }
         [XmlArray("UpDownMixCoeff")]
-
         [XmlArrayItem("int")]
         public int[] UpDownMixCoeff { get; set; }
         public uint? UpDownMixChanMap { get; set; }
