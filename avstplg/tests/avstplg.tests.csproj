@@ -2,7 +2,7 @@
   <!-- TargetFramework is not available early, Directory.Build.props does not help. -->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <BaseIntermediateOutputPath>..\build\$(Configuration)\$(TargetFramework)\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\build\$(Configuration)\$(TargetFramework)\bin\</BaseOutputPath>
   </PropertyGroup>
@@ -14,30 +14,32 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)</OutputPath>
-    <PublishDir>$(BaseOutputPath)publish</PublishDir>
-    <PublishSingleFile>true</PublishSingleFile>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-    <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <SelfContained>false</SelfContained>
+    <IsPackable>false</IsPackable>
     <UseCurrentRuntimeIdentifier>true</UseCurrentRuntimeIdentifier>
-    <CheckEolTargetFramework>false</CheckEolTargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="1.3.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\avstplg.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="NUcmSerializer">
       <HintPath>..\libs\NUcmSerializer.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <Target Name="DeletePublish" AfterTargets="Clean">
-    <Message Text="Deleting the publish directory: $(PublishDir)" Importance="high" />
-    <RemoveDir Directories="$(PublishDir)" />
-  </Target>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="avstplg.tests" />
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
