@@ -139,26 +139,22 @@ void build_provider(std::map<uint64_t, struct log_literal2_0> &provider,
 int write_entry(std::ostream &out, struct log_literal2_0 *literal,
 		const log_entry_icl &entry, uint32_t *data)
 {
-	std::string format;
 	char buf[512];
-	int ret;
+	int ret, ret2;
 
-	ret = snprintf(buf, sizeof(buf), "%llu: %s(%u):\n",
+	ret = snprintf(buf, sizeof(buf), "%llu: %s(%u): ",
 		       (unsigned long long)entry.data->timestamp,
 		       literal->filename.data(), literal->hdr.line);
 	if (ret < 0)
 		return ret;
-	out << buf;
 
-	format = "%lld: " + literal->text;
+	ret2 = snprintf(buf + ret, sizeof(buf) - ret, literal->text.data(),
+			data[0], data[1], data[2], data[3], data[4], data[5],
+			data[6]);
+	if (ret2 < 0)
+		return ret2;
 
-	ret = snprintf(buf, sizeof(buf), format.data(),
-		       entry.data->timestamp,
-		       data[0], data[1], data[2], data[3],
-		       data[4], data[5], data[6]);
-	if (ret < 0)
-		return ret;
-	out << buf << std::endl;
-
+	out.write(buf, ret + ret2);
+	out.write("\n", 1);
 	return 0;
 }
