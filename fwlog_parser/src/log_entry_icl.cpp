@@ -77,7 +77,8 @@ static void elf_init_literal(std::istream &elf, struct log_literal2_0 &literal,
 
 		literal.filename.resize(FILENAME_MAX);
 		elf.seekg(funcstrs->off + offset, std::ios_base::beg);
-		elf.read(const_cast<char *>(literal.filename.data()), FILENAME_MAX);
+		elf.getline(const_cast<char *>(literal.filename.data()), FILENAME_MAX,
+			    '\0');
 	} else {
 		literal.filename.assign("invalid_filename");
 	}
