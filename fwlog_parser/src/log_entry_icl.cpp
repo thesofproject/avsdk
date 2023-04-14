@@ -74,11 +74,17 @@ static void elf_init_literal(std::istream &elf, struct log_literal2_0 &literal,
 	if (literal.hdr.file >= funcstrs->vaddr &&
 	    literal.hdr.file <= (funcstrs->vaddr + funcstrs->size)) {
 		uint64_t offset = literal.hdr.file - funcstrs->vaddr;
+		size_t pos;
 
 		literal.filename.resize(FILENAME_MAX);
 		elf.seekg(funcstrs->off + offset, std::ios_base::beg);
 		elf.getline(const_cast<char *>(literal.filename.data()), FILENAME_MAX,
 			    '\0');
+
+		// extract just the filename
+		pos = literal.filename.rfind('/');
+		if (pos != std::string::npos)
+			literal.filename.erase(0, pos + 1);
 	} else {
 		literal.filename.assign("invalid_filename");
 	}
