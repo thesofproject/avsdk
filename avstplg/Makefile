@@ -1,37 +1,48 @@
-#Solution configuration, use either "Debug" or "Release"
+# Solution configuration, use either "Debug" or "Release".
 CONFIGURATION	= Debug
+FRAMEWORK	= net6.0
 ASSEMBLY_NAME	= avstplg
-SOLUTION_NAME  := $(ASSEMBLY_NAME)_NETFramework.sln
-SRCDIR	       := src
-OUTDIR	       := $(SRCDIR)/bin/$(CONFIGURATION)
-MSBUILD_FLAGS	= /m
-#Build command, either "msbuild" or "dotnet build"
-BUILDCMD	= msbuild
+OUTDIR	       := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))/build
+MSBUILD_FLAGS	= -m
+MONO		=
+
+.PHONY: all build clean
 
 all: build
 
-build:
-	$(BUILDCMD) /property:Configuration=$(CONFIGURATION) /t:Build $(MSBUILD_FLAGS) $(SOLUTION_NAME)
-ifeq ($(BUILDCMD),msbuild)
-	@chmod +x "./$(OUTDIR)/$(ASSEMBLY_NAME).exe"
-endif
+# MSBuild for Mono. Publishing not supported.
+ifneq ($(MONO),)
+SOLUTION_NAME  := $(ASSEMBLY_NAME)_NETFramework.sln
+BINDIR	       := $(OUTDIR)/mono/bin/$(CONFIGURATION)
+OBJDIR	       := $(OUTDIR)/mono/obj/
+MSBUILD	       := msbuild
 
-rebuild:
-	$(BUILDCMD) /property:Configuration=$(CONFIGURATION) /t:Rebuild $(MSBUILD_FLAGS) $(SOLUTION_NAME)
-ifeq ($(BUILDCMD),msbuild)
-	@chmod +x "./$(OUTDIR)/$(ASSEMBLY_NAME).exe"
-endif
+# MSBuild for Mono does not mark output as an executable.
+build: buildsolution
+	@chmod +x "$(BINDIR)/$(ASSEMBLY_NAME).exe"
 
-clean:
-	$(BUILDCMD) /property:Configuration=$(CONFIGURATION) /t:Clean $(MSBUILD_FLAGS) $(SOLUTION_NAME)
-
-install: build
-	@mkdir -p $(DESTDIR)/opt/avstplg
-ifeq ($(BUILDCMD),msbuild)
-	@cp -r $(OUTDIR)/* $(DESTDIR)/opt/avstplg
+# MSBuild for .NET. Publish when building for portability.
 else
-	@cp -r $(OUTDIR)/net6.0/* $(DESTDIR)/opt/avstplg
+SOLUTION_NAME  := $(ASSEMBLY_NAME).sln
+BINDIR	       := $(OUTDIR)/bin/$(CONFIGURATION)/$(FRAMEWORK)
+OBJDIR	       := $(OUTDIR)/obj/
+MSBUILD	       := dotnet build
+
+# RuntimeIdentifier is a must when publishing to a single file.
+# At the same time, ImportByWildcardBeforeSolution=false bypasses limitation
+# of specifying RID being supported only on project-level, not solution-level.
+MSBUILD_FLAGS  += --use-current-runtime -p:PublishSingleFile=true --no-self-contained \
+		  -p:ImportByWildcardBeforeSolution=false \
+		  -p:PublishDir=$(BINDIR)/publish
+
+build: publishsolution
 endif
 
-uninstall:
-	@rm -rf /opt/avstplg
+# The BaseIntermediateOutputPath must end with a trailing slash.
+%solution:
+	$(MSBUILD) -p:Configuration=$(CONFIGURATION) \
+		   -p:BaseIntermediateOutputPath=$(OBJDIR) \
+		   -p:OutputPath=$(BINDIR) \
+		   -t:$(subst solution,,$@) $(MSBUILD_FLAGS) $(SOLUTION_NAME)
+
+clean: cleansolution
