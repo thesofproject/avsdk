@@ -3,24 +3,20 @@
 # top-most EditorConfig file
 root = true
 
-# Default settings:
+# Unix-like default settings:
 [*]
-insert_final_newline = true
-indent_style = space
-indent_size = 4
+insert_final_newline = false
+indent_style = tab
+indent_size = 8
 trim_trailing_whitespace = true
 end_of_line = lf
 max_line_length = 100
 
 # XML files
 [*.xml]
+insert_final_newline = true
+indent_style = space
 indent_size = 2
-
-# Shell scripts
-[*.sh]
-insert_final_newline = false
-indent_style = tab
-tab_width = 8
 
 # Generated code
 [*{_AssemblyInfo.cs,.notsupported.cs,AsmOffsets.cs}]
@@ -28,6 +24,10 @@ generated_code = true
 
 # C# files
 [*.cs]
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+
 # New line preferences
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
