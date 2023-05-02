@@ -23,11 +23,6 @@ namespace NUcmSerializer
         {
             Identifier = identifier;
         }
-
-        public Section()
-            : this(null)
-        {
-        }
     }
 
     public static class TPLG_CTL
@@ -267,11 +262,6 @@ namespace NUcmSerializer
         {
         }
 
-        protected VendorTuples()
-            : this(null)
-        {
-        }
-
         public abstract int Size();
     }
 
@@ -416,11 +406,6 @@ namespace NUcmSerializer
 
         public SectionControl(string identifier)
             : base(identifier)
-        {
-        }
-
-        public SectionControl()
-            : this(null)
         {
         }
     }
