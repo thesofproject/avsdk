@@ -98,8 +98,7 @@ namespace NUcmSerializer
                 }
 
                 TypeConverter conv = TypeDescriptor.GetConverter(type);
-                if (conv != null)
-                    return conv.ConvertFromString(value);
+                return conv.ConvertFromString(value);
             }
             catch (NotSupportedException)
             {
