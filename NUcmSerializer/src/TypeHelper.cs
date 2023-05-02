@@ -56,7 +56,7 @@ namespace NUcmSerializer
                 return TokenType.Tuple;
             if (type.IsVendorArrayType())
                 return TokenType.VendorArray;
-            if (type.IsSubclassOf(typeof(Section)))
+            if (type.IsSubclassOf(typeof(Section)) || type == typeof(Section))
                 return TokenType.Section;
 
             return TokenType.None;
