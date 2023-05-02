@@ -120,7 +120,7 @@ namespace NUcmSerializer
             {
                 if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     byte.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.CurrentCulture, out byte val))
+                                  CultureInfo.CurrentCulture, out byte val))
                     result.Add(val);
                 else if (byte.TryParse(substr, out val))
                     result.Add(val);
@@ -139,7 +139,7 @@ namespace NUcmSerializer
             {
                 if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     ushort.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.CurrentCulture, out ushort val))
+                                    CultureInfo.CurrentCulture, out ushort val))
                     result.Add(val);
                 else if (ushort.TryParse(substr, out val))
                     result.Add(val);
@@ -158,7 +158,7 @@ namespace NUcmSerializer
             {
                 if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     uint.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.CurrentCulture, out uint val))
+                                  CultureInfo.CurrentCulture, out uint val))
                     result.Add(val);
                 else if (uint.TryParse(substr, out val))
                     result.Add(val);
