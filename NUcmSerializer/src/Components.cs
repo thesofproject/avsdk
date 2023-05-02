@@ -689,11 +689,17 @@ namespace NUcmSerializer
 
             set
             {
-                string[] substrs = value.Split(new[] { ',' });
-
                 Formats.Clear();
-                foreach (var s in substrs)
-                    Formats.Add((PCM_FORMAT)Enum.Parse(typeof(PCM_FORMAT), s));
+                if (value == null)
+                    return;
+
+                string[] substrs = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(s => s.Trim())
+                                        .Distinct().ToArray();
+
+                foreach (string s in substrs)
+                    if (Enum.GetNames<PCM_FORMAT>().Contains(s))
+                        Formats.Add(Enum.Parse<PCM_FORMAT>(s));
             }
         }
 
@@ -708,14 +714,27 @@ namespace NUcmSerializer
 
             set
             {
-                string[] substrs = value.Split(new[] { ',' });
-
                 Rates.Clear();
-                foreach (var s in substrs)
+                if (value == null)
+                    return;
+
+                string[] substrs = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(s => s.Trim())
+                                        .Distinct().ToArray();
+
+                foreach (string s in substrs)
                 {
+                    string tmp;
+
+                    if (s[0] == '_')
+                        continue;
+
                     if (char.IsDigit(s[0]))
-                        s.Insert(0, "_");
-                    Rates.Add((PCM_RATE)Enum.Parse(typeof(PCM_RATE), s));
+                        tmp = s.Insert(0, "_");
+                    else
+                        tmp = s;
+                    if (Enum.GetNames<PCM_RATE>().Contains(tmp))
+                        Rates.Add(Enum.Parse<PCM_RATE>(tmp));
                 }
             }
         }
