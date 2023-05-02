@@ -50,13 +50,13 @@ namespace NUcmSerializer
         {
             if (type.IsSimpleType())
                 return TokenType.Element;
-            else if (type.IsSimpleArrayType())
+            if (type.IsSimpleArrayType())
                 return TokenType.Array;
-            else if (type.IsSimpleTupleType())
+            if (type.IsSimpleTupleType())
                 return TokenType.Tuple;
-            else if (type.IsVendorArrayType())
+            if (type.IsVendorArrayType())
                 return TokenType.VendorArray;
-            else if (type.IsSubclassOf(typeof(Section)))
+            if (type.IsSubclassOf(typeof(Section)))
                 return TokenType.Section;
 
             return TokenType.None;
