@@ -757,6 +757,7 @@ namespace avstplg
             section.Rates.UnionWith(rates.Select(s => s.ToRate()));
             section.ChannelsMax = channels.Max();
             section.ChannelsMin = channels.Min();
+            section.SigBits = caps.SigBits;
 
             return section;
         }
