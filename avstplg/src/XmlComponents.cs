@@ -243,6 +243,7 @@ namespace avstplg
         public string Formats { get; set; }
         public string Rates { get; set; }
         public string Channels { get; set; }
+        public uint SigBits { get; set; }
     }
 
     public class FEDAI
