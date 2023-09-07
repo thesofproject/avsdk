@@ -84,5 +84,51 @@ namespace nhltdecode
 
             return MarshalHelper.BytesToStructure<T>(bytes);
         }
+
+        internal static void OverwriteAt(this BinaryWriter writer, long pos, byte value)
+        {
+            long current = writer.BaseStream.Position;
+
+            writer.BaseStream.Position = pos;
+            writer.Write(value);
+            writer.BaseStream.Position = current;
+        }
+
+        internal static void OverwriteAt(this BinaryWriter writer, long pos, int value)
+        {
+            long current = writer.BaseStream.Position;
+
+            writer.BaseStream.Position = pos;
+            writer.Write(value);
+            writer.BaseStream.Position = current;
+        }
+
+        internal static int Write<T>(this BinaryWriter writer, T value)
+            where T : struct
+        {
+            byte[] bytes = MarshalHelper.StructureToBytes<T>(value);
+
+            writer.Write(bytes);
+            return bytes.Length;
+        }
+
+        internal static byte CalculateChecksum(this Stream stream)
+        {
+            byte[] buf = new byte[1024];
+            long pos = stream.Position;
+            byte checksum = 0;
+
+            stream.Seek(0, SeekOrigin.Begin);
+
+            int count;
+            do {
+                count = stream.Read(buf, 0, buf.Length);
+                for (int i = 0; i < count; i++)
+                    checksum += buf[i];
+            } while (count == buf.Length);
+
+            stream.Position = pos;
+            return (byte)(256 - checksum);
+        }
     }
 }
