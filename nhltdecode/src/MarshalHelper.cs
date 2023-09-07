@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+// Copyright (c) 2020-2023, Intel Corporation. All rights reserved.
 //
 // Authors: Piotr Maziarz <piotrx.maziarz@linux.intel.com>
 //          Cezary Rojewski <cezary.rojewski@intel.com>
@@ -40,9 +40,8 @@ namespace nhltdecode
             return StructureToBytes<T>(str, Marshal.SizeOf(typeof(T)));
         }
 
-        internal static T FromBinaryReader<T>(BinaryReader reader, int size)
+        internal static T BytesToStructure<T>(byte[] bytes)
         {
-            byte[] bytes = reader.ReadBytes(size);
             GCHandle h = default(GCHandle);
             T result;
 
@@ -58,12 +57,6 @@ namespace nhltdecode
             }
 
             return result;
-        }
-
-        internal static T FromBinaryReader<T>(BinaryReader reader)
-            where T : struct
-        {
-            return FromBinaryReader<T>(reader, Marshal.SizeOf(typeof(T)));
         }
     }
 }
