@@ -167,6 +167,22 @@ namespace nhltdecode
             return size;
         }
 
+        private static int WriteI2SConfig2(BinaryWriter writer, I2SConfig i2s)
+        {
+            byte[] tsgroup = i2s.TdmTsGroup;
+
+            // Count based on size of Native.I2SConfig2.TdmTsGroup.
+            Array.Resize(ref tsgroup, 256);
+
+            writer.Write(i2s.GatewayAttributes);
+            WriteI2SConfigHeader(writer, i2s);
+            writer.Write(tsgroup);
+            WriteSSPConfig(writer, i2s);
+            WriteMclkConfig(writer, i2s);
+
+            return Marshal.SizeOf(typeof(Native.I2SConfig2));
+        }
+
         public static int WriteI2SConfig(BinaryWriter writer, I2SConfig i2s)
         {
             if (i2s == null)
@@ -174,6 +190,9 @@ namespace nhltdecode
 
             switch (i2s.Version)
             {
+                case I2SConfig.VERSION2_0:
+                    return WriteI2SConfig2(writer, i2s);
+
                 case I2SConfig.VERSION1_5:
                     return WriteI2SConfig15(writer, i2s);
 

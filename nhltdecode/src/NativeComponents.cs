@@ -69,6 +69,7 @@ namespace nhltdecode.Native
     //
     // - I2SConfigLegacy for 1 MCLK, up to 8 channels configuration
     // - I2SConfig15 for 2+ MCLK, up to 8 channels configuration
+    // - I2SConfig2 for 1 MCLK, up to 16 channels configuration
     //
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -116,6 +117,22 @@ namespace nhltdecode.Native
         public uint[] TdmTsGroup;
         public SSPConfig SSPConfig;
         public MclkConfig15 MclkConfig;
+        //
+        // Optionally followed by:
+        // byte[] DmaControls;
+        //
+    };
+
+    // Header.VersionMajor = 2.0
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct I2SConfig2
+    {
+        public uint GatewayAttributes;
+        public I2SConfigHeader Header;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public uint[] TdmTsGroup;
+        public SSPConfig SSPConfig;
+        public MclkConfig MclkConfig;
         //
         // Optionally followed by:
         // byte[] DmaControls;
