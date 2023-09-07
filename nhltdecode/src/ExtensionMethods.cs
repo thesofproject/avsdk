@@ -10,6 +10,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace nhltdecode
 {
@@ -45,6 +46,43 @@ namespace nhltdecode
         {
             TryUInt32(value, out uint result);
             return (byte)result;
+        }
+
+        internal static byte PeekByte(this BinaryReader reader)
+        {
+            long pos = reader.BaseStream.Position;
+            byte result = reader.ReadByte();
+
+            reader.BaseStream.Position = pos;
+            return result;
+        }
+
+        internal static uint PeekUInt32(this BinaryReader reader)
+        {
+            long pos = reader.BaseStream.Position;
+            uint result = reader.ReadUInt32();
+
+            reader.BaseStream.Position = pos;
+            return result;
+        }
+
+        internal static T Peek<T>(this BinaryReader reader)
+            where T : struct
+        {
+            long pos = reader.BaseStream.Position;
+            T result = reader.Read<T>();
+
+            reader.BaseStream.Position = pos;
+            return result;
+        }
+
+        internal static T Read<T>(this BinaryReader reader)
+            where T : struct
+        {
+            int size = Marshal.SizeOf(typeof(T));
+            byte[] bytes = reader.ReadBytes(size);
+
+            return MarshalHelper.BytesToStructure<T>(bytes);
         }
     }
 }
