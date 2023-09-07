@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+// Copyright (c) 2020-2023, Intel Corporation. All rights reserved.
 //
 // Authors: Piotr Maziarz <piotrx.maziarz@linux.intel.com>
 //          Cezary Rojewski <cezary.rojewski@intel.com>
@@ -28,10 +28,6 @@ namespace nhltdecode
             decodeOption.AddAlias("-d");
             rootCmd.AddOption(decodeOption);
 
-            var blobOption = new Option<bool>("--blob", "parse blob while decoding binary");
-            blobOption.AddAlias("-b");
-            rootCmd.AddOption(blobOption);
-
             var outputArgument = new Argument<FileInfo>("output", "output file");
             rootCmd.AddArgument(outputArgument);
 
@@ -43,23 +39,84 @@ namespace nhltdecode
                 }
             });
 
-            rootCmd.SetHandler((compile, decode, parseBlob, output) =>
+            rootCmd.SetHandler((compile, decode, output) =>
             {
                 if (decode != null)
-                    Decode(decode.FullName, output.FullName, parseBlob);
+                    Decode(decode.FullName, output.FullName);
                 else
                     Compile(compile.FullName, output.FullName);
-            }, compileOption, decodeOption, blobOption, outputArgument);
+            }, compileOption, decodeOption, outputArgument);
 
             rootCmd.Invoke(args);
         }
 
-        private static void Decode(string input, string output, bool parseBlob)
+        private static void Decode(string input, string output)
         {
+            var reader = new BinaryReader(new FileStream(input, FileMode.Open, FileAccess.Read),
+                                          System.Text.Encoding.ASCII);
+            NHLT table = null;
+
+            try
+            {
+                table = BinaryReading.ReadNHLT(reader);
+            }
+            finally
+            {
+                reader.Dispose();
+            }
+
+            if (table == null)
+                return;
+
+            var xs = new XmlSerializer(typeof(NHLT));
+            var settings = new XmlWriterSettings()
+            {
+                Indent = true,
+            };
+            XmlWriter writer = XmlWriter.Create(new StreamWriter(output), settings);
+
+            try
+            {
+                xs.Serialize(writer, table);
+            }
+            finally
+            {
+                writer.Dispose();
+            }
         }
 
         private static void Compile(string input, string output)
         {
+            var xs = new XmlSerializer(typeof(NHLT));
+            var settings = new XmlReaderSettings()
+            {
+                IgnoreWhitespace = false,
+            };
+            XmlReader reader = XmlReader.Create(new StreamReader(input), settings);
+            NHLT table = null;
+
+            try
+            {
+                table = (NHLT)xs.Deserialize(reader);
+            }
+            finally
+            {
+                reader.Dispose();
+            }
+
+            if (table == null)
+                return;
+
+            var writer = new BinaryWriter(new FileStream(output, FileMode.Create));
+
+            try
+            {
+                BinaryWriting.WriteNHLT(writer, table);
+            }
+            finally
+            {
+                writer.Dispose();
+            }
         }
     }
 }
