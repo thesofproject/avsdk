@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (c) 2020-2022, Intel Corporation. All rights reserved.
+// Copyright (c) 2020-2023, Intel Corporation. All rights reserved.
 //
 // Authors: Piotr Maziarz <piotrx.maziarz@linux.intel.com>
 //          Cezary Rojewski <cezary.rojewski@intel.com>
@@ -39,6 +39,12 @@ namespace nhltdecode
         {
             TryUInt32(value, out uint result);
             return (ushort)result;
+        }
+
+        internal static byte ToUInt8(this string value)
+        {
+            TryUInt32(value, out uint result);
+            return (byte)result;
         }
     }
 }
