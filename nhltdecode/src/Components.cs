@@ -18,6 +18,7 @@ namespace nhltdecode
 {
     public class I2SConfig
     {
+        public const ushort VERSION2_0 = 0x0200;
         public const ushort VERSION1_5 = 0x0105;
         public const byte SIGNATURE = 0xEE;
 
@@ -55,6 +56,10 @@ namespace nhltdecode
 
             switch (Version)
             {
+                case VERSION2_0:
+                    size += Marshal.SizeOf(typeof(Native.I2SConfig2));
+                    break;
+
                 case VERSION1_5:
                     size += Marshal.SizeOf(typeof(Native.I2SConfig15));
                     if (MdivR != null)

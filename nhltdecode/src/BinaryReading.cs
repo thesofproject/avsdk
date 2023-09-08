@@ -152,6 +152,14 @@ namespace nhltdecode
             InitMclkConfig15(reader, ref i2s);
         }
 
+        private static void InitI2SConfig2(BinaryReader reader, ref I2SConfig i2s)
+        {
+            // Count based on size of Native.I2SConfig2.TdmTsGroup.
+            i2s.TdmTsGroup = new HexBLOB(reader.ReadBytes(256));
+            InitSSPConfig(reader, ref i2s);
+            InitMclkConfig(reader, ref i2s);
+        }
+
         public static I2SConfig ReadI2SConfig(BinaryReader reader)
         {
             Native.Config cfg = reader.Read<Native.Config>();
@@ -170,6 +178,10 @@ namespace nhltdecode
 
             switch (result.Version)
             {
+                case I2SConfig.VERSION2_0:
+                    InitI2SConfig2(reader, ref result);
+                    break;
+
                 case I2SConfig.VERSION1_5:
                     InitI2SConfig15(reader, ref result);
                     break;
