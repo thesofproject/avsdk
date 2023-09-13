@@ -68,11 +68,6 @@ namespace nhltdecode
             return result;
         }
 
-        public static Native.MicSnrSensitivity ReadMicSnrSensitivity(BinaryReader reader)
-        {
-            return reader.Read<Native.MicSnrSensitivity>();
-        }
-
         public static DeviceConfig ReadDeviceConfig(BinaryReader reader)
         {
             Native.Config cfg = reader.Read<Native.Config>();
@@ -97,8 +92,6 @@ namespace nhltdecode
                     result = ReadMicDeviceConfig(reader);
                     if (result.ArrayType == DeviceConfig.MICARRAY_TYPE_VENDOR)
                         result.VendorMicsConfig = ReadVendorMicsConfig(reader);
-                    if (result.ArrayExtension == DeviceConfig.MICARRAY_EXT_SNR_SENSITIVITY)
-                        result.MicSnrSensitivity = ReadMicSnrSensitivity(reader);
                     break;
             }
 
