@@ -54,9 +54,6 @@ namespace nhltdecode
             foreach (Native.VendorMicConfig mic in device.VendorMicsConfig)
                 bytes.AddRange(MarshalHelper.StructureToBytes(mic));
 
-            if (device.MicSnrSensitivity.HasValue)
-                bytes.AddRange(MarshalHelper.StructureToBytes(device.MicSnrSensitivity.Value));
-
             return WriteConfig(writer, bytes.ToArray());
         }
 
