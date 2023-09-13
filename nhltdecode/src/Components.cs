@@ -180,14 +180,12 @@ namespace nhltdecode
     public class DeviceConfig
     {
         public const byte MICARRAY_TYPE_VENDOR = 0xF;
-        public const byte MICARRAY_EXT_SNR_SENSITIVITY = 1;
 
         public byte? VirtualSlot;
         public byte? ConfigType;
         public HexUInt8? ArrayTypeEx;
         [XmlArrayItem("VendorMicConfig")]
         public Native.VendorMicConfig[] VendorMicsConfig;
-        public Native.MicSnrSensitivity? MicSnrSensitivity;
 
         // Bits 3:0 of ArrayTypeEx express array type.
         public int ArrayType
@@ -214,11 +212,6 @@ namespace nhltdecode
         public bool ShouldSerializeArrayTypeEx()
         {
             return ArrayTypeEx.HasValue;
-        }
-
-        public bool ShouldSerializeMicSnrSensitivity()
-        {
-            return MicSnrSensitivity.HasValue;
         }
     }
 

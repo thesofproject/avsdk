@@ -228,14 +228,6 @@ namespace nhltdecode.Native
         //
     }
 
-    // Optional MicDevice or VendorMicDevice extension.
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct MicSnrSensitivity
-    {
-        public long SNR;
-        public long Sensitivity;
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct VendorMicConfig
     {
