@@ -182,23 +182,36 @@ namespace nhltdecode
 
         public static int WriteI2SConfig(BinaryWriter writer, I2SConfig i2s)
         {
+            int size;
+
             if (i2s == null)
                 throw new ArgumentNullException(nameof(i2s));
 
             switch (i2s.Version)
             {
                 case I2SConfig.VERSION2_0:
-                    return WriteI2SConfig2(writer, i2s);
+                    size = WriteI2SConfig2(writer, i2s);
+                    break;
 
                 case I2SConfig.VERSION1_5:
-                    return WriteI2SConfig15(writer, i2s);
+                    size = WriteI2SConfig15(writer, i2s);
+                    break;
 
                 case 0:
-                    return WriteI2SConfigLegacy(writer, i2s);
+                    size = WriteI2SConfigLegacy(writer, i2s);
+                    break;
 
                 default:
                     throw new ArgumentException($"Invalid I2SConfig version: {i2s.Version}");
             }
+
+            if (i2s.DmaControls.HasValue)
+            {
+                writer.Write(i2s.DmaControls.Value);
+                size += i2s.DmaControls.Value.Length;
+            }
+
+            return size;
         }
 
         public static int WriteFirFilter(BinaryWriter writer, FirFilter filter)
