@@ -360,8 +360,9 @@ namespace nhltdecode
 
         public static int WriteDevicesInfo(BinaryWriter writer, Native.DeviceInfo[] devices)
         {
+            // The component is optional.
             if (devices == null)
-                throw new ArgumentNullException(nameof(devices));
+                return 0;
 
             int size = Marshal.SizeOf<Native.DevicesInfo>();
 
