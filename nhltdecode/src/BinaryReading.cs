@@ -371,6 +371,8 @@ namespace nhltdecode
             long pos = reader.BaseStream.Position;
             Native.Endpoint ep = reader.Read<Native.Endpoint>();
 
+            pos += ep.Length;
+
             var result = new Endpoint()
             {
                 LinkType = ep.LinkType,
@@ -399,9 +401,11 @@ namespace nhltdecode
                     break;
             }
 
-            result.DevicesInfo = ReadDevicesInfo(reader);
+            // DevicesInfo component is optional.
+            if (reader.BaseStream.Position < pos)
+                result.DevicesInfo = ReadDevicesInfo(reader);
             // Skip over any remaining artifacts at the end.
-            reader.BaseStream.Position = pos + ep.Length;
+            reader.BaseStream.Position = pos;
 
             return result;
         }

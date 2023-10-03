@@ -331,6 +331,8 @@ namespace nhltdecode.Native
         // Followed by:
         // Config         DeviceConfig;
         // FormatsConfig  FormatsConfig;
+        //
+        // Optionally followed by:
         // DevicesInfo    DevicesInfo;
         //
     }
@@ -361,6 +363,8 @@ namespace nhltdecode.Native
         //
         // Followed by:
         // Endpoint[]  Endpoints;
+        //
+        // Optionally followed by:
         // Config      OEDConfig;
         //
     }
