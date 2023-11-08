@@ -24,10 +24,11 @@ namespace nhltdecode.Native
         //
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     public struct DeviceInfo
     {
-        public Guid Id;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
+        public string Id;
         public byte InstanceId;
         public byte PortId;
     }
