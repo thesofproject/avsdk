@@ -353,11 +353,6 @@ namespace nhltdecode
             return size;
         }
 
-        public static int WriteDeviceInfo(BinaryWriter writer, Native.DeviceInfo device)
-        {
-            return writer.Write<Native.DeviceInfo>(device);
-        }
-
         public static int WriteDevicesInfo(BinaryWriter writer, Native.DeviceInfo[] devices)
         {
             // The component is optional.
@@ -369,7 +364,7 @@ namespace nhltdecode
             writer.Write((byte)devices.Length);
 
             foreach (Native.DeviceInfo device in devices)
-                size += WriteDeviceInfo(writer, device);
+                size += writer.Write<Native.DeviceInfo>(device);
             return size;
         }
 

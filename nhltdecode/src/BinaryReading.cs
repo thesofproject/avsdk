@@ -345,24 +345,13 @@ namespace nhltdecode
             return result;
         }
 
-        public static Native.DeviceInfo ReadDeviceInfo(BinaryReader reader)
-        {
-            var result = new Native.DeviceInfo();
-
-            result.Id = new Guid(reader.ReadBytes(16));
-            result.InstanceId = reader.ReadByte();
-            result.PortId = reader.ReadByte();
-
-            return result;
-        }
-
         public static Native.DeviceInfo[] ReadDevicesInfo(BinaryReader reader)
         {
             byte count = reader.ReadByte();
             var result = new Native.DeviceInfo[count];
 
             for (byte i = 0; i < count; i++)
-                result[i] = ReadDeviceInfo(reader);
+                result[i] = reader.Read<Native.DeviceInfo>();
             return result;
         }
 
