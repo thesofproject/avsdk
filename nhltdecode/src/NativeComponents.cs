@@ -27,7 +27,7 @@ namespace nhltdecode.Native
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     public struct DeviceInfo
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
         public string Id;
         public byte InstanceId;
         public byte PortId;
