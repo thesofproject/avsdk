@@ -174,7 +174,6 @@ namespace nhltdecode
         };
         static readonly Regex WsRegex = new Regex(@"\s+");
         static readonly int RowWidth = 4;
-        static readonly int ColumnWidth = 4;
         byte[] values;
 
         static int ParseNybble(char c)
@@ -219,15 +218,20 @@ namespace nhltdecode
             if ((hs.Length & 1) != 0)
                 throw new ArgumentException("Input must have even number of characters");
 
-            int length = hs.Length / 2;
-            byte[] result = new byte[length];
+            byte[] result = new byte[hs.Length / 2];
+            int i = 0;
 
-            for (int i = 0, j = 0; i < length; i++)
+            while (i < hs.Length)
             {
-                int high = ParseNybble(hs[j++]);
-                int low = ParseNybble(hs[j++]);
+                int chunkLength = Math.Min(sizeof(uint) * 2, hs.Length - i);
 
-                result[i] = (byte)((high << 4) | low);
+                for (int j = i, k = chunkLength - 1; k >= 0; k -= 2)
+                {
+                    int high = ParseNybble(hs[i++]);
+                    int low = ParseNybble(hs[i++]);
+
+                    result[(j + k) / 2] = (byte)(high << 4 | low);
+                }
             }
 
             return result;
@@ -236,17 +240,20 @@ namespace nhltdecode
         static string BytesToHexString(byte[] bytes)
         {
             StringBuilder result = new StringBuilder(bytes.Length * 2);
-            int idx = 0;
+            int i = 0;
 
-            while (idx < bytes.Length)
+            while (i < bytes.Length)
             {
                 result.Append("\n              ");
-                for (int i = 0; i < RowWidth && idx < bytes.Length; i++)
+                for (int j = 0; j < RowWidth && i < bytes.Length; j++)
                 {
-                    if (i > 0)
+                    int chunkLength = Math.Min(sizeof(uint), bytes.Length - i);
+
+                    if (j > 0)
                         result.Append(" ");
-                    for (int j = 0; j < ColumnWidth && idx < bytes.Length; j++, idx++)
-                        result.Append(HexTable[bytes[idx]]);
+                    for (int k = chunkLength - 1; k >= 0; k--)
+                        result.Append(HexTable[bytes[i + k]]);
+                    i += chunkLength;
                 }
             }
 
