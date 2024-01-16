@@ -319,6 +319,12 @@ namespace avstplg
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_DMA_TYPE_U32, module.whmDMAType.Value));
             if (module.WhmDMABufferSize != null)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_DMABUFF_SIZE_U32, module.WhmDMABufferSize.Value));
+            if (module.PeakVolVolume.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_VOLUME_U32, module.PeakVolVolume.Value));
+            if (module.PeakVolCurveType.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_CURVE_TYPE_U32, module.PeakVolCurveType.Value));
+            if (module.PeakVolCurveDuration.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.PEAKVOL_CURVE_DURATION_U32, module.PeakVolCurveDuration.Value));
 
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();

@@ -145,6 +145,9 @@ namespace avstplg
             }
         }
         public uint? WhmDMABufferSize { get; set; }
+        public uint? PeakVolVolume { get; set; }
+        public uint? PeakVolCurveType { get; set; }
+        public uint? PeakVolCurveDuration { get; set; }
     }
 
     public class ModuleInitConfig
