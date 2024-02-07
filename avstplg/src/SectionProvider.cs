@@ -55,6 +55,7 @@ namespace avstplg
             sections.Add(GetSectionTokens<AVS_TKN_CONDPATH>("avs_condpath_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_PIN_FMT>("avs_pin_format_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_KCONTROL>("avs_kcontrol_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_INIT_CONFIG>("avs_init_config_tokens"));
 
             return sections;
         }
@@ -364,6 +365,72 @@ namespace avstplg
             return sections;
         }
 
+        public static IEnumerable<Section> GetModuleInitConfigSections(ModuleInitConfig initConfig, int id)
+        {
+            var wordTuples = new List<Tuple<string, uint>>
+            {
+                GetTuple(AVS_TKN_INIT_CONFIG.ID_U32, initConfig.Id),
+                GetTuple(AVS_TKN_INIT_CONFIG.LENGTH_U32, (uint)initConfig.Data.Length),
+            };
+
+            var byteTuples = new List<Tuple<string, byte>>
+            {
+                GetTuple(AVS_TKN_INIT_CONFIG.PARAM_U8, initConfig.Param)
+            };
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = wordTuples.ToArray();
+
+            var bytes = new VendorTuples<byte>();
+            bytes.Tuples = byteTuples.ToArray();
+
+            var vendorTuples = new SectionVendorTuples($"module_init_config{id}_hdr_tuples");
+            vendorTuples.Tokens = "avs_init_config_tokens";
+            vendorTuples.Tuples = new VendorTuples[] { words, bytes };
+
+            var sections = new List<Section>();
+            sections.Add(vendorTuples);
+
+            // create private section referencing added tuples entries
+            var headerData = new SectionData($"module_init_config{id}_hdr_data");
+            headerData.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(headerData);
+
+            // create private section referencing added bytes entries
+            var data = new SectionData($"module_init_config{id}_data");
+            data.Bytes = initConfig.Data;
+            sections.Add(data);
+
+            return sections;
+        }
+
+        public static IEnumerable<Section> GetModuleInitConfigsSections(ModuleInitConfig[] initConfigs)
+        {
+            var sections = new List<Section>();
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_MANIFEST.NUM_INIT_CONFIGS_U32, (uint)initConfigs.Length),
+            };
+
+            var tuples = new SectionVendorTuples("module_init_config_tuples");
+            tuples.Tokens = "avs_manifest_tokens";
+            tuples.Tuples = new VendorTuples[] { words };
+            sections.Add(tuples);
+
+            // create private section referencing all added entries
+            var data = new SectionData("module_init_config_hdr_data");
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
+
+            // create private sections adding tuples and bytes entries
+            for (int i = 0; i < initConfigs.Length; i++)
+                sections.AddRange(GetModuleInitConfigSections(initConfigs[i], i));
+
+            return sections;
+        }
+
         public static Section GetPipelineConfigSection(PipelineConfig config, int id)
         {
             var wordTuples = new List<Tuple<string, uint>>
@@ -510,6 +577,8 @@ namespace avstplg
                 byteTuples.Add(GetTuple(AVS_TKN_MOD.PROC_DOMAIN_U8, module.ProcessingDomain.Value));
             if (module.KcontrolId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MOD.KCONTROL_ID_U32, module.KcontrolId.Value));
+            if (module.InitConfigIds != null)
+                wordTuples.Add(GetTuple(AVS_TKN_MOD.INIT_CONFIG_NUM_IDS_U32, (uint)module.InitConfigIds.Length));
 
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();
@@ -520,6 +589,23 @@ namespace avstplg
             var section = new SectionVendorTuples($"{namePrefix}_mod{id}_tuples");
             section.Tokens = "avs_module_tokens";
             section.Tuples = new VendorTuples[] { words, bytes };
+
+            return section;
+        }
+
+        public static Section GetModuleInitConfigSection(Module module, string namePrefix, uint id, uint config_id)
+        {
+            var wordTuples = new List<Tuple<string, uint>>
+            {
+                GetTuple(AVS_TKN_MOD.INIT_CONFIG_ID_U32, module.InitConfigIds[config_id]),
+            };
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = wordTuples.ToArray();
+
+            var section = new SectionVendorTuples($"{namePrefix}_mod{id}_config{config_id}_tuples");
+            section.Tokens = "avs_module_tokens";
+            section.Tuples = new VendorTuples[] { words };
 
             return section;
         }
@@ -546,11 +632,18 @@ namespace avstplg
             int numBindings = (ppl.BindingId == null) ? 0 : ppl.BindingId.Length;
 
             if (ppl.Modules != null)
+            {
                 for (uint i = 0; i < ppl.Modules.Length; i++)
+                {
                     sections.Add(GetModuleSection(ppl.Modules[i], identifier, i));
-            if (ppl.Modules != null)
+                    if (ppl.Modules[i].InitConfigIds != null)
+                        for (uint j = 0; j < ppl.Modules[i].InitConfigIds.Length; j++)
+                            sections.Add(GetModuleInitConfigSection(ppl.Modules[i], identifier, i, j));
+                }
+
                 for (uint i = 0; i < numBindings; i++)
                     sections.Add(GetBindingIdSection(ppl.BindingId[i], identifier, i));
+            }
 
             var words = new VendorTuples<uint>();
             words.Tuples = new[]
@@ -924,6 +1017,8 @@ namespace avstplg
             sections.AddRange(GetPipelineConfigsSections(topology.PipelineConfigs));
             sections.AddRange(GetBindingsSections(topology.Bindings));
             sections.AddRange(GetCondpathTemplatesSections(topology.CondpathTemplates));
+            if (topology.ModuleInitConfigs != null)
+                sections.AddRange(GetModuleInitConfigsSections(topology.ModuleInitConfigs));
 
             var manifest = new SectionManifest("avs_manifest");
             // Manifest should not reference any SectionData that is already
