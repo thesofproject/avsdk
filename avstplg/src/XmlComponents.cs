@@ -147,6 +147,15 @@ namespace avstplg
         public uint? WhmDMABufferSize { get; set; }
     }
 
+    public class ModuleInitConfig
+    {
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
+        public byte Param { get; set; }
+        public uint Length { get; set; }
+        public HexBLOB Data { get; set; }
+    }
+
     public class PipelineConfig
     {
         [XmlAttribute("id")]
@@ -182,6 +191,8 @@ namespace avstplg
         public byte? ProcessingDomain { get; set; }
         public uint ConfigExtId { get; set; }
         public uint? KcontrolId { get; set; }
+        [XmlArrayItem("InitConfigId")]
+        public uint[] InitConfigIds { get; set; }
     }
 
     public class Pipeline
@@ -312,6 +323,7 @@ namespace avstplg
         public AudioFormat[] AudioFormats;
         public ModuleConfigBase[] ModuleConfigsBase;
         public ModuleConfigExt[] ModuleConfigsExt;
+        public ModuleInitConfig[] ModuleInitConfigs;
         public PipelineConfig[] PipelineConfigs;
         public Binding[] Bindings;
         public PathTemplate[] PathTemplates;

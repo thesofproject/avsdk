@@ -19,6 +19,7 @@ namespace avstplg
         NUM_PPLCFGS_U32,
         NUM_BINDINGS_U32,
         NUM_CONDPATH_TMPLS_U32,
+        NUM_INIT_CONFIGS_U32,
     }
 
     public enum AVS_TKN_LIBRARY
@@ -142,6 +143,8 @@ namespace avstplg
         PROC_DOMAIN_U8,
         MODCFG_EXT_ID_U32,
         KCONTROL_ID_U32,
+        INIT_CONFIG_NUM_IDS_U32,
+        INIT_CONFIG_ID_U32,
     }
 
     public enum AVS_TKN_PATH_TMPL
@@ -186,5 +189,12 @@ namespace avstplg
     public enum AVS_TKN_KCONTROL
     {
         ID_U32 = 2301,
+    }
+
+    public enum AVS_TKN_INIT_CONFIG
+    {
+        ID_U32 = 2401,
+        PARAM_U8,
+        LENGTH_U32,
     }
 }
