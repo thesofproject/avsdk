@@ -31,6 +31,18 @@ namespace avstplg
             return result;
         }
 
+        internal static ushort ToUInt16(this string value)
+        {
+            TryUInt32(value, out uint result);
+            return (ushort)result;
+        }
+
+        internal static byte ToUInt8(this string value)
+        {
+            TryUInt32(value, out uint result);
+            return (byte)result;
+        }
+
         internal static bool TryUInt32(this string value, out uint result)
         {
             if (value.StartsWith("0x", StringComparison.CurrentCulture))
