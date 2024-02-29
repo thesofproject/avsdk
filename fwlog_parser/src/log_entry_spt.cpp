@@ -26,6 +26,16 @@ static void init_literal(struct log_literal1_5 &literal, const std::string &reco
 	if (tokens.size() < LOG_LITERAL_TOKEN_COUNT)
 		throw std::invalid_argument("invalid record: \"" + record + "\"");
 
+	// if 'message' token contains ',', its chunks need to be rejoined
+	if (tokens.size() > LOG_LITERAL_TOKEN_COUNT) {
+		// 'message' token is the 5th element and spans till 'param1'
+		auto start = tokens.begin() + 5;
+		auto end = tokens.end() - 4;
+
+		tokens[5] = boost::algorithm::join(boost::make_iterator_range(start, end), ",");
+		tokens.erase(start + 1, end);
+	}
+
 	// remove '"'s from the front and at the end, and trim
 	for (auto it = tokens.begin(); it != tokens.end(); ++it) {
 		std::string &s = *it;
