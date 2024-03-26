@@ -1017,7 +1017,8 @@ namespace avstplg
             sections.AddRange(GetPipelineConfigsSections(topology.PipelineConfigs));
             sections.AddRange(GetBindingsSections(topology.Bindings));
             sections.AddRange(GetCondpathTemplatesSections(topology.CondpathTemplates));
-            sections.AddRange(GetModuleInitConfigsSections(topology.ModuleInitConfigs));
+            if (topology.ModuleInitConfigs != null)
+                sections.AddRange(GetModuleInitConfigsSections(topology.ModuleInitConfigs));
 
             var manifest = new SectionManifest("avs_manifest");
             // Manifest should not reference any SectionData that is already
