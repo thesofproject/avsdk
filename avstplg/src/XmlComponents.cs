@@ -152,7 +152,6 @@ namespace avstplg
         [XmlAttribute("id")]
         public uint Id { get; set; }
         public byte Param { get; set; }
-        public uint Length { get; set; }
         public HexBLOB Data { get; set; }
     }
 
