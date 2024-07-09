@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using NUcmSerializer;
 
@@ -42,14 +44,16 @@ namespace avstplg
 
         static readonly Option s_input = new Option("-c", "--compile");
         static readonly Option s_output = new Option("-o", "--output");
+        static readonly Option s_xsd = new Option("-x", "--xsd");
         static readonly Option s_help = new Option("-h", "--help");
         static readonly Option s_version = new Option("-v", "--version");
 
         static readonly string s_appName = AppDomain.CurrentDomain.FriendlyName;
-        static readonly Dictionary<string, Option> s_requiredOptions = new Dictionary<string, Option>()
+        static readonly Dictionary<string, Option> s_parseOptions = new Dictionary<string, Option>()
         {
             { "input", s_input },
             { "output", s_output },
+            { "xsd", s_xsd },
         };
 
         static void ShowShortHelp()
@@ -74,18 +78,23 @@ namespace avstplg
 
             for (int i = 0; i <= last; i += 2)
             {
-                string key = s_requiredOptions.FirstOrDefault(
+                string key = s_parseOptions.FirstOrDefault(
                     p => p.Value.Matches(args[i])).Key;
 
                 if (key == null || result.ContainsKey(key))
                     continue;
 
                 result[key] = args[i + 1];
-                if (result.Keys.Count == s_requiredOptions.Count)
+                if (result.Keys.Count == s_parseOptions.Count)
                     break;
             }
 
             return result;
+        }
+
+        private static void SchemaValidationEventCallback(object sender, ValidationEventArgs args)
+        {
+            Console.WriteLine("Error: " + args.Message);
         }
 
         static int Main(string[] args)
@@ -113,6 +122,30 @@ namespace avstplg
 
             try
             {
+                if (dictionary.ContainsKey("xsd"))
+                {
+                    XmlSchema schema;
+
+                    var schemaDeserializer = new XmlSerializer(typeof(XmlSchema));
+                    using (var stream = new FileStream(dictionary["xsd"], FileMode.Open))
+                    {
+                        schema = (XmlSchema)schemaDeserializer.Deserialize(stream);
+                    }
+
+                    var settings = new XmlReaderSettings();
+                    settings.Schemas.Add(schema);
+                    settings.ValidationType = ValidationType.Schema;
+                    settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessInlineSchema;
+                    settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
+                    settings.ValidationFlags |= XmlSchemaValidationFlags.ReportValidationWarnings;
+                    settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessIdentityConstraints;
+                    settings.ValidationEventHandler += new ValidationEventHandler(SchemaValidationEventCallback);
+
+                    XmlReader reader = XmlReader.Create(dictionary["input"], settings);
+
+                    while (reader.Read()) ;
+                }
+
                 Topology topology;
                 var deserializer = new XmlSerializer(typeof(Topology));
                 using (var stream = new FileStream(dictionary["input"], FileMode.Open))
