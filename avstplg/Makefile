@@ -6,6 +6,11 @@ OUTDIR	       := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))/build
 MSBUILD_FLAGS	= -m
 MONO		=
 
+# The BaseIntermediateOutputPath must end with a trailing slash.
+override MSBUILD_FLAGS += -p:Configuration=$(CONFIGURATION)
+override MSBUILD_FLAGS += -p:OutputPath=$(BINDIR)
+override MSBUILD_FLAGS += -p:BaseIntermediateOutputPath=$(OBJDIR)
+
 .PHONY: all build clean
 
 all: build
@@ -28,21 +33,20 @@ BINDIR	       := $(OUTDIR)/bin/$(CONFIGURATION)/$(FRAMEWORK)
 OBJDIR	       := $(OUTDIR)/obj/
 MSBUILD	       := dotnet build
 
-# RuntimeIdentifier is a must when publishing to a single file.
-# At the same time, ImportByWildcardBeforeSolution=false bypasses limitation
-# of specifying RID being supported only on project-level, not solution-level.
-MSBUILD_FLAGS  += --use-current-runtime -p:PublishSingleFile=true --no-self-contained \
-		  -p:ImportByWildcardBeforeSolution=false \
-		  -p:PublishDir=$(BINDIR)/publish
+# RuntimeIdentifier (RID) is a must when publishing to a single file. Set it
+# based on the current machine with --use-current-runtime.
+# Due to certain limitations, specifying RID is supported only on project-level,
+# not solution-level. ImportByWildcardBeforeSolution=false bypasses that.
+
+override MSBUILD_FLAGS += --use-current-runtime --no-self-contained
+override MSBUILD_FLAGS += -p:ImportByWildcardBeforeSolution=false
+override MSBUILD_FLAGS += -p:PublishSingleFile=true
+override MSBUILD_FLAGS += -p:PublishDir=$(BINDIR)/publish
 
 build: publishsolution
 endif
 
-# The BaseIntermediateOutputPath must end with a trailing slash.
 %solution:
-	$(MSBUILD) -p:Configuration=$(CONFIGURATION) \
-		   -p:BaseIntermediateOutputPath=$(OBJDIR) \
-		   -p:OutputPath=$(BINDIR) \
-		   -t:$(subst solution,,$@) $(MSBUILD_FLAGS) $(SOLUTION_NAME)
+	$(MSBUILD) $(SOLUTION_NAME) -t:$(subst solution,,$@) $(MSBUILD_FLAGS)
 
 clean: cleansolution
