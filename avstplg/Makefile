@@ -1,7 +1,7 @@
 # Solution configuration, use either "Debug" or "Release".
 CONFIGURATION	= Debug
 FRAMEWORK	= net6.0
-ASSEMBLY_NAME	= avstplg
+ASSEMBLY_NAME  := avstplg
 OUTDIR	       := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))/build
 MSBUILD_FLAGS	= -m
 MONO		=
