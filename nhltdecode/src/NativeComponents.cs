@@ -68,9 +68,9 @@ namespace nhltdecode.Native
     //
     // Depending on configuration of choice, different struct is used:
     //
-    // - I2SConfigLegacy for 1 MCLK, up to 8 channels configurationn
-    // - I2SConfig15 for 2+ MCLK, up to 8 channels configurationn
-    // - I2SConfig2 for 1 MCLK, up to 16 channels configurationn
+    // - I2SConfigLegacy for 1 MCLK, up to 8 channels configuration
+    // - I2SConfig15 for 2+ MCLK, up to 8 channels configuration
+    // - I2SConfig2 for 1 MCLK, up to 16 channels configuration
     //
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
