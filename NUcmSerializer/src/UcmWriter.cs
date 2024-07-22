@@ -89,6 +89,9 @@ namespace NUcmSerializer
 
         public UcmWriter(Stream stream, Encoding encoding)
         {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
             this.encoding = encoding;
             if (encoding == null)
                 writer = new StreamWriter(stream);
