@@ -20,6 +20,7 @@ namespace avstplg
         NUM_BINDINGS_U32,
         NUM_CONDPATH_TMPLS_U32,
         NUM_INIT_CONFIGS_U32,
+        NUM_NHLT_CONFIGS_U32,
     }
 
     public enum AVS_TKN_LIBRARY
@@ -106,6 +107,8 @@ namespace avstplg
         PEAKVOL_VOLUME_U32,
         PEAKVOL_CURVE_TYPE_U32,
         PEAKVOL_CURVE_DURATION_U32,
+
+        CPR_NHLT_CONFIG_ID_U32,
     }
 
     public enum AVS_TKN_PPLCFG
@@ -200,6 +203,12 @@ namespace avstplg
     {
         ID_U32 = 2401,
         PARAM_U8,
+        LENGTH_U32,
+    }
+
+    public enum AVS_TKN_NHLT_CONFIG
+    {
+        ID_U32 = 2501,
         LENGTH_U32,
     }
 }

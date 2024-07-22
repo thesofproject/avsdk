@@ -148,6 +148,7 @@ namespace avstplg
         public uint? PeakVolVolume { get; set; }
         public uint? PeakVolCurveType { get; set; }
         public uint? PeakVolCurveDuration { get; set; }
+        public uint? CprNHLTConfigId { get; set; }
     }
 
     public class ModuleInitConfig
@@ -155,6 +156,13 @@ namespace avstplg
         [XmlAttribute("id")]
         public uint Id { get; set; }
         public byte Param { get; set; }
+        public HexBLOB Data { get; set; }
+    }
+
+    public class NHLTConfig
+    {
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
         public HexBLOB Data { get; set; }
     }
 
@@ -328,6 +336,7 @@ namespace avstplg
         public ModuleConfigBase[] ModuleConfigsBase;
         public ModuleConfigExt[] ModuleConfigsExt;
         public ModuleInitConfig[] ModuleInitConfigs;
+        public NHLTConfig[] NHLTConfigs;
         public PipelineConfig[] PipelineConfigs;
         public Binding[] Bindings;
         public PathTemplate[] PathTemplates;
