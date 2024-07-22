@@ -56,6 +56,7 @@ namespace avstplg
             sections.Add(GetSectionTokens<AVS_TKN_PIN_FMT>("avs_pin_format_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_KCONTROL>("avs_kcontrol_tokens"));
             sections.Add(GetSectionTokens<AVS_TKN_INIT_CONFIG>("avs_init_config_tokens"));
+            sections.Add(GetSectionTokens<AVS_TKN_NHLT_CONFIG>("avs_NHLT_config_tokens"));
 
             return sections;
         }
@@ -246,6 +247,8 @@ namespace avstplg
             var byteTuples = new List<Tuple<string, byte>>();
 
             // module-type specific tuples
+            if (module.CprBlobFormatId.HasValue && module.CprNHLTConfigId.HasValue)
+                    throw new InvalidOperationException("Can't use blob override and NHLT config at the same time");
             if (module.CprOutAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
             if (module.CprBlobFormatId.HasValue)
@@ -258,6 +261,10 @@ namespace avstplg
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMA_TYPE_U32, module.cprDMAType.Value));
             if (module.CprDMABufferSize != null)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMABUFF_SIZE_U32, module.CprDMABufferSize.Value));
+            if (module.CprNHLTConfigId.HasValue) {
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_BLOB_FMT_ID_U32, 0xFFFFFFFE));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_NHLT_CONFIG_ID_U32, module.CprNHLTConfigId.Value));
+	    }
             if (module.MicselOutAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MICSEL_OUT_AFMT_ID_U32, module.MicselOutAudioFormatId.Value));
             if (module.IntelWOVCpcLowPowerMode.HasValue)
@@ -433,6 +440,64 @@ namespace avstplg
             // create private sections adding tuples and bytes entries
             for (int i = 0; i < initConfigs.Length; i++)
                 sections.AddRange(GetModuleInitConfigSections(initConfigs[i], i));
+
+            return sections;
+        }
+
+        public static IEnumerable<Section> GetNHLTConfigSections(NHLTConfig NHLTConfig, int id)
+        {
+            var wordTuples = new List<Tuple<string, uint>>
+            {
+                GetTuple(AVS_TKN_NHLT_CONFIG.ID_U32, NHLTConfig.Id),
+                GetTuple(AVS_TKN_NHLT_CONFIG.LENGTH_U32, (uint)NHLTConfig.Data.Length),
+            };
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = wordTuples.ToArray();
+
+            var vendorTuples = new SectionVendorTuples($"NHLT_config{id}_hdr_tuples");
+            vendorTuples.Tokens = "avs_NHLT_config_tokens";
+            vendorTuples.Tuples = new VendorTuples[] { words };
+
+            var sections = new List<Section>();
+            sections.Add(vendorTuples);
+
+            // create private section referencing added tuples entries
+            var headerData = new SectionData($"NHLT_config{id}_hdr_data");
+            headerData.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(headerData);
+
+            // create private section referencing added bytes entries
+            var data = new SectionData($"NHLT_config{id}_data");
+            data.Bytes = NHLTConfig.Data;
+            sections.Add(data);
+
+            return sections;
+        }
+
+        public static IEnumerable<Section> GetNHLTConfigsSections(NHLTConfig[] NHLTConfigs)
+        {
+            var sections = new List<Section>();
+
+            var words = new VendorTuples<uint>();
+            words.Tuples = new[]
+            {
+                GetTuple(AVS_TKN_MANIFEST.NUM_NHLT_CONFIGS_U32, (uint)NHLTConfigs.Length),
+            };
+
+            var tuples = new SectionVendorTuples("NHLT_config_tuples");
+            tuples.Tokens = "avs_manifest_tokens";
+            tuples.Tuples = new VendorTuples[] { words };
+            sections.Add(tuples);
+
+            // create private section referencing all added entries
+            var data = new SectionData("NHLT_config_hdr_data");
+            data.Tuples = sections.Select(s => s.Identifier).ToArray();
+            sections.Add(data);
+
+            // create private sections adding tuples and bytes entries
+            for (int i = 0; i < NHLTConfigs.Length; i++)
+                sections.AddRange(GetNHLTConfigSections(NHLTConfigs[i], i));
 
             return sections;
         }
@@ -1043,6 +1108,13 @@ namespace avstplg
             sections.AddRange(GetCondpathTemplatesSections(topology.CondpathTemplates));
             if (topology.ModuleInitConfigs != null)
                 sections.AddRange(GetModuleInitConfigsSections(topology.ModuleInitConfigs));
+            if (topology.NHLTConfigs != null) {
+                if (topology.ModuleInitConfigs == null) {
+                    ModuleInitConfig[] mockConfigs = Array.Empty<ModuleInitConfig>();
+                    sections.AddRange(GetModuleInitConfigsSections(mockConfigs));
+                }
+                sections.AddRange(GetNHLTConfigsSections(topology.NHLTConfigs));
+            }
 
             var manifest = new SectionManifest("avs_manifest");
             // Manifest should not reference any SectionData that is already
