@@ -226,6 +226,8 @@ namespace avstplg
         public Path[] Paths;
         [XmlElement("VolumeMixer")]
         public Kcontrol Kcontrol { get; set; }
+        [XmlElement("MuteMixer")]
+        public Kcontrol MuteKcontrol { get; set; }
     }
 
     public class Condpath
