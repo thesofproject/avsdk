@@ -738,8 +738,14 @@ namespace avstplg
             {
                 // ASoC does not create kcontrols for widgets of type SCHEDULER.
                 widget.Type = TPLG_DAPM.PGA;
-                widget.Mixer = new string[] { template.Kcontrol.Name };
+
+                List<string> mixerSettings = new List<string> { template.Kcontrol.Name };
+                if (template.MuteKcontrol != null && template.MuteKcontrol.Name != null)
+                    mixerSettings.Add(template.MuteKcontrol.Name);
+                widget.Mixer = mixerSettings.ToArray();
                 sections.AddRange(GetKcontrolMixerSections(template.Kcontrol));
+                if (template.MuteKcontrol != null && template.MuteKcontrol.Name != null)
+                    sections.AddRange(GetKcontrolMixerSections(template.MuteKcontrol));
             }
 
             sections.Add(widget);
@@ -921,12 +927,24 @@ namespace avstplg
             var control = new SectionControlMixer(kctrl.Name);
             // TODO: replace hardcodes below with descriptive constants
             control.Max = kctrl.max;
-            control.Ops = new Ops("ctl")
+            if (kctrl.Name.Contains("Volume"))
             {
-                Get = 257,
-                Put = 257,
-                Info = TPLG_CTL.VOLSW,
-            };
+                control.Ops = new Ops("ctl")
+                {
+                    Get = 257,
+                    Put = 257,
+                    Info = TPLG_CTL.VOLSW,
+                };
+            }
+            else if (kctrl.Name.Contains("Switch"))
+            {
+                control.Ops = new Ops("ctl")
+                {
+                    Get = 258,
+                    Put = 258,
+                    Info = TPLG_CTL.VOLSW,
+                };
+            }
             control.Access = new[]
             {
                 CTL_ELEM_ACCESS.READWRITE,
