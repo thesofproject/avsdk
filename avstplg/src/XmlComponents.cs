@@ -324,6 +324,7 @@ namespace avstplg
                     max = value.ToInt32();
             }
         }
+        public int NumChannels { get; set; }
     }
 
     [XmlRoot]

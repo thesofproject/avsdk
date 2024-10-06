@@ -15,6 +15,19 @@ namespace avstplg
 {
     public static class SectionProvider
     {
+        /* ASoC core supports up to 8 channels for kcontrols. */
+        static ChannelMap[] DefaultChannelMap =
+        {
+            new ChannelMap(ChannelName.FrontLeft),
+            new ChannelMap(ChannelName.FrontRight),
+            new ChannelMap(ChannelName.RearLeft),
+            new ChannelMap(ChannelName.RearRight),
+            new ChannelMap(ChannelName.FrontCenter),
+            new ChannelMap(ChannelName.SideLeft),
+            new ChannelMap(ChannelName.SideRight),
+            new ChannelMap(ChannelName.RearCenter),
+        };
+
         static Tuple<string, U> GetTuple<T, U>(T token, U value)
             where T : struct
         {
@@ -1016,6 +1029,7 @@ namespace avstplg
                 CTL_ELEM_ACCESS.VOLATILE,
             };
             control.Data = data.Identifier;
+            control.Channel = DefaultChannelMap.Take(kctrl.NumChannels).ToArray();
             sections.Add(control);
 
             return sections;
