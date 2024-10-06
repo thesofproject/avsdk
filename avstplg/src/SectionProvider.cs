@@ -996,18 +996,18 @@ namespace avstplg
             {
                 control.Ops = new Ops("ctl")
                 {
-                    Get = 257,
-                    Put = 257,
-                    Info = TPLG_CTL.VOLSW,
+                    Get = AVS_CTL_OPS.VOLUME,
+                    Put = AVS_CTL_OPS.VOLUME,
+                    Info = AVS_CTL_OPS.VOLUME,
                 };
             }
             else if (kctrl.Name.Contains("Switch"))
             {
                 control.Ops = new Ops("ctl")
                 {
-                    Get = 258,
-                    Put = 258,
-                    Info = TPLG_CTL.VOLSW,
+                    Get = AVS_CTL_OPS.MUTE,
+                    Put = AVS_CTL_OPS.MUTE,
+                    Info = AVS_CTL_OPS.MUTE,
                 };
             }
             control.Access = new[]
