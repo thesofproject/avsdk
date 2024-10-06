@@ -211,4 +211,11 @@ namespace avstplg
         ID_U32 = 2501,
         LENGTH_U32,
     }
+
+    public static class AVS_CTL_OPS
+    {
+        /* Lower values reserved by ASoC core. */
+        public const uint VOLUME = 257;
+        public const uint MUTE = 258;
+    }
 }
