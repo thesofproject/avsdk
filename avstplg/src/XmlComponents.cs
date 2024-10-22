@@ -324,6 +324,7 @@ namespace avstplg
                     max = value.ToInt32();
             }
         }
+        public bool Invert { get; set; }
         public int NumChannels { get; set; }
     }
 

@@ -1030,6 +1030,7 @@ namespace avstplg
             };
             control.Data = data.Identifier;
             control.Channel = DefaultChannelMap.Take(kctrl.NumChannels).ToArray();
+            control.Invert = kctrl.Invert;
             sections.Add(control);
 
             return sections;
