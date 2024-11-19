@@ -65,12 +65,31 @@ namespace nhltdecode.Native
         public uint Ssioc;
     }
 
+    // For ACE 3.0+ onward
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct SSPConfig3
+    {
+        public uint Ssc0;
+        public uint Ssc1;
+        public uint Sscto;
+        public uint Sspsp;
+        public uint Ssc2;
+        public uint Sspsp2;
+        public uint Ssc3;
+        public uint Ssioc;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public ulong[] Ssmidytsa;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public ulong[] Ssmodytsa;
+    }
+
     //
     // Depending on configuration of choice, different struct is used:
     //
     // - I2SConfigLegacy for 1 MCLK, up to 8 channels configuration
     // - I2SConfig15 for 2+ MCLK, up to 8 channels configuration
     // - I2SConfig2 for 1 MCLK, up to 16 channels configuration
+    // - I2SConfig3 for 2+ MCLK, up to 16 channels configuration (TdmTsGroup ignored at 8+)
     //
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -140,6 +159,20 @@ namespace nhltdecode.Native
         //
     };
 
+    // Header.VersionMajor/Minor = 3.0
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct I2SConfig3
+    {
+        public uint GatewayAttributes;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public uint[] TdmTsGroup;
+        public SSPConfig3 SSPConfig;
+        public MclkConfig15 MclkConfig;
+        //
+        // Optionally followed by:
+        // byte[] DmaControls;
+        //
+    };
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct FirFilter
     {
