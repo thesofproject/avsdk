@@ -76,6 +76,28 @@ namespace nhltdecode
             return writer.Write<Native.SSPConfig>(ssp);
         }
 
+        private static int WriteSSPConfig3(BinaryWriter writer, I2SConfig i2s)
+        {
+            var ssp = new Native.SSPConfig3()
+            {
+                Ssc0 = i2s.Ssc0,
+                Ssc1 = i2s.Ssc1,
+                Sscto = i2s.Sscto,
+                Sspsp = i2s.Sspsp,
+                Ssc2 = i2s.Ssc2,
+                Sspsp2 = i2s.Sspsp2,
+                Ssc3 = i2s.Ssc3,
+                Ssioc = i2s.Ssioc,
+                Ssmidytsa = new ulong[8],
+                Ssmodytsa = new ulong[8],
+            };
+
+            ssp.Ssmidytsa[0] = i2s.Sstsa;
+            ssp.Ssmodytsa[0] = i2s.Ssrsa;
+
+            return writer.Write<Native.SSPConfig3>(ssp);
+        }
+
         private static int WriteMclkConfig(BinaryWriter writer, I2SConfig i2s)
         {
             var mclk = new Native.MclkConfig()
@@ -180,6 +202,21 @@ namespace nhltdecode
             return Marshal.SizeOf(typeof(Native.I2SConfig2));
         }
 
+        private static int WriteI2SConfig3(BinaryWriter writer, I2SConfig i2s)
+        {
+            byte[] tsgroup = i2s.TdmTsGroup;
+
+            // Count based on size of Native.I2SConfig3.TdmTsGroup.
+            Array.Resize(ref tsgroup, 32);
+
+            writer.Write(i2s.GatewayAttributes);
+            writer.Write(tsgroup);
+            WriteSSPConfig3(writer, i2s);
+            WriteMclkConfig(writer, i2s);
+
+            return Marshal.SizeOf(typeof(Native.I2SConfig3));
+        }
+
         public static int WriteI2SConfig(BinaryWriter writer, I2SConfig i2s)
         {
             int size;
@@ -189,6 +226,10 @@ namespace nhltdecode
 
             switch (i2s.Version)
             {
+                case I2SConfig.VERSION3_0:
+                    size = WriteI2SConfig3(writer, i2s);
+                    break;
+
                 case I2SConfig.VERSION2_0:
                     size = WriteI2SConfig2(writer, i2s);
                     break;
