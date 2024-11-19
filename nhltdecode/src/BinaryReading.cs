@@ -114,6 +114,22 @@ namespace nhltdecode
             i2s.Ssioc = ssp.Ssioc;
         }
 
+        private static void InitSSPConfig3(BinaryReader reader, ref I2SConfig i2s)
+        {
+            Native.SSPConfig3 ssp = reader.Read<Native.SSPConfig3>();
+
+            i2s.Ssc0 = ssp.Ssc0;
+            i2s.Ssc1 = ssp.Ssc1;
+            i2s.Sscto = ssp.Sscto;
+            i2s.Sspsp = ssp.Sspsp;
+            i2s.Sstsa = (uint)ssp.Ssmidytsa[0];
+            i2s.Ssrsa = (uint)ssp.Ssmodytsa[0];
+            i2s.Ssc2 = ssp.Ssc2;
+            i2s.Sspsp2 = ssp.Sspsp2;
+            i2s.Ssc3 = ssp.Ssc3;
+            i2s.Ssioc = ssp.Ssioc;
+        }
+
         private static void InitMclkConfig(BinaryReader reader, ref I2SConfig i2s)
         {
             i2s.MdivCtrl = reader.ReadUInt32();
@@ -153,6 +169,14 @@ namespace nhltdecode
             InitMclkConfig(reader, ref i2s);
         }
 
+        private static void InitI2SConfig3(BinaryReader reader, ref I2SConfig i2s)
+        {
+            // Count based on size of Native.I2SConfig3.TdmTsGroup.
+            i2s.TdmTsGroup = new HexBLOB(reader.ReadBytes(32));
+            InitSSPConfig3(reader, ref i2s);
+            InitMclkConfig(reader, ref i2s);
+        }
+
         public static I2SConfig ReadI2SConfig(BinaryReader reader)
         {
             Native.Config cfg = reader.Read<Native.Config>();
@@ -171,6 +195,10 @@ namespace nhltdecode
 
             switch (result.Version)
             {
+                case I2SConfig.VERSION3_0:
+                    InitI2SConfig3(reader, ref result);
+                    break;
+
                 case I2SConfig.VERSION2_0:
                     InitI2SConfig2(reader, ref result);
                     break;
