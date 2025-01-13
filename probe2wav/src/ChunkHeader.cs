@@ -22,15 +22,23 @@ namespace probe2wav
     {
         public uint ProbeId;
         public uint ProbeFormat;
-        public ulong Timestamp;
+        public uint TimestampHigh;
+        public uint TimestampLow;
         public uint DataSize;
 
         public string ProbeIdStr => "0x" + ProbeId.ToString("X8").TrimStart('0');
 
         // While checksum theoretically is 8 bytes only least significant 4 bytes contains valid data.
         // Most significant 4 bytes should be equal to 0.
-        public ulong ExpectedChecksum =>
-                (ProbeId + ProbeFormat + Timestamp + DataSize + Constants.SyncPattern) & 0xFFFFFFFF;
+        public ulong ExpectedChecksum
+        {
+            get
+            {
+                return (ProbeId + ProbeFormat + TimestampHigh + TimestampLow + DataSize +
+                    Constants.SyncPattern) & 0xFFFFFFFF;
+            }
+        }
+
         public bool Wav => ProbeId != Constants.BaseFWProbeId;
 
         public static ChunkHeader Create(BinaryReader binaryReader)
@@ -38,7 +46,8 @@ namespace probe2wav
             ChunkHeader header;
             header.ProbeId = binaryReader.ReadUInt32();
             header.ProbeFormat = binaryReader.ReadUInt32();
-            header.Timestamp = binaryReader.ReadUInt64();
+            header.TimestampHigh = binaryReader.ReadUInt32();
+            header.TimestampLow = binaryReader.ReadUInt32();
             header.DataSize = binaryReader.ReadUInt32();
 
             return header;
