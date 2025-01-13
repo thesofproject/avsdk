@@ -102,6 +102,7 @@ namespace probe2wav
                     }
                     else
                     {
+                        Console.WriteLine($"Incorrect checksum at offset: {binaryReader.BaseStream.Position - 8}");
                         checksumMismatchCount++;
                     }
                 }
@@ -119,7 +120,7 @@ namespace probe2wav
                 Console.WriteLine($"Conversion finished - {chunkSuccessCount}/{allChunksCount} chunks correct");
 
             if (checksumMismatchCount > 0 || syncPatternSearchCount > 1 || formatMismatchCount > 0)
-                throw new Exception($"Checksum mismatch: {checksumMismatchCount}, Sync pattern search: {syncPatternSearchCount}, Format mismatch: {formatMismatchCount}");
+                Console.WriteLine($"Checksum mismatch: {checksumMismatchCount}, Sync pattern search: {syncPatternSearchCount}, Format mismatch: {formatMismatchCount}");
         }
 
         private int SearchSyncPattern(BinaryReader reader)
