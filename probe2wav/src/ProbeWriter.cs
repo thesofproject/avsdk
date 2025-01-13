@@ -80,7 +80,7 @@ namespace probe2wav
             writer.Write((uint)Format.SampleRate);
             writer.Write(Format.SampleRate * Format.BlockAlign); // Average bytes per second
             writer.Write((ushort)Format.BlockAlign);
-            writer.Write((ushort)Format.ValidBits);
+            writer.Write((ushort)Format.ContainerBits);
             writer.Write(Encoding.ASCII.GetBytes("data"));
             writer.Write((uint)bytesWritten);
         }
