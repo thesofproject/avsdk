@@ -330,7 +330,7 @@ namespace avstplg
             if (module.WhmOutAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_OUT_AFMT_ID_U32, module.WhmOutAudioFormatId.Value));
             if (module.WhmBlobFormatId.HasValue)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_BLOB_FMT_ID_U32, module.WhmBlobFormatId.Value));
+                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_BLOB_AFMT_ID_U32, module.WhmBlobFormatId.Value));
             if (module.WhmWakeTickPeriod.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_WAKE_TICK_PERIOD_U32, module.WhmWakeTickPeriod.Value));
             if (module.WhmVirtualIndex != null)
