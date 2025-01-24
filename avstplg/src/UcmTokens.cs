@@ -98,10 +98,10 @@ namespace avstplg
         WHM_REF_AFMT_ID_U32,
         WHM_OUT_AFMT_ID_U32,
         WHM_WAKE_TICK_PERIOD_U32,
+        WHM_VINDEX_U8,
         WHM_DMA_TYPE_U32,
         WHM_DMABUFF_SIZE_U32,
-        WHM_VINDEX_U8,
-        WHM_BLOB_FMT_ID_U32,
+        WHM_BLOB_AFMT_ID_U32,
 
         PEAKVOL_CHANNEL_ID_U32, // Reserved
         PEAKVOL_VOLUME_U32,
