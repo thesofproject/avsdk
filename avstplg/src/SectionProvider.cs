@@ -951,6 +951,7 @@ namespace avstplg
             string identifier;
 
             var pcm = new SectionPCM(fedai.Name);
+            pcm.ID = fedai.Id;
             pcm.IgnoreSuspend = fedai.IgnoreSuspend;
             if (fedai.CaptureCapabilities != null)
             {
