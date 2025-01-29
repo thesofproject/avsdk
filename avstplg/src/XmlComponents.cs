@@ -271,6 +271,8 @@ namespace avstplg
 
     public class FEDAI
     {
+        [XmlAttribute("id")]
+        public uint Id { get; set; }
         [XmlAttribute("name")]
         public string Name { get; set; }
         public bool IgnoreSuspend { get; set; }
