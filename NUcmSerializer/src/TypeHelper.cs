@@ -50,13 +50,13 @@ namespace NUcmSerializer
         {
             if (type.IsSimpleType())
                 return TokenType.Element;
-            else if (type.IsSimpleArrayType())
+            if (type.IsSimpleArrayType())
                 return TokenType.Array;
-            else if (type.IsSimpleTupleType())
+            if (type.IsSimpleTupleType())
                 return TokenType.Tuple;
-            else if (type.IsVendorArrayType())
+            if (type.IsVendorArrayType())
                 return TokenType.VendorArray;
-            else if (type.IsSubclassOf(typeof(Section)))
+            if (type.IsSubclassOf(typeof(Section)) || type == typeof(Section))
                 return TokenType.Section;
 
             return TokenType.None;
@@ -98,8 +98,7 @@ namespace NUcmSerializer
                 }
 
                 TypeConverter conv = TypeDescriptor.GetConverter(type);
-                if (conv != null)
-                    return conv.ConvertFromString(value);
+                return conv.ConvertFromString(value);
             }
             catch (NotSupportedException)
             {
@@ -121,7 +120,7 @@ namespace NUcmSerializer
             {
                 if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     byte.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.CurrentCulture, out byte val))
+                                  CultureInfo.CurrentCulture, out byte val))
                     result.Add(val);
                 else if (byte.TryParse(substr, out val))
                     result.Add(val);
@@ -140,7 +139,7 @@ namespace NUcmSerializer
             {
                 if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     ushort.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.CurrentCulture, out ushort val))
+                                    CultureInfo.CurrentCulture, out ushort val))
                     result.Add(val);
                 else if (ushort.TryParse(substr, out val))
                     result.Add(val);
@@ -159,7 +158,7 @@ namespace NUcmSerializer
             {
                 if (substr.StartsWith("0x", StringComparison.CurrentCulture) &&
                     uint.TryParse(substr.Substring(2), NumberStyles.HexNumber,
-                                        CultureInfo.CurrentCulture, out uint val))
+                                  CultureInfo.CurrentCulture, out uint val))
                     result.Add(val);
                 else if (uint.TryParse(substr, out val))
                     result.Add(val);

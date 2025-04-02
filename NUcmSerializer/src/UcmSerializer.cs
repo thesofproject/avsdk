@@ -22,6 +22,8 @@ namespace NUcmSerializer
 
         public void Serialize(Stream stream, IEnumerable<Section> sections, Encoding encoding)
         {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
             if (sections == null)
                 throw new ArgumentNullException("sections");
 
@@ -45,6 +47,9 @@ namespace NUcmSerializer
 
         public IEnumerable<Section> Deserialize(Stream stream, Encoding encoding)
         {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
             List<Section> result = new List<Section>();
             Section section;
 
