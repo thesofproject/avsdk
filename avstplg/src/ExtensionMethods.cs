@@ -87,10 +87,14 @@ namespace avstplg
                     return PCM_RATE._8000;
                 case 11025:
                     return PCM_RATE._11025;
+                case 12000:
+                    return PCM_RATE._12000;
                 case 16000:
                     return PCM_RATE._16000;
                 case 22050:
                     return PCM_RATE._22050;
+                case 24000:
+                    return PCM_RATE._24000;
                 case 32000:
                     return PCM_RATE._32000;
                 case 44100:
@@ -108,7 +112,6 @@ namespace avstplg
                 case 192000:
                     return PCM_RATE._192000;
                 case 0:
-                case 24000:
                 case 37800:
                     return PCM_RATE.KNOT;
 
