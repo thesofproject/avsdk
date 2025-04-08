@@ -121,6 +121,8 @@ namespace avstplg
         {
             switch (value)
             {
+                case 8:
+                    return PCM_FORMAT.S8;
                 case 16:
                     return PCM_FORMAT.S16_LE;
                 case 24:
