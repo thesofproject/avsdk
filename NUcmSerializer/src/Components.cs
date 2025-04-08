@@ -687,6 +687,14 @@ namespace NUcmSerializer
         _96000,     // 96000Hz
         _176400,    // 176400Hz
         _192000,    // 192000Hz
+        _352800,    // 352800Hz
+        _384000,    // 384000Hz
+        _705600,    // 705600Hz
+        _768000,    // 768000Hz
+        // extended rates since 6.12
+        _12000,     // 12000Hz
+        _24000,     // 24000Hz
+        _120000,    // 120000Hz
         CONTINUOUS = 30,  // continuous range
         KNOT = 31   // supports more non-continuos rates
     }
