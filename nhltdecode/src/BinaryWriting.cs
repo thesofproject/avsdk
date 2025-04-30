@@ -127,7 +127,7 @@ namespace nhltdecode
                 int bytesCount = i2s.MdivR.Length * 4;
                 byte[] bytes = new byte[bytesCount];
 
-                Buffer.BlockCopy(i2s.MdivR, 0, bytes, 0, bytesCount);
+                Buffer.BlockCopy(Array.ConvertAll(i2s.MdivR, r => (uint)r), 0, bytes, 0, bytesCount);
                 writer.Write(bytes);
                 size += bytesCount;
             }
