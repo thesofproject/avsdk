@@ -204,17 +204,21 @@ namespace nhltdecode
 
         private static int WriteI2SConfig3(BinaryWriter writer, I2SConfig i2s)
         {
+            int size = Marshal.SizeOf(typeof(Native.I2SConfig3));
             byte[] tsgroup = i2s.TdmTsGroup;
 
             // Count based on size of Native.I2SConfig3.TdmTsGroup.
             Array.Resize(ref tsgroup, 32);
 
             writer.Write(i2s.GatewayAttributes);
+            WriteI2SConfigHeader(writer, i2s);
             writer.Write(tsgroup);
             WriteSSPConfig3(writer, i2s);
-            WriteMclkConfig(writer, i2s);
 
-            return Marshal.SizeOf(typeof(Native.I2SConfig3));
+            size += WriteMclkConfig15(writer, i2s);
+            size -= Marshal.SizeOf(typeof(Native.MclkConfig15));
+
+            return size;
         }
 
         public static int WriteI2SConfig(BinaryWriter writer, I2SConfig i2s)

@@ -174,7 +174,7 @@ namespace nhltdecode
             // Count based on size of Native.I2SConfig3.TdmTsGroup.
             i2s.TdmTsGroup = new HexBLOB(reader.ReadBytes(32));
             InitSSPConfig3(reader, ref i2s);
-            InitMclkConfig(reader, ref i2s);
+            InitMclkConfig15(reader, ref i2s);
         }
 
         public static I2SConfig ReadI2SConfig(BinaryReader reader)

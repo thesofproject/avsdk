@@ -55,10 +55,13 @@ namespace nhltdecode
         {
             int size = 0;
 
+            // I2SConfigs with MclkConfig15 must account for MdivR flex array.
             switch (Version)
             {
                 case VERSION3_0:
                     size += Marshal.SizeOf(typeof(Native.I2SConfig3));
+                    if (MdivR != null)
+                        size += MdivR.Length * sizeof(uint);
                     break;
 
                 case VERSION2_0:
@@ -70,7 +73,6 @@ namespace nhltdecode
                     if (MdivR != null)
                         size += MdivR.Length * sizeof(uint);
                     break;
-
 
                 case 0:
                     size += Marshal.SizeOf(typeof(Native.I2SConfigLegacy));

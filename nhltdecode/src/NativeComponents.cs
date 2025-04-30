@@ -164,6 +164,7 @@ namespace nhltdecode.Native
     public struct I2SConfig3
     {
         public uint GatewayAttributes;
+        public I2SConfigHeader Header;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public uint[] TdmTsGroup;
         public SSPConfig3 SSPConfig;
@@ -173,6 +174,7 @@ namespace nhltdecode.Native
         // byte[] DmaControls;
         //
     };
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct FirFilter
     {
