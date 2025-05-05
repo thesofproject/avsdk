@@ -53,7 +53,7 @@ namespace nhltdecode
 
         public int SizeOf()
         {
-            int size = DmaControls?.Length ?? 0;
+            int size = 0;
 
             switch (Version)
             {
