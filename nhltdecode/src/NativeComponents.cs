@@ -124,6 +124,7 @@ namespace nhltdecode.Native
         public byte VersionMajor;
         public byte Reserved;
         public byte Signature;
+        // Size of the registers BLOB - I2SConfig without GatewayAttributes.
         public uint SizeBytes;
     }
 

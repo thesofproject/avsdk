@@ -161,7 +161,7 @@ namespace nhltdecode
                 VersionMinor = i2s.VersionMinor,
                 VersionMajor = i2s.VersionMajor,
                 Signature = I2SConfig.SIGNATURE,
-                SizeBytes = (uint)i2s.SizeOf(),
+                SizeBytes = i2s.SizeOfBlob(),
             };
 
             return writer.Write<Native.I2SConfigHeader>(hdr);

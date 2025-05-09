@@ -84,6 +84,26 @@ namespace nhltdecode
             return size;
         }
 
+        public uint SizeOfBlob()
+        {
+            int size = SizeOf();
+
+            switch (Version)
+            {
+                // GatewayAttributes are not part of the registers BLOB.
+                case VERSION3_0:
+                case VERSION2_0:
+                case VERSION1_5:
+                case 0:
+                    size -= Marshal.SizeOf(typeof(uint));
+                    break;
+                default:
+                    break;
+            }
+
+            return (uint)size;
+        }
+
         public bool ShouldSerializeVersion()
         {
             return Version != 0;
