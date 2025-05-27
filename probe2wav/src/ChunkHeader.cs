@@ -28,14 +28,12 @@ namespace probe2wav
 
         public string ProbeIdStr => "0x" + ProbeId.ToString("X8").TrimStart('0');
 
-        // While checksum theoretically is 8 bytes only least significant 4 bytes contains valid data.
-        // Most significant 4 bytes should be equal to 0.
         public ulong ExpectedChecksum
         {
             get
             {
-                return (ProbeId + ProbeFormat + TimestampHigh + TimestampLow + DataSize +
-                    Constants.SyncPattern) & 0xFFFFFFFF;
+                return (ulong)ProbeId + ProbeFormat + TimestampHigh + TimestampLow + DataSize +
+                       Constants.SyncPattern;
             }
         }
 
