@@ -136,6 +136,46 @@ namespace nhltdecode
         }
     }
 
+    public struct HexUInt64 : IXmlSerializable
+    {
+        ulong value;
+
+        public HexUInt64(ulong v)
+        {
+            value = v;
+        }
+
+        XmlSchema IXmlSerializable.GetSchema()
+        {
+            return null;
+        }
+
+        void IXmlSerializable.ReadXml(XmlReader reader)
+        {
+            value = reader.ReadElementContentAsString().ToUInt64();
+        }
+
+        void IXmlSerializable.WriteXml(XmlWriter writer)
+        {
+            writer.WriteValue(ToString());
+        }
+
+        public static implicit operator ulong(HexUInt64 h)
+        {
+            return h.value;
+        }
+
+        public static implicit operator HexUInt64(ulong v)
+        {
+            return new HexUInt64(v);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("0x{0:X16}", value);
+        }
+    }
+
     public struct HexBLOB : IXmlSerializable
     {
         static readonly string[] HexTable = new string[] {

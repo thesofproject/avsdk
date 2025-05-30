@@ -30,12 +30,18 @@ namespace nhltdecode
         public HexUInt32 Ssc1;
         public HexUInt32 Sscto;
         public HexUInt32 Sspsp;
-        public HexUInt32 Sstsa;
-        public HexUInt32 Ssrsa;
+        [XmlElement]
+        public HexUInt32[] Sstsa;
+        [XmlElement]
+        public HexUInt32[] Ssrsa;
         public HexUInt32 Ssc2;
         public HexUInt32 Sspsp2;
         public HexUInt32 Ssc3;
         public HexUInt32 Ssioc;
+        [XmlElement]
+        public HexUInt64[] Ssmidytsa;
+        [XmlElement]
+        public HexUInt64[] Ssmodytsa;
         public HexUInt32 MdivCtrl;
         [XmlElement]
         public HexUInt32[] MdivR;

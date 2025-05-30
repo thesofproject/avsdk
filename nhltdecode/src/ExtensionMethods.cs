@@ -36,6 +36,21 @@ namespace nhltdecode
             return result;
         }
 
+        internal static bool TryUInt64(this string value, out ulong result)
+        {
+            if (value.StartsWith("0x", StringComparison.CurrentCulture))
+                return ulong.TryParse(value.Substring(2), NumberStyles.HexNumber,
+                              CultureInfo.CurrentCulture, out result);
+
+            return ulong.TryParse(value, out result);
+        }
+
+        internal static ulong ToUInt64(this string value)
+        {
+            TryUInt64(value, out ulong result);
+            return result;
+        }
+
         internal static ushort ToUInt16(this string value)
         {
             TryUInt32(value, out uint result);

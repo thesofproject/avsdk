@@ -65,8 +65,8 @@ namespace nhltdecode
                 Ssc1 = i2s.Ssc1,
                 Sscto = i2s.Sscto,
                 Sspsp = i2s.Sspsp,
-                Sstsa = i2s.Sstsa,
-                Ssrsa = i2s.Ssrsa,
+                Sstsa = i2s.Sstsa[0],
+                Ssrsa = i2s.Ssrsa[0],
                 Ssc2 = i2s.Ssc2,
                 Sspsp2 = i2s.Sspsp2,
                 Ssc3 = i2s.Ssc3,
@@ -92,8 +92,10 @@ namespace nhltdecode
                 Ssmodytsa = new ulong[8],
             };
 
-            ssp.Ssmidytsa[0] = i2s.Sstsa;
-            ssp.Ssmodytsa[0] = i2s.Ssrsa;
+            for (int i = 0; i < i2s.Ssmidytsa.Length; i++)
+                ssp.Ssmidytsa[i] = i2s.Ssmidytsa[i];
+            for (int i = 0; i < i2s.Ssmodytsa.Length; i++)
+                ssp.Ssmodytsa[i] = i2s.Ssmodytsa[i];
 
             return writer.Write<Native.SSPConfig3>(ssp);
         }

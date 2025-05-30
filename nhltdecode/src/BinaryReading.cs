@@ -106,8 +106,10 @@ namespace nhltdecode
             i2s.Ssc1 = ssp.Ssc1;
             i2s.Sscto = ssp.Sscto;
             i2s.Sspsp = ssp.Sspsp;
-            i2s.Sstsa = ssp.Sstsa;
-            i2s.Ssrsa = ssp.Ssrsa;
+            i2s.Sstsa = new HexUInt32[1];
+            i2s.Sstsa[0] = ssp.Sstsa;
+            i2s.Ssrsa = new HexUInt32[1];
+            i2s.Ssrsa[0] = ssp.Ssrsa;
             i2s.Ssc2 = ssp.Ssc2;
             i2s.Sspsp2 = ssp.Sspsp2;
             i2s.Ssc3 = ssp.Ssc3;
@@ -122,12 +124,16 @@ namespace nhltdecode
             i2s.Ssc1 = ssp.Ssc1;
             i2s.Sscto = ssp.Sscto;
             i2s.Sspsp = ssp.Sspsp;
-            i2s.Sstsa = (uint)ssp.Ssmidytsa[0];
-            i2s.Ssrsa = (uint)ssp.Ssmodytsa[0];
             i2s.Ssc2 = ssp.Ssc2;
             i2s.Sspsp2 = ssp.Sspsp2;
             i2s.Ssc3 = ssp.Ssc3;
             i2s.Ssioc = ssp.Ssioc;
+            i2s.Ssmidytsa = new HexUInt64[8];
+            i2s.Ssmodytsa = new HexUInt64[8];
+            for (int i = 0; i < 8; i++)
+                i2s.Ssmidytsa[i] = ssp.Ssmidytsa[i];
+            for (int i = 0; i < 8; i++)
+                i2s.Ssmodytsa[i] = ssp.Ssmodytsa[i];
         }
 
         private static void InitMclkConfig(BinaryReader reader, ref I2SConfig i2s)
