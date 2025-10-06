@@ -41,9 +41,7 @@ static void init_literal(struct log_literal1_5 &literal, const std::string &reco
 		std::string &s = *it;
 
 		boost::trim(s);
-		if (s.length() < 2)
-			continue;
-		while (s.front() == '\"' && s.back() == '\"') {
+		while (s.length() >= 2 && s.front() == '\"' && s.back() == '\"') {
 			s.erase(0, 1);
 			s.pop_back();
 			boost::trim(s);
