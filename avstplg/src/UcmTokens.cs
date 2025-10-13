@@ -107,8 +107,6 @@ namespace avstplg
         PEAKVOL_VOLUME_U32,
         PEAKVOL_CURVE_TYPE_U32,
         PEAKVOL_CURVE_DURATION_U32,
-
-        CPR_NHLT_CONFIG_ID_U32,
     }
 
     public enum AVS_TKN_PPLCFG
@@ -153,6 +151,7 @@ namespace avstplg
         KCONTROL_ID_U32,
         INIT_CONFIG_NUM_IDS_U32,
         INIT_CONFIG_ID_U32,
+        NHLT_CONFIG_ID_U32,
     }
 
     public enum AVS_TKN_PATH_TMPL

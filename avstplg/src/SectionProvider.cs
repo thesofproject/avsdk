@@ -260,8 +260,6 @@ namespace avstplg
             var byteTuples = new List<Tuple<string, byte>>();
 
             // module-type specific tuples
-            if (module.CprBlobFormatId.HasValue && module.CprNHLTConfigId.HasValue)
-                    throw new InvalidOperationException("Can't use blob override and NHLT config at the same time");
             if (module.CprOutAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_OUT_AFMT_ID_U32, module.CprOutAudioFormatId.Value));
             if (module.CprBlobFormatId.HasValue)
@@ -274,10 +272,6 @@ namespace avstplg
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMA_TYPE_U32, module.cprDMAType.Value));
             if (module.CprDMABufferSize != null)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_DMABUFF_SIZE_U32, module.CprDMABufferSize.Value));
-            if (module.CprNHLTConfigId.HasValue) {
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_BLOB_FMT_ID_U32, 0xFFFFFFFE));
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.CPR_NHLT_CONFIG_ID_U32, module.CprNHLTConfigId.Value));
-	    }
             if (module.MicselOutAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.MICSEL_OUT_AFMT_ID_U32, module.MicselOutAudioFormatId.Value));
             if (module.IntelWOVCpcLowPowerMode.HasValue)
@@ -662,6 +656,8 @@ namespace avstplg
                 wordTuples.Add(GetTuple(AVS_TKN_MOD.KCONTROL_ID_U32, module.KcontrolId.Value));
             if (module.InitConfigIds != null)
                 wordTuples.Add(GetTuple(AVS_TKN_MOD.INIT_CONFIG_NUM_IDS_U32, (uint)module.InitConfigIds.Length));
+            if (module.NHLTConfigId.HasValue)
+                wordTuples.Add(GetTuple(AVS_TKN_MOD.NHLT_CONFIG_ID_U32, module.NHLTConfigId.Value));
 
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();

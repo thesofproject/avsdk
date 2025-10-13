@@ -147,7 +147,6 @@ namespace avstplg
         public uint? PeakVolVolume { get; set; }
         public uint? PeakVolCurveType { get; set; }
         public uint? PeakVolCurveDuration { get; set; }
-        public uint? CprNHLTConfigId { get; set; }
     }
 
     public class ModuleInitConfig
@@ -202,6 +201,7 @@ namespace avstplg
         public uint? KcontrolId { get; set; }
         [XmlArrayItem("InitConfigId")]
         public uint[] InitConfigIds { get; set; }
+        public uint? NHLTConfigId { get; set; }
     }
 
     public class Pipeline
