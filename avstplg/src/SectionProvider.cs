@@ -1126,7 +1126,7 @@ namespace avstplg
                 sections.AddRange(GetModuleInitConfigsSections(topology.ModuleInitConfigs));
             if (topology.NHLTConfigs != null) {
                 if (topology.ModuleInitConfigs == null) {
-                    ModuleInitConfig[] mockConfigs = Array.Empty<ModuleInitConfig>();
+                    ModuleInitConfig[] mockConfigs = new ModuleInitConfig[0];
                     sections.AddRange(GetModuleInitConfigsSections(mockConfigs));
                 }
                 sections.AddRange(GetNHLTConfigsSections(topology.NHLTConfigs));
