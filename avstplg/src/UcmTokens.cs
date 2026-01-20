@@ -208,7 +208,7 @@ namespace avstplg
     public enum AVS_TKN_NHLT_CONFIG
     {
         ID_U32 = 2501,
-        LENGTH_U32,
+        SIZE_U32 = 2502,
     }
 
     public static class AVS_CTL_OPS

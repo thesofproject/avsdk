@@ -455,7 +455,7 @@ namespace avstplg
             var wordTuples = new List<Tuple<string, uint>>
             {
                 GetTuple(AVS_TKN_NHLT_CONFIG.ID_U32, NHLTConfig.Id),
-                GetTuple(AVS_TKN_NHLT_CONFIG.LENGTH_U32, (uint)NHLTConfig.Data.Length),
+                GetTuple(AVS_TKN_NHLT_CONFIG.SIZE_U32, (uint)NHLTConfig.Data.Length),
             };
 
             var words = new VendorTuples<uint>();
