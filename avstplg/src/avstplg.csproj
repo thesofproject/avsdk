@@ -1,11 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
 
+  <!-- TargetFramework is not available early, Directory.Build.props does not help. -->
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <BaseIntermediateOutputPath>..\build\$(Configuration)\$(TargetFramework)\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>..\build\$(Configuration)\$(TargetFramework)\bin\</BaseOutputPath>
+  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <OutputPath>$(BaseOutputPath)</OutputPath>
+    <PublishDir>$(BaseOutputPath)publish</PublishDir>
+    <PublishSingleFile>true</PublishSingleFile>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <SelfContained>false</SelfContained>
+    <UseCurrentRuntimeIdentifier>true</UseCurrentRuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,4 +30,5 @@
     </Reference>
   </ItemGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
