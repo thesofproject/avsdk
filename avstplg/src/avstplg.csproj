@@ -1,7 +1,7 @@
 <Project>
-
   <!-- TargetFramework is not available early, Directory.Build.props does not help. -->
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <TargetFramework>net6.0</TargetFramework>
     <BaseIntermediateOutputPath>..\build\$(Configuration)\$(TargetFramework)\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\build\$(Configuration)\$(TargetFramework)\bin\</BaseOutputPath>
