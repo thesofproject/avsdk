@@ -807,13 +807,14 @@ namespace avstplg
             widget.IgnoreSuspend = template.IgnoreSuspend;
             widget.Data = new string[] { data.Identifier };
 
+            // ASoC does not create kcontrols for widgets of type SCHEDULER.
             if (template.Kcontrol == null || template.Kcontrol.Name == null)
             {
                 widget.Type = TPLG_DAPM.SCHEDULER;
             }
             else
             {
-                // ASoC does not create kcontrols for widgets of type SCHEDULER.
+                // Kcontrols needed, use non-SCHEDULER type.
                 widget.Type = TPLG_DAPM.PGA;
 
                 List<string> mixerSettings = new List<string> { template.Kcontrol.Name };
@@ -1017,7 +1018,6 @@ namespace avstplg
             sections.Add(data);
 
             var control = new SectionControlMixer(kctrl.Name);
-            // TODO: replace hardcodes below with descriptive constants
             control.Max = kctrl.max;
             if (kctrl.Name == null)
             {
