@@ -22,6 +22,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SelfContained>false</SelfContained>
     <UseCurrentRuntimeIdentifier>true</UseCurrentRuntimeIdentifier>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
