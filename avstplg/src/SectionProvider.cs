@@ -1019,7 +1019,10 @@ namespace avstplg
             var control = new SectionControlMixer(kctrl.Name);
             // TODO: replace hardcodes below with descriptive constants
             control.Max = kctrl.max;
-            if (kctrl.Name.Contains("Volume"))
+            if (kctrl.Name == null)
+            {
+            }
+            else if (kctrl.Name.Contains("Volume"))
             {
                 control.Ops = new Ops("ctl")
                 {
