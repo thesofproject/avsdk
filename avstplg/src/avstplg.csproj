@@ -31,5 +31,10 @@
     </Reference>
   </ItemGroup>
 
+  <Target Name="DeletePublish" AfterTargets="Clean">
+    <Message Text="Deleting the publish directory: $(PublishDir)" Importance="high" />
+    <RemoveDir Directories="$(PublishDir)" />
+  </Target>
+
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
