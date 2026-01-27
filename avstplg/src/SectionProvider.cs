@@ -1140,8 +1140,10 @@ namespace avstplg
             sections.AddRange(GetCondpathTemplatesSections(topology.CondpathTemplates));
             if (topology.ModuleInitConfigs != null)
                 sections.AddRange(GetModuleInitConfigsSections(topology.ModuleInitConfigs));
-            if (topology.NHLTConfigs != null) {
-                if (topology.ModuleInitConfigs == null) {
+            if (topology.NHLTConfigs != null)
+            {
+                if (topology.ModuleInitConfigs == null)
+                {
                     ModuleInitConfig[] mockConfigs = new ModuleInitConfig[0];
                     sections.AddRange(GetModuleInitConfigsSections(mockConfigs));
                 }
