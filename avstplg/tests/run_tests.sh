@@ -20,6 +20,8 @@ echo "Value of ResultsDirectory node from \"$SETTINGS_FILE\": \"$output_dir\"."
 output=$(dotnet test --collect:"XPlat Code Coverage" \
 		     --settings $SETTINGS_FILE \
 		     --results-directory=$output_dir)
+# Status of 'dotnet test' is the code we want to exit the script with
+exit_code=$?
 echo "$output"
 
 # Retrieve parent directory of $COVERAGE_FILE
@@ -41,3 +43,5 @@ echo "$output"
 echo "Removing: \"$report_dir\"."
 rm -r -f $report_dir
 echo "Done."
+
+exit $exit_code
