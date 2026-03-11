@@ -1098,6 +1098,17 @@ namespace avstplg
             }
         }
 
+        public static IEnumerable<Section> GetKcontrolsSections(Kcontrol[] kcontrols)
+        {
+            var sections = new List<Section>();
+            int length = (kcontrols != null) ? kcontrols.Length : 0;
+
+            for (int i = 0; i < length; i++)
+                sections.AddRange(GetKcontrolSections(kcontrols[i]));
+
+            return sections;
+        }
+
         public static IEnumerable<Section> GetTopologySections(Topology topology)
         {
             var sections = new List<Section>();
@@ -1162,8 +1173,7 @@ namespace avstplg
             for (int i = 0; i < topology.Graphs.Length; i++)
                 sections.Add(GetDAPMGraphSection(topology.Graphs[i]));
 
-            for (int i = 0; i < topology.Kcontrols.Length; i++)
-                sections.AddRange(GetKcontrolSections(topology.Kcontrols[i]));
+            sections.AddRange(GetKcontrolsSections(topology.Kcontrols));
 
             return sections;
         }
