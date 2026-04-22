@@ -35,6 +35,7 @@ namespace probe2wav.Native
             Raw = r;
         }
 
+#pragma warning disable format
         public uint FormatType      => Raw & 0x1;
         public uint StandardType    => (Raw >> 1) & 0xF;
         public uint AudioFormat     => (Raw >> 5) & 0xF;
@@ -48,6 +49,7 @@ namespace probe2wav.Native
 
         public uint NumChannels     => NumChannels0 + 1;
         public uint ContainerBits   => (ContainerSize0 + 1) * 8;
+#pragma warning restore format
         public uint SampleRate
         {
             get

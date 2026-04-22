@@ -7,8 +7,8 @@
 //
 
 using System.Runtime.InteropServices;
-using Xunit;
 using probe2wav.Native;
+using Xunit;
 
 namespace probe2wav.tests
 {

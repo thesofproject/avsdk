@@ -46,6 +46,7 @@ namespace probe2wav
         {
             WavHeader hdr;
 
+#pragma warning disable format
             // Constants for PCM WAV header.
             hdr.ChunkID         = new char[] { 'R', 'I', 'F', 'F' };
             hdr.Format          = new char[] { 'W', 'A', 'V', 'E' };
@@ -62,6 +63,7 @@ namespace probe2wav
             hdr.ByteRate        = format.SampleRate * hdr.BlockAlign;
             hdr.SampleRate      = format.SampleRate;
             hdr.Subchunk2Size   = bytesWritten;
+#pragma warning restore format
 
             writer.Seek(0, SeekOrigin.Begin);
             writer.Write<WavHeader>(hdr);

@@ -23,7 +23,7 @@ namespace probe2wav.tests
             tempFile = Path.Combine(tempDir, "empty.bin");
 
             Directory.CreateDirectory(tempDir);
-            File.WriteAllBytes(tempFile, Array.Empty<byte>());            
+            File.WriteAllBytes(tempFile, Array.Empty<byte>());
         }
 
         public void Dispose()
