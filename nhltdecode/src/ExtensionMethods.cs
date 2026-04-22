@@ -136,7 +136,8 @@ namespace nhltdecode
             stream.Seek(0, SeekOrigin.Begin);
 
             int count;
-            do {
+            do
+            {
                 count = stream.Read(buf, 0, buf.Length);
                 for (int i = 0; i < count; i++)
                     checksum += buf[i];

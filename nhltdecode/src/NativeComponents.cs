@@ -46,8 +46,8 @@ namespace nhltdecode.Native
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct MclkConfig
     {
-         public uint MdivCtrl;
-         public uint MdivR;
+        public uint MdivCtrl;
+        public uint MdivR;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
