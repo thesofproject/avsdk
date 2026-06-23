@@ -140,7 +140,8 @@ namespace avstplg
                 ShowHelp();
                 return 0;
             }
-            else if (args.Any(a => s_version.Matches(a)))
+
+            if (args.Any(a => s_version.Matches(a)))
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 Console.WriteLine($"Intel AVS topology tool, version {version}");
