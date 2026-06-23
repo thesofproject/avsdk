@@ -35,7 +35,7 @@ namespace avstplg
         {
             if (value.StartsWith("0x", StringComparison.Ordinal))
                 return uint.TryParse(value.Substring(2), NumberStyles.HexNumber,
-                              CultureInfo.CurrentCulture, out result);
+                                     CultureInfo.CurrentCulture, out result);
 
             return uint.TryParse(value, out result);
         }
@@ -50,7 +50,7 @@ namespace avstplg
         {
             var result = new List<uint>();
             IEnumerable<string> substrs = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => s.Trim());
+                                               .Select(s => s.Trim());
 
             foreach (string substr in substrs)
                 if (TryUInt32(substr, out uint val))
