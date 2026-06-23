@@ -7,7 +7,9 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -136,7 +138,7 @@ namespace avstplg
         }
     }
 
-    public struct HexBLOB : IXmlSerializable
+    public struct HexBLOB : IXmlSerializable, IEquatable<HexBLOB>
     {
         static readonly string[] HexTable = new string[] {
             "00", "01", "02", "03", "04", "05", "06", "07",
@@ -297,6 +299,27 @@ namespace avstplg
         {
             if (values != null)
                 writer.WriteValue(BytesToHexString(values));
+        }
+
+        public bool Equals(HexBLOB other)
+        {
+            if (values == null)
+                return other.values == null;
+            if (other.values == null)
+                return false;
+            return Enumerable.SequenceEqual(values, other.values);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is HexBLOB && Equals((HexBLOB)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            if (values == null)
+                return 0;
+            return ((IStructuralEquatable)values).GetHashCode(EqualityComparer<byte>.Default);
         }
     }
 }
