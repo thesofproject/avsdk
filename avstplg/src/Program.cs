@@ -73,20 +73,20 @@ namespace avstplg
 
         static Dictionary<string, string> ParseArguments(string[] args)
         {
-            var result = new Dictionary<string, string>();
-            int last = (args.Length / 2 - 1) * 2; // last valid to check
+            if (args.Length % 2 != 0)
+                return null;
 
-            for (int i = 0; i <= last; i += 2)
+            var result = new Dictionary<string, string>();
+
+            for (int i = 0; i < args.Length; i += 2)
             {
-                string key = s_parseOptions.FirstOrDefault(
-                    p => p.Value.Matches(args[i])).Key;
+                string option = args[i];
+                string key = s_parseOptions.FirstOrDefault(p => p.Value.Matches(option)).Key;
 
                 if (key == null || result.ContainsKey(key))
-                    continue;
+                    return null;
 
                 result[key] = args[i + 1];
-                if (result.Keys.Count == s_parseOptions.Count)
-                    break;
             }
 
             return result;
@@ -112,8 +112,13 @@ namespace avstplg
             }
 
             Dictionary<string, string> dictionary = ParseArguments(args);
-            if (!dictionary.ContainsKey("input") ||
-                !dictionary.ContainsKey("output"))
+
+            if (dictionary == null)
+            {
+                ShowShortHelp();
+                return 1;
+            }
+            if (!dictionary.ContainsKey("input") || !dictionary.ContainsKey("output"))
             {
                 Console.WriteLine($"Please specify -c and -o arguments.");
                 ShowShortHelp();
