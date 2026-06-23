@@ -16,7 +16,7 @@ namespace avstplg
     public static class SectionProvider
     {
         /* ASoC core supports up to 8 channels for kcontrols. */
-        static ChannelMap[] DefaultChannelMap =
+        static readonly ChannelMap[] s_defaultChannelMap =
         {
             new ChannelMap(ChannelName.FrontLeft),
             new ChannelMap(ChannelName.FrontRight),
@@ -1007,7 +1007,7 @@ namespace avstplg
                 CTL_ELEM_ACCESS.VOLATILE,
             };
             control.Data = data.Identifier;
-            control.Channel = DefaultChannelMap.Take(kctrl.NumChannels).ToArray();
+            control.Channel = s_defaultChannelMap.Take(kctrl.NumChannels).ToArray();
             control.Invert = kctrl.Invert;
             sections.Add(control);
 
