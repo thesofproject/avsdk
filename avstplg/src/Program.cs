@@ -128,7 +128,7 @@ namespace avstplg
                 serializer.Serialize(stream, sections);
         }
 
-        private static void SchemaValidationEventCallback(object sender, ValidationEventArgs args)
+        static void SchemaValidationEventCallback(object sender, ValidationEventArgs args)
         {
             Console.WriteLine("Error: " + args.Message);
         }
