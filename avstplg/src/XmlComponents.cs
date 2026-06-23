@@ -75,14 +75,10 @@ namespace avstplg
             {
                 return uuid.ToString();
             }
-
             set
             {
-                try
-                {
-                    uuid = new Guid(value);
-                }
-                catch { }
+                if (Guid.TryParse(value, out Guid result))
+                    uuid = result;
             }
         }
 
