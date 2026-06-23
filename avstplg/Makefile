@@ -15,7 +15,7 @@ MSBUILD		       := msbuild
 
 # Mark output as executable as MSBuild for Mono does not do that.
 build: buildsolution
-	@chmod +x "${OUTDIR}/$(CONFIGURATION)/net4.5/bin/$(ASSEMBLY_NAME).exe"
+	@chmod +x "${OUTDIR}/$(CONFIGURATION)/net4.8/bin/$(ASSEMBLY_NAME).exe"
 
 # MSBuild for .NET, the default. Publish when building for portability.
 else

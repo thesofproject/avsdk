@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>avstplg</RootNamespace>
     <AssemblyName>avstplg</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkNumber>$([System.Text.RegularExpressions.Regex]::Replace($(TargetFrameworkVersion), '^v', ''))</TargetFrameworkNumber>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
