@@ -170,18 +170,7 @@ namespace avstplg
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{s_appName} failed. Message: {ex.Message}");
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
-                    Console.WriteLine("Inner stack trace:");
-                    Console.WriteLine(ex.InnerException.StackTrace);
-                }
-
-                Console.WriteLine();
-                Console.WriteLine("Stack trace:");
-                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine($"{s_appName} failed. {ex.GetType()}: {ex.Message}");
                 return 1;
             }
 
