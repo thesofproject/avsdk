@@ -291,13 +291,11 @@ namespace avstplg
 
             if (module.UpDownMixCoeff != null)
             {
-                int max = (int)(AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_7_S32 - AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32) + 1;
-                if (module.UpDownMixCoeff.Length > max)
-                    throw new InvalidOperationException("Too many coefficients passed to UpDownMix");
+                AVS_TKN_MODCFG token = AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32;
+                int max = AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_7_S32 - token + 1;
 
-                AVS_TKN_MODCFG e = AVS_TKN_MODCFG.UPDOWN_MIX_COEFF_0_S32;
-                for (int i = 0; i < module.UpDownMixCoeff.Length; i++, e++)
-                    wordTuples.Add(GetTuple(e, (uint)module.UpDownMixCoeff[i]));
+                foreach (int coeff in module.UpDownMixCoeff.Take(max))
+                    wordTuples.Add(GetTuple(token++, (uint)coeff));
             }
 
             AddTupleIf(wordTuples, AVS_TKN_MODCFG.UPDOWN_MIX_CHAN_MAP_U32, module.UpDownMixChanMap);

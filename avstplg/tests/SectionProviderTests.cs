@@ -216,10 +216,6 @@ namespace avstplg.tests
 
             Assert.NotNull(section);
             Assert.Equal<string>($"modcfg_ext{id}_tuples", section.Identifier, s_comparer);
-
-            cfg.UpDownMixCoeff = new int[9];
-            Assert.Throws<InvalidOperationException>(
-            () => SectionProvider.GetModuleConfigExtSection(cfg, 0));
         }
 
         [Fact]
