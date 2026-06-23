@@ -25,6 +25,16 @@ namespace avstplg
             value = v;
         }
 
+        public static implicit operator byte(HexUInt8 h)
+        {
+            return h.value;
+        }
+
+        public static implicit operator HexUInt8(byte v)
+        {
+            return new HexUInt8(v);
+        }
+
         XmlSchema IXmlSerializable.GetSchema()
         {
             return null;
@@ -38,16 +48,6 @@ namespace avstplg
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
             writer.WriteValue(ToString());
-        }
-
-        public static implicit operator byte(HexUInt8 h)
-        {
-            return h.value;
-        }
-
-        public static implicit operator HexUInt8(byte v)
-        {
-            return new HexUInt8(v);
         }
 
         public override string ToString()
@@ -65,6 +65,16 @@ namespace avstplg
             value = v;
         }
 
+        public static implicit operator ushort(HexUInt16 h)
+        {
+            return h.value;
+        }
+
+        public static implicit operator HexUInt16(ushort v)
+        {
+            return new HexUInt16(v);
+        }
+
         XmlSchema IXmlSerializable.GetSchema()
         {
             return null;
@@ -78,16 +88,6 @@ namespace avstplg
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
             writer.WriteValue(ToString());
-        }
-
-        public static implicit operator ushort(HexUInt16 h)
-        {
-            return h.value;
-        }
-
-        public static implicit operator HexUInt16(ushort v)
-        {
-            return new HexUInt16(v);
         }
 
         public override string ToString()
@@ -105,6 +105,16 @@ namespace avstplg
             value = v;
         }
 
+        public static implicit operator uint(HexUInt32 h)
+        {
+            return h.value;
+        }
+
+        public static implicit operator HexUInt32(uint v)
+        {
+            return new HexUInt32(v);
+        }
+
         XmlSchema IXmlSerializable.GetSchema()
         {
             return null;
@@ -118,16 +128,6 @@ namespace avstplg
         void IXmlSerializable.WriteXml(XmlWriter writer)
         {
             writer.WriteValue(ToString());
-        }
-
-        public static implicit operator uint(HexUInt32 h)
-        {
-            return h.value;
-        }
-
-        public static implicit operator HexUInt32(uint v)
-        {
-            return new HexUInt32(v);
         }
 
         public override string ToString()
@@ -265,6 +265,21 @@ namespace avstplg
             values = b;
         }
 
+        public static implicit operator byte[](HexBLOB b)
+        {
+            return b.values;
+        }
+
+        public static implicit operator HexBLOB(byte[] b)
+        {
+            return new HexBLOB(b);
+        }
+
+        public int Length
+        {
+            get => values?.Length ?? 0;
+        }
+
         XmlSchema IXmlSerializable.GetSchema()
         {
             return null;
@@ -282,21 +297,6 @@ namespace avstplg
         {
             if (values != null)
                 writer.WriteValue(BytesToHexString(values));
-        }
-
-        public static implicit operator byte[](HexBLOB b)
-        {
-            return b.values;
-        }
-
-        public static implicit operator HexBLOB(byte[] b)
-        {
-            return new HexBLOB(b);
-        }
-
-        public int Length
-        {
-            get => values?.Length ?? 0;
         }
     }
 }
