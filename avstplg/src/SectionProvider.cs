@@ -257,6 +257,7 @@ namespace avstplg
                 GetTuple(AVS_TKN_MODCFG.EXT_ID_U32, module.Id),
             };
 
+            var shortTuples = new List<Tuple<string, ushort>>();
             var byteTuples = new List<Tuple<string, byte>>();
 
             // module-type specific tuples
@@ -314,9 +315,9 @@ namespace avstplg
                 byteTuples.Add(GetTuple(AVS_TKN_MODCFG.ASRC_DISABLE_JITTER_BUFFER_U8, module.ASrcDisableJitterBuffer.Value));
 
             if (module.InPinFormats != null)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.EXT_NUM_INPUT_PINS_U16, (uint)module.InPinFormats.Length));
+                shortTuples.Add(GetTuple(AVS_TKN_MODCFG.EXT_NUM_INPUT_PINS_U16, (ushort)module.InPinFormats.Length));
             if (module.OutPinFormats != null)
-                wordTuples.Add(GetTuple(AVS_TKN_MODCFG.EXT_NUM_OUTPUT_PINS_U16, (uint)module.OutPinFormats.Length));
+                shortTuples.Add(GetTuple(AVS_TKN_MODCFG.EXT_NUM_OUTPUT_PINS_U16, (ushort)module.OutPinFormats.Length));
 
             if (module.WhmRefAudioFormatId.HasValue)
                 wordTuples.Add(GetTuple(AVS_TKN_MODCFG.WHM_REF_AFMT_ID_U32, module.WhmRefAudioFormatId.Value));
@@ -342,12 +343,15 @@ namespace avstplg
             var words = new VendorTuples<uint>();
             words.Tuples = wordTuples.ToArray();
 
+            var shorts = new VendorTuples<ushort>();
+            shorts.Tuples = shortTuples.ToArray();
+
             var bytes = new VendorTuples<byte>();
             bytes.Tuples = byteTuples.ToArray();
 
             var section = new SectionVendorTuples($"modcfg_ext{id}_tuples");
             section.Tokens = "avs_modcfg_ext_tokens";
-            section.Tuples = new VendorTuples[] { words, uuids, bytes };
+            section.Tuples = new VendorTuples[] { words, shorts, uuids, bytes };
 
             return section;
         }
