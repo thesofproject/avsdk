@@ -92,6 +92,42 @@ namespace avstplg
             return result;
         }
 
+        static void ValidateXml(string xmlFilename, string xsdFilename)
+        {
+            var schemaDeserializer = new XmlSerializer(typeof(XmlSchema));
+            XmlSchema schema;
+
+            using (var stream = new FileStream(xsdFilename, FileMode.Open))
+                schema = (XmlSchema)schemaDeserializer.Deserialize(stream);
+
+            var settings = new XmlReaderSettings();
+            settings.Schemas.Add(schema);
+            settings.ValidationType = ValidationType.Schema;
+            settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessInlineSchema;
+            settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
+            settings.ValidationFlags |= XmlSchemaValidationFlags.ReportValidationWarnings;
+            settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessIdentityConstraints;
+            settings.ValidationEventHandler += new ValidationEventHandler(SchemaValidationEventCallback);
+
+            using (XmlReader reader = XmlReader.Create(xmlFilename, settings))
+                while (reader.Read()) ;
+        }
+
+        static void Compile(string inputFilename, string outputFilename)
+        {
+            var deserializer = new XmlSerializer(typeof(Topology));
+            Topology topology;
+
+            using (var stream = new FileStream(inputFilename, FileMode.Open))
+                topology = (Topology)deserializer.Deserialize(stream);
+
+            var serializer = new UcmSerializer();
+            IEnumerable<Section> sections = SectionProvider.GetTopologySections(topology);
+
+            using (var stream = new FileStream(outputFilename, FileMode.Create))
+                serializer.Serialize(stream, sections);
+        }
+
         private static void SchemaValidationEventCallback(object sender, ValidationEventArgs args)
         {
             Console.WriteLine("Error: " + args.Message);
@@ -128,42 +164,9 @@ namespace avstplg
             try
             {
                 if (dictionary.ContainsKey("xsd"))
-                {
-                    XmlSchema schema;
+                    ValidateXml(dictionary["input"], dictionary["xsd"]);
 
-                    var schemaDeserializer = new XmlSerializer(typeof(XmlSchema));
-                    using (var stream = new FileStream(dictionary["xsd"], FileMode.Open))
-                    {
-                        schema = (XmlSchema)schemaDeserializer.Deserialize(stream);
-                    }
-
-                    var settings = new XmlReaderSettings();
-                    settings.Schemas.Add(schema);
-                    settings.ValidationType = ValidationType.Schema;
-                    settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessInlineSchema;
-                    settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessSchemaLocation;
-                    settings.ValidationFlags |= XmlSchemaValidationFlags.ReportValidationWarnings;
-                    settings.ValidationFlags |= XmlSchemaValidationFlags.ProcessIdentityConstraints;
-                    settings.ValidationEventHandler += new ValidationEventHandler(SchemaValidationEventCallback);
-
-                    XmlReader reader = XmlReader.Create(dictionary["input"], settings);
-
-                    while (reader.Read()) ;
-                }
-
-                Topology topology;
-                var deserializer = new XmlSerializer(typeof(Topology));
-                using (var stream = new FileStream(dictionary["input"], FileMode.Open))
-                {
-                    topology = (Topology)deserializer.Deserialize(stream);
-                }
-
-                var serializer = new UcmSerializer();
-                IEnumerable<Section> sections = SectionProvider.GetTopologySections(topology);
-                using (var stream = new FileStream(dictionary["output"], FileMode.Create))
-                {
-                    serializer.Serialize(stream, sections);
-                }
+                Compile(dictionary["input"], dictionary["output"]);
             }
             catch (Exception ex)
             {
