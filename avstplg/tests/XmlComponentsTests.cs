@@ -1,6 +1,13 @@
+//
+// Copyright (c) 2026, Intel Corporation. All rights reserved.
+//
+// Author: Cezary Rojewski <cezary.rojewski@intel.com>
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
 using System;
 using System.Globalization;
-using avstplg;
 using Xunit;
 
 namespace avstplg.tests
@@ -15,7 +22,7 @@ namespace avstplg.tests
         }
 
         [Fact]
-        public void TestLibrary()
+        public void Library()
         {
             Library lib = new Library()
             {
@@ -23,18 +30,19 @@ namespace avstplg.tests
                 FileName = "MyLibrary.bin",
             };
 
-            Assert.Equal<uint>(0u, lib.Id);
-            Assert.Equal<string>("MyLibrary.bin", lib.FileName, s_comparer);
+            Assert.Equal(0u, lib.Id);
+            Assert.Equal("MyLibrary.bin", lib.FileName, s_comparer);
         }
 
         [Fact]
-        public void TestAudioFormat()
+        public void AudioFormat()
         {
             AudioFormat fmt = new AudioFormat()
             {
                 Id = 0,
                 SampleRate = 48000,
                 BitDepth = 32,
+                ChannelMap = "0xFFFFFF10",
                 ChannelConfig = 0,
                 Interleaving = 0,
                 NumChannels = 2,
@@ -42,30 +50,25 @@ namespace avstplg.tests
                 SampleType = 0,
             };
 
-            Assert.Equal<uint>(0, fmt.Id);
-            Assert.Equal<uint>(48000, fmt.SampleRate);
-            Assert.Equal<uint>(32, fmt.BitDepth);
-            Assert.Equal<uint>(0, fmt.ChannelConfig);
-            Assert.Equal<uint>(0, fmt.Interleaving);
-            Assert.Equal<uint>(2, fmt.NumChannels);
-            Assert.Equal<uint>(24, fmt.ValidBitDepth);
-            Assert.Equal<uint>(0, fmt.SampleType);
-
-            fmt.ChannelMap = "0xFFFFFF10";
-            Assert.Equal<string>("0xFFFFFF10", fmt.ChannelMap, s_comparer);
-            Assert.NotEqual<string>("0x10", fmt.ChannelMap, s_comparer);
+            Assert.Equal(0u, fmt.Id);
+            Assert.Equal(48000u, fmt.SampleRate);
+            Assert.Equal(32u, fmt.BitDepth);
+            Assert.Equal("0xFFFFFF10", fmt.ChannelMap, s_comparer);
+            Assert.Equal(0u, fmt.ChannelConfig);
+            Assert.Equal(0u, fmt.Interleaving);
+            Assert.Equal(2u, fmt.NumChannels);
+            Assert.Equal(24u, fmt.ValidBitDepth);
+            Assert.Equal(0u, fmt.SampleType);
 
             fmt.ChannelMap = string.Empty;
-            Assert.NotEqual<string>("0x0", fmt.ChannelMap, s_comparer);
-            Assert.Equal<string>("0x00000000", fmt.ChannelMap, s_comparer);
+            Assert.Equal("0x00000000", fmt.ChannelMap, s_comparer);
 
             fmt.ChannelMap = null;
-            Assert.NotEqual<string>("0x0", fmt.ChannelMap, s_comparer);
-            Assert.Equal<string>("0x00000000", fmt.ChannelMap, s_comparer);
+            Assert.Equal("0x00000000", fmt.ChannelMap, s_comparer);
         }
 
         [Fact]
-        public void TestModuleConfigBase()
+        public void ModuleConfigBase()
         {
             ModuleConfigBase cfg = new ModuleConfigBase()
             {
@@ -76,15 +79,15 @@ namespace avstplg.tests
                 Pages = 1,
             };
 
-            Assert.Equal<uint>(0, cfg.Id);
-            Assert.Equal<uint>(100000, cfg.Cpc);
-            Assert.Equal<uint>(0x180, cfg.Ibs);
-            Assert.Equal<uint>(0x300, cfg.Obs);
-            Assert.Equal<uint>(1, cfg.Pages);
+            Assert.Equal(0u, cfg.Id);
+            Assert.Equal(100000u, cfg.Cpc);
+            Assert.Equal(0x180u, cfg.Ibs);
+            Assert.Equal(0x300u, cfg.Obs);
+            Assert.Equal(1u, cfg.Pages);
         }
 
         [Fact]
-        public void TestIOPinFormat()
+        public void IOPinFormat()
         {
             IOPinFormat pin = new IOPinFormat()
             {
@@ -92,16 +95,17 @@ namespace avstplg.tests
                 AudioFormatId = 8,
             };
 
-            Assert.Equal<uint>(768, pin.IObs);
-            Assert.Equal<uint>(8, pin.AudioFormatId);
+            Assert.Equal(768u, pin.IObs);
+            Assert.Equal(8u, pin.AudioFormatId);
         }
 
         [Fact]
-        public void TestModuleConfigExt()
+        public void ModuleConfigExt()
         {
             ModuleConfigExt cfg = new ModuleConfigExt()
             {
                 Id = 0,
+                UUID = Guid.Empty.ToString(),
                 CprOutAudioFormatId = 0,
                 CprBlobFormatId = 0,
                 CprFeatureMask = 0,
@@ -130,62 +134,63 @@ namespace avstplg.tests
                 WhmWakeTickPeriod = 0,
                 WhmVirtualIndex = 0,
                 WhmDMABufferSize = 0,
+                PeakVolVolume = 0,
+                PeakVolCurveType = 0,
+                PeakVolCurveDuration = 0,
             };
 
-            Assert.Equal<uint>(0, cfg.Id);
-            Assert.Equal<uint>(0, cfg.CprOutAudioFormatId.Value);
-            Assert.Equal<uint>(0, cfg.CprBlobFormatId.Value);
-            Assert.Equal<uint>(0, cfg.CprFeatureMask.Value);
+            Assert.Equal(0u, cfg.Id);
+            Assert.Equal(Guid.Empty.ToString(), cfg.UUID, s_comparer);
+            Assert.Equal(0u, cfg.CprOutAudioFormatId.Value);
+            Assert.Equal(0u, cfg.CprBlobFormatId.Value);
+            Assert.Equal(0u, cfg.CprFeatureMask.Value);
             Assert.Equal<byte>(0, cfg.CprVirtualIndex.Value);
-            Assert.Equal<uint>(0, cfg.CprDMABufferSize.Value);
-            Assert.Equal<uint>(0, cfg.MicselOutAudioFormatId.Value);
-            Assert.Equal<uint>(0, cfg.IntelWOVCpcLowPowerMode.Value);
-            Assert.Equal<uint>(0, cfg.SrcOutFrequency.Value);
-            Assert.Equal<uint>(0, cfg.MuxRefAudioFormatId.Value);
-            Assert.Equal<uint>(0, cfg.MuxOutAudioFormatId.Value);
-            Assert.Equal<uint>(0, cfg.AecRefAudioFormatId.Value);
-            Assert.Equal<uint>(0, cfg.AecOutAudioFormatId.Value);
-            Assert.Equal<uint>(0, cfg.AecCpcLowPowerMode.Value);
-            Assert.Equal<uint>(0, cfg.UpDownMixOutChanCfg.Value);
-            Assert.Equal<uint>(0, cfg.UpDownMixCoeffSelect.Value);
+            Assert.Null(cfg.CprDMAType);    // tests negative branch in the getter
+            Assert.Equal(0u, cfg.CprDMABufferSize.Value);
+            Assert.Equal(0u, cfg.MicselOutAudioFormatId.Value);
+            Assert.Equal(0u, cfg.IntelWOVCpcLowPowerMode.Value);
+            Assert.Equal(0u, cfg.SrcOutFrequency.Value);
+            Assert.Equal(0u, cfg.MuxRefAudioFormatId.Value);
+            Assert.Equal(0u, cfg.MuxOutAudioFormatId.Value);
+            Assert.Equal(0u, cfg.AecRefAudioFormatId.Value);
+            Assert.Equal(0u, cfg.AecOutAudioFormatId.Value);
+            Assert.Equal(0u, cfg.AecCpcLowPowerMode.Value);
+            Assert.Equal(0u, cfg.UpDownMixOutChanCfg.Value);
+            Assert.Equal(0u, cfg.UpDownMixCoeffSelect.Value);
             Assert.Empty(cfg.UpDownMixCoeff);
-            Assert.Equal<uint>(0, cfg.UpDownMixChanMap.Value);
-            Assert.Equal<uint>(0, cfg.ASrcOutFrequency.Value);
+            Assert.Equal(0u, cfg.UpDownMixChanMap.Value);
+            Assert.Equal(0u, cfg.ASrcOutFrequency.Value);
             Assert.Equal<byte>(0, cfg.ASrcMode.Value);
             Assert.Equal<byte>(0, cfg.ASrcDisableJitterBuffer.Value);
             Assert.NotNull(cfg.InPinFormats);
             Assert.Null(cfg.OutPinFormats);
-            Assert.Equal<uint>(0, cfg.WhmRefAudioFormatId.Value);
-            Assert.Equal<uint>(0, cfg.WhmOutAudioFormatId.Value);
-            Assert.Equal<uint>(0, cfg.WhmBlobFormatId.Value);
-            Assert.Equal<uint>(0, cfg.WhmWakeTickPeriod.Value);
+            Assert.Equal(0u, cfg.WhmRefAudioFormatId.Value);
+            Assert.Equal(0u, cfg.WhmOutAudioFormatId.Value);
+            Assert.Equal(0u, cfg.WhmBlobFormatId.Value);
+            Assert.Equal(0u, cfg.WhmWakeTickPeriod.Value);
             Assert.Equal<byte>(0, cfg.WhmVirtualIndex.Value);
-            Assert.Equal<uint>(0, cfg.WhmDMABufferSize.Value);
+            Assert.Null(cfg.WhmDMAType);    // tests negative branch in the getter
+            Assert.Equal(0u, cfg.WhmDMABufferSize.Value);
+            Assert.Equal(0u, cfg.PeakVolVolume.Value);
+            Assert.Equal(0u, cfg.PeakVolCurveType.Value);
+            Assert.Equal(0u, cfg.PeakVolCurveDuration.Value);
 
-            cfg.UUID = Guid.Empty.ToString();
-            Assert.Equal<string>(Guid.Empty.ToString(), cfg.UUID, s_comparer);
-            cfg.UUID = null; // exception squelched
-            Assert.Equal<string>(Guid.Empty.ToString(), cfg.UUID, s_comparer);
+            cfg.UUID = null;                // exception squelched
+            Assert.Equal(Guid.Empty.ToString(), cfg.UUID, s_comparer);
 
-            Assert.Null(cfg.CprDMAType);
-            cfg.CprDMAType = "0xa"; // shall be capitalized
-            Assert.NotEqual<string>("0xa", cfg.CprDMAType, s_comparer);
-            Assert.Equal<string>("0x0000000A", cfg.CprDMAType, s_comparer);
-            cfg.CprDMAType = null; // value shall not change
-            Assert.NotNull(cfg.CprDMAType);
-            Assert.Equal<string>("0x0000000A", cfg.CprDMAType, s_comparer);
+            cfg.CprDMAType = "0xa";
+            cfg.WhmDMAType = "0xa";
+            Assert.Equal("0x0000000A", cfg.CprDMAType, s_comparer);
+            Assert.Equal("0x0000000A", cfg.WhmDMAType, s_comparer);
 
-            Assert.Null(cfg.WhmDMAType);
-            cfg.WhmDMAType = "0xa"; // shall be capitalized
-            Assert.NotEqual<string>("0xa", cfg.WhmDMAType, s_comparer);
-            Assert.Equal<string>("0x0000000A", cfg.WhmDMAType, s_comparer);
-            cfg.WhmDMAType = null; // value shall not change
-            Assert.NotNull(cfg.WhmDMAType);
-            Assert.Equal<string>("0x0000000A", cfg.WhmDMAType, s_comparer);
+            cfg.CprDMAType = null;          // value shall not change
+            cfg.WhmDMAType = null;
+            Assert.Equal("0x0000000A", cfg.CprDMAType, s_comparer);
+            Assert.Equal("0x0000000A", cfg.WhmDMAType, s_comparer);
         }
 
         [Fact]
-        public void TestPipelineConfig()
+        public void PipelineConfig()
         {
             PipelineConfig cfg = new PipelineConfig()
             {
@@ -197,16 +202,16 @@ namespace avstplg.tests
                 Trigger = 0,
             };
 
-            Assert.Equal<uint>(0, cfg.Id);
+            Assert.Equal(0u, cfg.Id);
             Assert.Equal<ushort>(8, cfg.RequiredSize);
             Assert.Equal<byte>(0, cfg.Priority.Value);
             Assert.False(cfg.LowPower);
             Assert.Equal<ushort>(0, cfg.Attributes.Value);
-            Assert.Equal<uint>(0, cfg.Trigger.Value);
+            Assert.Equal(0u, cfg.Trigger.Value);
         }
 
         [Fact]
-        public void TestBinding()
+        public void Binding()
         {
             Binding binding = new Binding()
             {
@@ -221,19 +226,19 @@ namespace avstplg.tests
                 IsSink = true,
             };
 
-            Assert.Equal<uint>(0, binding.Id);
-            Assert.Equal<string>("avs_hdaudio", binding.TargetTopologyName, s_comparer);
-            Assert.Equal<uint>(2, binding.TargetPathTemplateId);
-            Assert.Equal<uint>(9, binding.TargetPipelineId);
-            Assert.Equal<uint>(0xb, binding.TargetModuleId);
+            Assert.Equal(0u, binding.Id);
+            Assert.Equal("avs_hdaudio", binding.TargetTopologyName, s_comparer);
+            Assert.Equal(2u, binding.TargetPathTemplateId);
+            Assert.Equal(9u, binding.TargetPipelineId);
+            Assert.Equal(0xBu, binding.TargetModuleId);
             Assert.Equal<byte>(0, binding.TargetModulePin);
-            Assert.Equal<uint>(6, binding.ModuleId);
+            Assert.Equal(6u, binding.ModuleId);
             Assert.Equal<byte>(3, binding.ModulePin);
             Assert.True(binding.IsSink);
         }
 
         [Fact]
-        public void TestModule()
+        public void Module()
         {
             Module mod = new Module()
             {
@@ -244,19 +249,51 @@ namespace avstplg.tests
                 ProcessingDomain = 1,
                 ConfigExtId = 0x34,
                 KcontrolId = 0,
+                InitConfigIds = new uint[] { 1, 2, 3 },
+                NHLTConfigId = 7,
             };
 
-            Assert.Equal<uint>(0, mod.Id);
-            Assert.Equal<uint>(7777, mod.ConfigBaseId);
-            Assert.Equal<uint>(1, mod.InAudioFormatId);
+            Assert.Equal(0u, mod.Id);
+            Assert.Equal(7777u, mod.ConfigBaseId);
+            Assert.Equal(1u, mod.InAudioFormatId);
             Assert.Equal<byte>(2, mod.CoreId.Value);
             Assert.Equal<byte>(1, mod.ProcessingDomain.Value);
-            Assert.Equal<uint>(0x34, mod.ConfigExtId);
-            Assert.Equal<uint>(0, mod.KcontrolId.Value);
+            Assert.Equal(0x34u, mod.ConfigExtId);
+            Assert.Equal(0u, mod.KcontrolId.Value);
+            Assert.Equal(3, mod.InitConfigIds.Length);
+            Assert.Equal(7u, mod.NHLTConfigId.Value);
         }
 
         [Fact]
-        public void TestPipeline()
+        public void ModuleInitConfig()
+        {
+            ModuleInitConfig cfg = new ModuleInitConfig()
+            {
+                Id = 3,
+                Param = 0x42,
+                Data = new byte[] { 0x01, 0x02, 0x03, 0x04 },
+            };
+
+            Assert.Equal(3u, cfg.Id);
+            Assert.Equal<byte>(0x42, cfg.Param);
+            Assert.Equal(4, cfg.Data.Length);
+        }
+
+        [Fact]
+        public void NHLTConfig()
+        {
+            NHLTConfig cfg = new NHLTConfig()
+            {
+                Id = 5,
+                Data = new byte[] { 0xAA, 0xBB },
+            };
+
+            Assert.Equal(5u, cfg.Id);
+            Assert.Equal(2, cfg.Data.Length);
+        }
+
+        [Fact]
+        public void Pipeline()
         {
             Pipeline ppl = new Pipeline()
             {
@@ -266,14 +303,14 @@ namespace avstplg.tests
                 BindingId = new uint[] { 543 },
             };
 
-            Assert.Equal<uint>(0, ppl.Id);
-            Assert.Equal<uint>(659308, ppl.ConfigId);
+            Assert.Equal(0u, ppl.Id);
+            Assert.Equal(659308u, ppl.ConfigId);
             Assert.Empty(ppl.Modules);
             Assert.Single(ppl.BindingId);
         }
 
         [Fact]
-        public void TestPath()
+        public void Path()
         {
             Path path = new Path()
             {
@@ -283,31 +320,37 @@ namespace avstplg.tests
                 Pipelines = null,
             };
 
-            Assert.Equal<uint>(0, path.Id);
-            Assert.Equal<uint>(2, path.FEAudioFormatId);
-            Assert.Equal<uint>(5, path.BEAudioFormatId);
+            Assert.Equal(0u, path.Id);
+            Assert.Equal(2u, path.FEAudioFormatId);
+            Assert.Equal(5u, path.BEAudioFormatId);
             Assert.Null(path.Pipelines);
         }
 
         [Fact]
-        public void TestPathTemplate()
+        public void PathTemplate()
         {
+            Kcontrol vol = new Kcontrol() { Name = "Master Volume" };
+            Kcontrol mute = new Kcontrol() { Name = "Master Switch" };
             PathTemplate tmpl = new PathTemplate()
             {
                 Id = 0,
                 WidgetName = "ssp0_fe",
                 IgnoreSuspend = true,
                 Paths = new Path[] { },
+                Kcontrol = vol,
+                MuteKcontrol = mute,
             };
 
-            Assert.Equal<uint>(0, tmpl.Id);
-            Assert.Equal<string>("ssp0_fe", tmpl.WidgetName, s_comparer);
+            Assert.Equal(0u, tmpl.Id);
+            Assert.Equal("ssp0_fe", tmpl.WidgetName, s_comparer);
             Assert.True(tmpl.IgnoreSuspend);
             Assert.Empty(tmpl.Paths);
+            Assert.Same(vol, tmpl.Kcontrol);
+            Assert.Same(mute, tmpl.MuteKcontrol);
         }
 
         [Fact]
-        public void TestCondpath()
+        public void Condpath()
         {
             Condpath path = new Condpath()
             {
@@ -317,14 +360,14 @@ namespace avstplg.tests
                 Pipelines = null,
             };
 
-            Assert.Equal<uint>(0, path.Id);
-            Assert.Equal<uint>(2, path.SourcePathId);
-            Assert.Equal<uint>(5, path.SinkPathId);
+            Assert.Equal(0u, path.Id);
+            Assert.Equal(2u, path.SourcePathId);
+            Assert.Equal(5u, path.SinkPathId);
             Assert.Null(path.Pipelines);
         }
 
         [Fact]
-        public void TestCondpathTemplate()
+        public void CondpathTemplate()
         {
             CondpathTemplate tmpl = new CondpathTemplate()
             {
@@ -339,51 +382,55 @@ namespace avstplg.tests
                 Condpaths = new Condpath[] { },
             };
 
-            Assert.Equal<uint>(0, tmpl.Id);
-            Assert.Equal<string>("rt274", tmpl.SourceTopologyName, s_comparer);
-            Assert.Equal<uint>(3, tmpl.SourcePathTemplateId);
-            Assert.Equal<string>("dmic", tmpl.SinkTopologyName, s_comparer);
-            Assert.Equal<uint>(6, tmpl.SinkPathTemplateId);
-            Assert.Equal<uint>(1, tmpl.ConditionType);
+            Assert.Equal(0u, tmpl.Id);
+            Assert.Equal("rt274", tmpl.SourceTopologyName, s_comparer);
+            Assert.Equal(3u, tmpl.SourcePathTemplateId);
+            Assert.Equal("dmic", tmpl.SinkTopologyName, s_comparer);
+            Assert.Equal(6u, tmpl.SinkPathTemplateId);
+            Assert.Equal(1u, tmpl.ConditionType);
             Assert.False(tmpl.Overridable);
             Assert.Equal<byte>(0, tmpl.Priority);
             Assert.Empty(tmpl.Condpaths);
         }
 
         [Fact]
-        public void TestPCMCapabilities()
+        public void PCMCapabilities()
         {
             PCMCapabilities caps = new PCMCapabilities()
             {
                 Formats = "S16_LE, S24_LE",
                 Rates = "44100, 48000",
                 Channels = null,
+                SigBits = 24,
             };
 
-            Assert.Equal<string>("S16_LE, S24_LE", caps.Formats, s_comparer);
-            Assert.Equal<string>("44100, 48000", caps.Rates, s_comparer);
+            Assert.Equal("S16_LE, S24_LE", caps.Formats, s_comparer);
+            Assert.Equal("44100, 48000", caps.Rates, s_comparer);
             Assert.Null(caps.Channels);
+            Assert.Equal(24u, caps.SigBits);
         }
 
         [Fact]
-        public void TestFEDAI()
+        public void FEDAI()
         {
             FEDAI dai = new FEDAI()
             {
+                Id = 9,
                 Name = "System Playback",
                 IgnoreSuspend = false,
                 CaptureCapabilities = null,
                 PlaybackCapabilities = new PCMCapabilities(),
             };
 
-            Assert.Equal<string>("System Playback", dai.Name, s_comparer);
+            Assert.Equal(9u, dai.Id);
+            Assert.Equal("System Playback", dai.Name, s_comparer);
             Assert.False(dai.IgnoreSuspend);
             Assert.Null(dai.CaptureCapabilities);
             Assert.NotNull(dai.PlaybackCapabilities);
         }
 
         [Fact]
-        public void TestDAPMRoute()
+        public void DAPMRoute()
         {
             DAPMRoute route = new DAPMRoute()
             {
@@ -392,13 +439,13 @@ namespace avstplg.tests
                 Source = "source1",
             };
 
-            Assert.Equal<string>("sink0", route.Sink, s_comparer);
+            Assert.Equal("sink0", route.Sink, s_comparer);
             Assert.Null(route.Control);
-            Assert.Equal<string>("source1", route.Source, s_comparer);
+            Assert.Equal("source1", route.Source, s_comparer);
         }
 
         [Fact]
-        public void TestDAPMGraph()
+        public void DAPMGraph()
         {
             DAPMGraph graph = new DAPMGraph()
             {
@@ -406,25 +453,38 @@ namespace avstplg.tests
                 Routes = new DAPMRoute[] { },
             };
 
-            Assert.Equal<string>("my_graph", graph.Name, s_comparer);
+            Assert.Equal("my_graph", graph.Name, s_comparer);
             Assert.Empty(graph.Routes);
         }
 
         [Fact]
-        public void TestKcontrol()
+        public void Kcontrol()
         {
-            Kcontrol kctrl = new Kcontrol()
+            Kcontrol ctl = new Kcontrol()
             {
                 Id = 0,
                 Name = "my_kctrl",
+                Type = KcontrolType.Mixer,
+                Invert = true,
+                NumChannels = 2,
             };
 
-            Assert.Equal<uint>(0, kctrl.Id);
-            Assert.Equal<string>("my_kctrl", kctrl.Name, s_comparer);
+            Assert.Equal(0u, ctl.Id);
+            Assert.Equal("my_kctrl", ctl.Name, s_comparer);
+            Assert.Equal(KcontrolType.Mixer, ctl.Type);
+            Assert.Null(ctl.Max);   // tests negative branch in the getter
+            Assert.True(ctl.Invert);
+            Assert.Equal(2, ctl.NumChannels);
+
+            ctl.Max = "0xa";
+            Assert.Equal("0x0000000A", ctl.Max, s_comparer);
+
+            ctl.Max = null;         // value shall not change
+            Assert.Equal("0x0000000A", ctl.Max, s_comparer);
         }
 
         [Fact]
-        public void TestTopology()
+        public void Topology()
         {
             Topology tplg = new Topology()
             {
@@ -443,8 +503,8 @@ namespace avstplg.tests
                 Kcontrols = null,
             };
 
-            Assert.Equal<string>("avs_hdaudio", tplg.Name, s_comparer);
-            Assert.Equal<uint>(1, tplg.Version);
+            Assert.Equal("avs_hdaudio", tplg.Name, s_comparer);
+            Assert.Equal(1u, tplg.Version);
             Assert.NotNull(tplg.Libraries);
             Assert.Null(tplg.AudioFormats);
             Assert.Null(tplg.ModuleConfigsBase);

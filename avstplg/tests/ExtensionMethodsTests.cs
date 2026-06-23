@@ -1,5 +1,12 @@
+//
+// Copyright (c) 2026, Intel Corporation. All rights reserved.
+//
+// Author: Cezary Rojewski <cezary.rojewski@intel.com>
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
 using System;
-using avstplg;
 using NUcmSerializer;
 using Xunit;
 
@@ -8,82 +15,107 @@ namespace avstplg.tests
     public class ExtensionMethodsTests
     {
         [Fact]
-        public void TestTryUInt32()
+        public void TryInt32()
         {
-            string str;
             bool result;
-            uint val;
+            int actual;
 
-            str = "0x10";
-            result = str.TryUInt32(out val);
-
+            result = "0x10".TryInt32(out actual);
             Assert.True(result);
-            Assert.Equal<uint>(0x10, val);
-            Assert.NotEqual<uint>(10, val);
+            Assert.Equal(0x10, actual);
 
-            str = "012345678";
-            result = str.TryUInt32(out val);
-
+            result = "12345".TryInt32(out actual);
             Assert.True(result);
-            Assert.Equal<uint>(012345678, val);
-            Assert.NotEqual<uint>(0x012345678, val);
+            Assert.Equal(12345, actual);
 
-            str = "0x0x";
-            result = str.TryUInt32(out val);
+            result = "-42".TryInt32(out actual);
+            Assert.True(result);
+            Assert.Equal(-42, actual);
 
+            Assert.False("0x0x".TryInt32(out actual));
+            Assert.False("notanumber".TryInt32(out actual));
+        }
+
+        [Fact]
+        public void ToInt32()
+        {
+            Assert.Equal(0x10, "0x10".ToInt32());
+            Assert.Equal(12345, "12345".ToInt32());
+            Assert.Equal(-42, "-42".ToInt32());
+            Assert.Equal(default(int), "0x0x".ToInt32());
+        }
+
+        [Fact]
+        public void TryUInt32()
+        {
+            bool result;
+            uint actual;
+
+            result = "0x10".TryUInt32(out actual);
+            Assert.True(result);
+            Assert.Equal<uint>(0x10, actual);
+
+            result = "012345678".TryUInt32(out actual);
+            Assert.True(result);
+            Assert.Equal<uint>(012345678, actual);
+
+            result = "0x0x".TryUInt32(out actual);
             Assert.False(result);
         }
 
         [Fact]
-        public void TestToUInt32()
+        public void ToUInt32()
         {
-            string str;
-            uint val;
-
-            str = "0x10";
-            val = str.ToUInt32();
-
-            Assert.Equal<uint>(0x10, val);
-            Assert.NotEqual<uint>(10, val);
-
-            str = "012345678";
-            val = str.ToUInt32();
-
-            Assert.Equal<uint>(012345678, val);
-            Assert.NotEqual<uint>(0x012345678, val);
-
-            str = "0x0x";
-            val = str.ToUInt32();
-            Assert.Equal<uint>(default(uint), val);
+            Assert.Equal(0x10u, "0x10".ToUInt32());
+            Assert.Equal(012345678u, "012345678".ToUInt32());
+            Assert.Equal(default(uint), "0x0x".ToUInt32());
         }
 
         [Fact]
-        public void TestToUInts32()
+        public void ToUInts32()
         {
             string str;
-            uint[] vals;
+            uint[] actuals;
 
             str = "16, 0x0,2,0x4, 0xa, 2456757";
-            vals = str.ToUInts32();
+            actuals = str.ToUInts32();
 
-            Assert.Equal<int>(6, vals.Length);
-            Assert.Equal<uint>(16, vals[0]);
-            Assert.Equal<uint>(0x0, vals[1]);
-            Assert.Equal<uint>(2, vals[2]);
-            Assert.Equal<uint>(0x4, vals[3]);
-            Assert.Equal<uint>(0xa, vals[4]);
-            Assert.Equal<uint>(2456757, vals[5]);
+            Assert.Equal(6, actuals.Length);
+            Assert.Equal(16u, actuals[0]);
+            Assert.Equal(0x0u, actuals[1]);
+            Assert.Equal(2u, actuals[2]);
+            Assert.Equal(0x4u, actuals[3]);
+            Assert.Equal(0xAu, actuals[4]);
+            Assert.Equal(2456757u, actuals[5]);
 
             str = @"333, aaaa;.[],.;,].;.,`/\/\[[]]5,0x999";
-            vals = str.ToUInts32();
+            actuals = str.ToUInts32();
 
-            Assert.Equal<int>(2, vals.Length);
-            Assert.Equal<uint>(333, vals[0]);
-            Assert.Equal<uint>(0x999, vals[1]);
+            Assert.Equal(2, actuals.Length);
+            Assert.Equal(333u, actuals[0]);
+            Assert.Equal(0x999u, actuals[1]);
         }
 
         [Fact]
-        void TestToRate()
+        public void ToUInt16()
+        {
+            Assert.Equal<ushort>(0x10, "0x10".ToUInt16());
+            Assert.Equal<ushort>(12345, "12345".ToUInt16());
+            Assert.Equal<ushort>(0xFFFF, "0xFFFF".ToUInt16());
+            Assert.Equal<ushort>(default(ushort), "0x0x".ToUInt16());
+        }
+
+        [Fact]
+        public void ToUInt8()
+        {
+            Assert.Equal<byte>(0x10, "0x10".ToUInt8());
+            Assert.Equal<byte>(255, "255".ToUInt8());
+            Assert.Equal<byte>(0xFF, "0xFF".ToUInt8());
+            Assert.Equal<byte>(default(byte), "0x0x".ToUInt8());
+        }
+
+        [Fact]
+        public void ToRate()
         {
             Assert.Equal(PCM_RATE._5512, 5512u.ToRate());
             Assert.Equal(PCM_RATE._8000, 8000u.ToRate());
@@ -107,8 +139,9 @@ namespace avstplg.tests
         }
 
         [Fact]
-        void TestToFormat()
+        public void ToFormat()
         {
+            Assert.Equal(PCM_FORMAT.S8, 8u.ToFormat());
             Assert.Equal(PCM_FORMAT.S16_LE, 16u.ToFormat());
             Assert.Equal(PCM_FORMAT.S24_LE, 24u.ToFormat());
             Assert.Equal(PCM_FORMAT.S32_LE, 32u.ToFormat());
@@ -116,7 +149,6 @@ namespace avstplg.tests
             Assert.Throws<NotSupportedException>(() => 7u.ToFormat());
             Assert.Throws<NotSupportedException>(() => 21u.ToFormat());
         }
-
     }
 }
 
