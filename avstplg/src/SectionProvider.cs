@@ -313,12 +313,11 @@ namespace avstplg
             AddTupleIf(wordTuples, AVS_TKN_MODCFG.PEAKVOL_CURVE_DURATION_U32, module.PeakVolCurveDuration);
 
             var words = new VendorTuples<uint>();
-            words.Tuples = wordTuples.ToArray();
-
             var shorts = new VendorTuples<ushort>();
-            shorts.Tuples = shortTuples.ToArray();
-
             var bytes = new VendorTuples<byte>();
+
+            words.Tuples = wordTuples.ToArray();
+            shorts.Tuples = shortTuples.ToArray();
             bytes.Tuples = byteTuples.ToArray();
 
             var section = new SectionVendorTuples($"modcfg_ext{id}_tuples");
@@ -505,15 +504,13 @@ namespace avstplg
             AddTupleIf(boolTuples, AVS_TKN_PPLCFG.LOW_POWER_BOOL, config.LowPower);
 
             var words = new VendorTuples<uint>();
-            words.Tuples = wordTuples.ToArray();
-
             var shorts = new VendorTuples<ushort>();
-            shorts.Tuples = shortTuples.ToArray();
-
             var bytes = new VendorTuples<byte>();
-            bytes.Tuples = byteTuples.ToArray();
-
             var bools = new VendorTuples<bool>();
+
+            words.Tuples = wordTuples.ToArray();
+            shorts.Tuples = shortTuples.ToArray();
+            bytes.Tuples = byteTuples.ToArray();
             bools.Tuples = boolTuples.ToArray();
 
             var section = new SectionVendorTuples($"pplcfg{id}_tuples");
@@ -928,6 +925,7 @@ namespace avstplg
             var pcm = new SectionPCM(fedai.Name);
             pcm.ID = fedai.Id;
             pcm.IgnoreSuspend = fedai.IgnoreSuspend;
+
             if (fedai.CaptureCapabilities != null)
             {
                 identifier = $"{fedai.Name}-capture";
