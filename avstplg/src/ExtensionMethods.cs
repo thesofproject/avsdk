@@ -18,7 +18,7 @@ namespace avstplg
     {
         internal static bool TryInt32(this string value, out int result)
         {
-            if (value.StartsWith("0x", StringComparison.CurrentCulture))
+            if (value.StartsWith("0x", StringComparison.Ordinal))
                 return int.TryParse(value.Substring(2), NumberStyles.HexNumber,
                                     CultureInfo.CurrentCulture, out result);
 
@@ -45,7 +45,7 @@ namespace avstplg
 
         internal static bool TryUInt32(this string value, out uint result)
         {
-            if (value.StartsWith("0x", StringComparison.CurrentCulture))
+            if (value.StartsWith("0x", StringComparison.Ordinal))
                 return uint.TryParse(value.Substring(2), NumberStyles.HexNumber,
                               CultureInfo.CurrentCulture, out result);
 
