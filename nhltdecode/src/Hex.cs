@@ -302,8 +302,6 @@ namespace nhltdecode
 
         public HexBLOB(byte[] b)
         {
-            if (b == null)
-                throw new ArgumentNullException(nameof(b));
             values = b;
         }
 
@@ -338,7 +336,7 @@ namespace nhltdecode
 
         public int Length
         {
-            get => values.Length;
+            get => values?.Length ?? 0;
         }
     }
 }
