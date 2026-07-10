@@ -21,26 +21,11 @@ namespace nhltdecode
             return (i & 0x01) + ((i >> 1) & 0x01);
         }
 
-        internal static bool TryUInt32(this string value, out uint result)
-        {
-            if (value.StartsWith("0x", StringComparison.Ordinal))
-                return uint.TryParse(value.Substring(2), NumberStyles.HexNumber,
-                              CultureInfo.CurrentCulture, out result);
-
-            return uint.TryParse(value, out result);
-        }
-
-        internal static uint ToUInt32(this string value)
-        {
-            TryUInt32(value, out uint result);
-            return result;
-        }
-
         internal static bool TryUInt64(this string value, out ulong result)
         {
             if (value.StartsWith("0x", StringComparison.Ordinal))
                 return ulong.TryParse(value.Substring(2), NumberStyles.HexNumber,
-                              CultureInfo.CurrentCulture, out result);
+                                      CultureInfo.CurrentCulture, out result);
 
             return ulong.TryParse(value, out result);
         }
@@ -48,6 +33,21 @@ namespace nhltdecode
         internal static ulong ToUInt64(this string value)
         {
             TryUInt64(value, out ulong result);
+            return result;
+        }
+
+        internal static bool TryUInt32(this string value, out uint result)
+        {
+            if (value.StartsWith("0x", StringComparison.Ordinal))
+                return uint.TryParse(value.Substring(2), NumberStyles.HexNumber,
+                                     CultureInfo.CurrentCulture, out result);
+
+            return uint.TryParse(value, out result);
+        }
+
+        internal static uint ToUInt32(this string value)
+        {
+            TryUInt32(value, out uint result);
             return result;
         }
 
