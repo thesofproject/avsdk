@@ -473,7 +473,7 @@ namespace nhltdecode
             if (value == null)
                 return new byte[size];
 
-            byte[] result = Encoding.ASCII.GetBytes(value).Take(size).ToArray();
+            byte[] result = Encoding.ASCII.GetBytes(value);
 
             Array.Resize(ref result, size);
             return result;
