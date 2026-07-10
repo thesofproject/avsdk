@@ -175,8 +175,9 @@ namespace nhltdecode
                 else
                     Decode(dictionary["decode"], dictionary["output"]);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"nhltdecode failed. {ex.GetType()}: {ex.Message}");
                 return 1;
             }
 
