@@ -150,26 +150,23 @@ namespace nhltdecode
                 xs.Serialize(writer, table);
         }
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             if (args.Any(a => s_help.Matches(a)))
-            {
-                ShowHelp(0);
-                return;
-            }
+                return ShowHelp(0);
 
             if (args.Any(a => s_version.Matches(a)))
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 Console.WriteLine($"Intel {s_appName} tool, version {version}");
-                return;
+                return 0;
             }
 
             Dictionary<string, string> dictionary = ParseArguments(args);
 
             int ret = VerifyArguments(dictionary);
             if (ret != 0)
-                return;
+                return ret;
 
             try
             {
@@ -180,7 +177,10 @@ namespace nhltdecode
             }
             catch
             {
+                return 1;
             }
+
+            return 0;
         }
     }
 }
