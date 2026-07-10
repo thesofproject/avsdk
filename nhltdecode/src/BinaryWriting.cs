@@ -450,6 +450,8 @@ namespace nhltdecode
             if (endpoints == null)
                 throw new ArgumentNullException(nameof(endpoints));
 
+            // The EndpointsCount is part of struct NHLT but
+            // for consistency with other array-writers handle it here.
             int size = sizeof(byte);
 
             writer.Write((byte)endpoints.Length);
