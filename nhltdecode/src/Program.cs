@@ -112,6 +112,44 @@ namespace nhltdecode
             return 0;
         }
 
+        static void Compile(string input, string output)
+        {
+            NHLT table;
+            var xs = new XmlSerializer(typeof(NHLT));
+            var settings = new XmlReaderSettings()
+            {
+                IgnoreWhitespace = false,
+                CloseInput = true,
+            };
+
+            using (var stream = new StreamReader(input))
+            using (XmlReader reader = XmlReader.Create(stream, settings))
+                table = (NHLT)xs.Deserialize(reader);
+
+            using (var stream = new FileStream(output, FileMode.Create))
+            using (var writer = new BinaryWriter(stream))
+                BinaryWriting.WriteNHLT(writer, table);
+        }
+
+        static void Decode(string input, string output)
+        {
+            NHLT table;
+            var xs = new XmlSerializer(typeof(NHLT));
+            var settings = new XmlWriterSettings()
+            {
+                Indent = true,
+                CloseOutput = true,
+            };
+
+            using (var stream = new FileStream(input, FileMode.Open, FileAccess.Read))
+            using (var reader = new BinaryReader(stream, System.Text.Encoding.ASCII))
+                table = BinaryReading.ReadNHLT(reader);
+
+            using (var stream = new StreamWriter(output))
+            using (XmlWriter writer = XmlWriter.Create(stream, settings))
+                xs.Serialize(writer, table);
+        }
+
         static void Main(string[] args)
         {
             if (args.Any(a => s_help.Matches(a)))
@@ -133,78 +171,15 @@ namespace nhltdecode
             if (ret != 0)
                 return;
 
-            if (dictionary.ContainsKey("compile"))
-                Compile(dictionary["compile"], dictionary["output"]);
-            else
-                Decode(dictionary["decode"], dictionary["output"]);
-        }
-
-        private static void Decode(string input, string output)
-        {
-            var reader = new BinaryReader(new FileStream(input, FileMode.Open, FileAccess.Read),
-                                          System.Text.Encoding.ASCII);
-            NHLT table = null;
-
             try
             {
-                table = BinaryReading.ReadNHLT(reader);
+                if (dictionary.ContainsKey("compile"))
+                    Compile(dictionary["compile"], dictionary["output"]);
+                else
+                    Decode(dictionary["decode"], dictionary["output"]);
             }
-            finally
+            catch
             {
-                reader.Dispose();
-            }
-
-            if (table == null)
-                return;
-
-            var xs = new XmlSerializer(typeof(NHLT));
-            var settings = new XmlWriterSettings()
-            {
-                Indent = true,
-            };
-            XmlWriter writer = XmlWriter.Create(new StreamWriter(output), settings);
-
-            try
-            {
-                xs.Serialize(writer, table);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
-        }
-
-        private static void Compile(string input, string output)
-        {
-            var xs = new XmlSerializer(typeof(NHLT));
-            var settings = new XmlReaderSettings()
-            {
-                IgnoreWhitespace = false,
-            };
-            XmlReader reader = XmlReader.Create(new StreamReader(input), settings);
-            NHLT table = null;
-
-            try
-            {
-                table = (NHLT)xs.Deserialize(reader);
-            }
-            finally
-            {
-                reader.Dispose();
-            }
-
-            if (table == null)
-                return;
-
-            var writer = new BinaryWriter(new FileStream(output, FileMode.Create));
-
-            try
-            {
-                BinaryWriting.WriteNHLT(writer, table);
-            }
-            finally
-            {
-                writer.Dispose();
             }
         }
     }
