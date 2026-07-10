@@ -18,7 +18,6 @@ namespace nhltdecode
         static string NormalizeId(byte[] id)
         {
             var validBytes = new List<byte>();
-            string result = string.Empty;
 
             // Ignore non-printable ASCII characters.
             foreach (byte b in id)

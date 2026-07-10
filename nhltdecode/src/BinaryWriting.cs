@@ -487,7 +487,6 @@ namespace nhltdecode
             // Save starting position to write the table's length at once it's known.
             long pos = writer.BaseStream.Position;
             var hdr = new Native.TableHeader();
-            Encoding ascii = Encoding.ASCII;
 
             // All fixed sizes based on Native.TableHeader layout.
             hdr.Signature = Encoding.ASCII.GetBytes("NHLT");
