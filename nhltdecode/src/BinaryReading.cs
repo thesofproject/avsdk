@@ -421,6 +421,9 @@ namespace nhltdecode
                     break;
 
                 default:
+                    // For consistency, consume FormatsCount. Perhaps we should just throw instead?
+                    byte count = reader.ReadByte();
+                    result.FormatsConfig = new FormatConfig[count];
                     break;
             }
 
