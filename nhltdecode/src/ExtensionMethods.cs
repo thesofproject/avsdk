@@ -16,7 +16,7 @@ namespace nhltdecode
 {
     internal static class ExtensionMethods
     {
-        internal static uint PopCount(uint i)
+        internal static uint PopCount2(uint i)
         {
             return (i & 0x01) + ((i >> 1) & 0x01);
         }

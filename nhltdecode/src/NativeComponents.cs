@@ -221,15 +221,17 @@ namespace nhltdecode.Native
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public uint[] TsGroup;
         public uint GlobalConfig;
+        // Expected range: 00b - 11b i.e.: up to 2 ChannelCtrls.
         public uint ChannelCtrlMask;
         //
         // Followed by:
         // ChannelConfig[] ChannelCtrls;
         //
+        // Expected range: 00b - 11b i.e.: up to 2 PdmCtrls.
         public uint PdmCtrlMask;
         //
         // Followed by:
-        // PdmCtrlCfg[] PdmCtrls;
+        // PDMCtrlConfig[] PdmCtrls;
         //
     };
 

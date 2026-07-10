@@ -175,8 +175,8 @@ namespace nhltdecode
                 uint mask = 0;
 
                 if (ChannelsConfig != null)
-                    foreach (ChannelConfig chn in ChannelsConfig)
-                        mask |= (1u << (int)chn.Id);
+                    for (int i = 0; i < Math.Min(2, ChannelsConfig.Length); i++)
+                        mask |= 1u << i;
                 return mask;
             }
         }
@@ -188,8 +188,8 @@ namespace nhltdecode
                 uint mask = 0;
 
                 if (PDMCtrlsConfig != null)
-                    foreach (PDMCtrlConfig pdm in PDMCtrlsConfig)
-                        mask |= (1u << (int)pdm.Id);
+                    for (int i = 0; i < Math.Min(2, PDMCtrlsConfig.Length); i++)
+                        mask |= 1u << i;
                 return mask;
             }
         }

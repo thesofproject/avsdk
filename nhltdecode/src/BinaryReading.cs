@@ -294,10 +294,10 @@ namespace nhltdecode
         public static PDMCtrlConfig[] ReadPDMCtrlsConfig(BinaryReader reader)
         {
             uint mask = reader.ReadUInt32();
-            uint count = ExtensionMethods.PopCount(mask);
+            uint count = ExtensionMethods.PopCount2(mask);
             var result = new PDMCtrlConfig[count];
 
-            for (int i = 0, j = 0; i < 32 && j < count; i++)
+            for (int i = 0, j = 0; j < count; i++)
             {
                 if ((mask & (1 << i)) != 0)
                 {
@@ -321,10 +321,10 @@ namespace nhltdecode
         public static ChannelConfig[] ReadChannelsConfig(BinaryReader reader)
         {
             uint mask = reader.ReadUInt32();
-            uint count = ExtensionMethods.PopCount(mask);
+            uint count = ExtensionMethods.PopCount2(mask);
             var result = new ChannelConfig[count];
 
-            for (int i = 0, j = 0; i < 32 && j < count; i++)
+            for (int i = 0, j = 0; j < count; i++)
             {
                 if ((mask & (1 << i)) != 0)
                 {
