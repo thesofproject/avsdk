@@ -31,7 +31,7 @@ namespace nhltdecode
             return Encoding.ASCII.GetString(validBytes.ToArray());
         }
 
-        public static DeviceConfig Read1bDeviceConfig(BinaryReader reader)
+        private static DeviceConfig Read1bDeviceConfig(BinaryReader reader)
         {
             return new DeviceConfig()
             {
@@ -39,7 +39,7 @@ namespace nhltdecode
             };
         }
 
-        public static DeviceConfig Read2bDeviceConfig(BinaryReader reader)
+        private static DeviceConfig Read2bDeviceConfig(BinaryReader reader)
         {
             return new DeviceConfig()
             {
@@ -48,7 +48,7 @@ namespace nhltdecode
             };
         }
 
-        public static DeviceConfig ReadMicDeviceConfig(BinaryReader reader)
+        private static DeviceConfig ReadMicDeviceConfig(BinaryReader reader)
         {
             return new DeviceConfig()
             {
@@ -58,7 +58,7 @@ namespace nhltdecode
             };
         }
 
-        public static Native.VendorMicConfig[] ReadVendorMicsConfig(BinaryReader reader)
+        private static Native.VendorMicConfig[] ReadVendorMicsConfig(BinaryReader reader)
         {
             byte count = reader.ReadByte();
             var result = new Native.VendorMicConfig[count];
