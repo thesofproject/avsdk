@@ -40,6 +40,7 @@ namespace nhltdecode
         }
 
         internal static T BytesToStructure<T>(byte[] bytes)
+            where T : struct
         {
             GCHandle h = default(GCHandle);
             T result;
