@@ -177,7 +177,7 @@ namespace nhltdecode
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"nhltdecode failed. {ex.GetType()}: {ex.Message}");
+                Console.WriteLine($"{s_appName} failed. {ex.GetType()}: {ex.Message}");
                 return 1;
             }
 
