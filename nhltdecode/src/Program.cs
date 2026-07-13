@@ -7,8 +7,11 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-using System.CommandLine;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -16,38 +19,124 @@ namespace nhltdecode
 {
     class Program
     {
+        struct Option
+        {
+            internal string shortName;
+            internal string longName;
+
+            internal Option(string s, string l)
+            {
+                shortName = s;
+                longName = l;
+            }
+
+            internal bool Matches(string arg)
+            {
+                return arg.Equals(shortName) || arg.Equals(longName);
+            }
+
+            public override string ToString()
+            {
+                return $"{shortName}, {longName}";
+            }
+        }
+
+        static readonly Option s_compile = new Option("-c", "--compile");
+        static readonly Option s_decode = new Option("-d", "--decode");
+        static readonly Option s_output = new Option("-o", "--output");
+        static readonly Option s_help = new Option("-h", "--help");
+        static readonly Option s_version = new Option("-v", "--version");
+
+        static readonly string s_appName = AppDomain.CurrentDomain.FriendlyName;
+        static readonly Dictionary<string, Option> s_parseOptions = new Dictionary<string, Option>()
+        {
+            { "compile", s_compile },
+            { "decode", s_decode },
+            { "output", s_output },
+        };
+
+        static int ShowHelp(int code)
+        {
+            Console.WriteLine($"Usage: {s_appName} [-c | -d] [FILE] -o [OUTPUT]");
+            Console.WriteLine();
+            Console.WriteLine($"  {s_compile} FILE\tPath to XML document to compile");
+            Console.WriteLine($"  {s_decode} FILE\tPath to binary file to decode");
+            Console.WriteLine($"  {s_output} FILE\tPath to output file to create");
+            Console.WriteLine($"  {s_help}\t\tShow this message and exit");
+            Console.WriteLine($"  {s_version}\t\tOutput version information and exit");
+            return code;
+        }
+
+        static Dictionary<string, string> ParseArguments(string[] args)
+        {
+            if (args.Length == 0)
+                return null;
+            // Working with pairs: option and filename.
+            if (args.Length % 2 != 0)
+                return null;
+
+            var result = new Dictionary<string, string>();
+
+            for (int i = 0; i < args.Length; i += 2)
+            {
+                string option = args[i];
+                string key = s_parseOptions.FirstOrDefault(p => p.Value.Matches(option)).Key;
+
+                if (key == null || result.ContainsKey(key))
+                    return null;
+
+                result[key] = args[i + 1];
+            }
+
+            return result;
+        }
+
+        static int VerifyArguments(Dictionary<string, string> dictionary)
+        {
+            if (dictionary == null)
+                return ShowHelp(1);
+
+            if (!dictionary.ContainsKey("output"))
+            {
+                Console.WriteLine("Please specify -o argument.");
+                return ShowHelp(1);
+            }
+
+            if ((dictionary.ContainsKey("compile") && dictionary.ContainsKey("decode")) ||
+                !dictionary.ContainsKey("compile") && !dictionary.ContainsKey("decode"))
+            {
+                Console.WriteLine("Please specify either -c or -d.");
+                return ShowHelp(1);
+            }
+
+            return 0;
+        }
+
         static void Main(string[] args)
         {
-            var rootCmd = new RootCommand();
-
-            var compileOption = new Option<FileInfo>("--compile", "compile XML file") { ArgumentHelpName = "file" };
-            compileOption.AddAlias("-c");
-            rootCmd.AddOption(compileOption);
-
-            var decodeOption = new Option<FileInfo>("--decode", "decode NHLT binary file") { ArgumentHelpName = "file" };
-            decodeOption.AddAlias("-d");
-            rootCmd.AddOption(decodeOption);
-
-            var outputArgument = new Argument<FileInfo>("output", "output file");
-            rootCmd.AddArgument(outputArgument);
-
-            rootCmd.AddValidator((result) =>
+            if (args.Any(a => s_help.Matches(a)))
             {
-                if (!((result.GetValueForOption(compileOption) == null) ^ (result.GetValueForOption(decodeOption) == null)))
-                {
-                    result.ErrorMessage = "You have to provide either --compile or --decode";
-                }
-            });
+                ShowHelp(0);
+                return;
+            }
 
-            rootCmd.SetHandler((compile, decode, output) =>
+            if (args.Any(a => s_version.Matches(a)))
             {
-                if (decode != null)
-                    Decode(decode.FullName, output.FullName);
-                else
-                    Compile(compile.FullName, output.FullName);
-            }, compileOption, decodeOption, outputArgument);
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                Console.WriteLine($"Intel {s_appName} tool, version {version}");
+                return;
+            }
 
-            rootCmd.Invoke(args);
+            Dictionary<string, string> dictionary = ParseArguments(args);
+
+            int ret = VerifyArguments(dictionary);
+            if (ret != 0)
+                return;
+
+            if (dictionary.ContainsKey("compile"))
+                Compile(dictionary["compile"], dictionary["output"]);
+            else
+                Decode(dictionary["decode"], dictionary["output"]);
         }
 
         private static void Decode(string input, string output)
